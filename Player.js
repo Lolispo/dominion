@@ -20,6 +20,12 @@ function Player(index){
 		}
 	}
 
+	this.loadCorrectImage = function(el, card){
+		var sPre = 'res/';
+		var sPost = '.png';
+		el.src = sPre + card.name + sPost;
+	}
+
 	this.getCssClassCard = function(el, card){
 		switch(card.cardType){
 			case CardType.ACTION_CARD:
@@ -41,9 +47,9 @@ function Player(index){
 		var handElement = document.getElementById('hand' + this.index);
 		//updateTextPrint(this.index, 'DEBUG: Displaying hand! ');
 		for(var i = 0; i < hand.length; i++){
-			var el = document.createElement('div');
+			var el = document.createElement('img');
 			el.id = "card_" + this.index + "_" + i;
-			el.innerHTML = hand[i].name;
+			this.loadCorrectImage(el, hand[i]);
 			this.getCssClassCard(el, hand[i]);
 			el.classList.add('card');
 			handElement.appendChild(el);
