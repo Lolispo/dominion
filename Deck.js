@@ -6,28 +6,39 @@ function DeckOfCards(playerIndex){
 	this.deckStack = [];
 	this.discard = [];
 	this.board = [];
-	this.actionsLeft = 1;
-	this.buysLeft = 1;
-	this.money = 0;	
 	this.phase = 2;				// 0 = action, 1 = buy, 2 = done, reset hand
 	this.hand = new Hand(this);
 
-	this.startTurn = function(){
-		this.phase = 0;
-		this.money = 0;
-		this.actionsLeft = 1;
-		this.buysLeft = 1;
-		createButton("-> Go To Buy Phase", "hand" + this.playerIndex, 'skipButton', (function(){
-			this.checkIfPhaseDone(true); // Go to next stage
-		}).bind(this));
+	this.updateMoney = function(value = this.money){
+		this.money = value;
+		document.getElementById("money" + this.playerIndex).innerHTML = "Money: " + this.money;
 	}
 
-	this.drawHand = function(){
-		if(this.phase === 2){
-			for(var i = 0; i < cardHandAmount; i++){
-				this.drawCard();
-			}		
-		}
+	this.updateActionsLeft = function(value = this.actionsLeft){
+		this.actionsLeft = value;
+		document.getElementById("actionsLeft" + this.playerIndex).innerHTML = "Actions Left: " + this.actionsLeft;
+	}
+
+	this.updateBuysLeft = function(value = this.buysLeft){
+		this.buysLeft = value;
+		document.getElementById("buysLeft" + this.playerIndex).innerHTML = "Buys Left: " + this.buysLeft;
+	}
+
+	this.updateActionsLeft(1);
+	this.updateBuysLeft(1);
+	this.updateMoney(0);	
+
+	this.updateHTMLElements = function(){
+		this.updateMoney();
+		this.updateActionsLeft();
+		this.updateBuysLeft();
+	}
+
+	this.startTurn = function(){
+		this.phase = 0;
+		createButton("-> Go To Buy Phase", "hand" + this.playerIndex, 'skipButton', (function(){
+			this.checkIfPhaseDone(true); // Go to next stage
+		}).bind(this), 'skipButtonCss');
 	}
 
 	this.initDeck = function(){
@@ -48,27 +59,32 @@ function DeckOfCards(playerIndex){
 	}
 
 	this.drawCard = function(){
+		console.log(this.deckStack, this.discard); // Debug me
 		if(this.deckStack.length === 0){
 			this.deckStack = this.discard;
 			this.discard = [];
 			shuffle(this.deckStack);
+			console.log('DEBUG Shuffle');
 		}
 		var tempCard = this.deckStack.pop(); // Read pop
-		updateTextPrint(this.playerIndex, 'Draw a card! ' + tempCard.name);
+		console.log(this.deckStack, this.discard); // Debug me
 		var handAmount = this.hand.newCard(tempCard);
+		updateTextPrint(this.playerIndex, 'Draw a card! ' + tempCard.name + ' (Hand = ' + handAmount + ' cards)');
+		this.updateHTMLElements();
 	}
 
 	this.discardHand = function(){
+		var discardedCards = this.hand.discardedHand();
 		updateTextPrint(this.playerIndex, 'Discarding hand!');
-		this.discard.concat(this.hand.discardedHand());
-		var el = document.getElementById("board" + this.playerIndex);
-		for(var i = 0; i < el.childNodes.length; i++){
-			el.removeChild(el.childNodes[i]);
-		}
-		el = document.getElementById("hand" + this.playerIndex);
-		for(var i = 0; i < el.childNodes.length; i++){
-			el.removeChild(el.childNodes[i]);
-		}
+		this.discard = this.discard.concat(discardedCards);		
+		console.log(this.deckStack, this.discard);
+		// Cleanup phase
+		this.updateMoney(0);	
+		this.updateActionsLeft(1);
+		this.updateBuysLeft(1);
+		this.board = [];
+		removeChildren("board" + this.playerIndex);
+		removeChildren("hand" + this.playerIndex);
 	}
 
 	this.checkIfPhaseDone = function(nextStage){ // Boolean to see if next stage
@@ -82,9 +98,9 @@ function DeckOfCards(playerIndex){
 			if(nextStage || this.buysLeft === 0 || this.money === 0){
 				this.phase++;
 				updateTextPrint(this.playerIndex, 'Ending Turn - Discarding hand and drawing new, money: ' + this.money + ', buysLeft: ' + this.buysLeft);
-				this.discardHand();
-				this.drawHand();
 				deleteButton("skipButton", "hand" + this.playerIndex);
+				this.discardHand();
+				getPlayer(this.playerIndex).drawHand();
 				changeTurn();
 			}			
 		}
@@ -104,13 +120,13 @@ function DeckOfCards(playerIndex){
 				}
 			}
 			if(actions.moreActions !== 0){
-				this.actionsLeft += actions.moreActions;
+				this.updateActionsLeft(this.actionsLeft + actions.moreActions);
 			}
 			if(actions.moreBuys !== 0){
-				this.buysLeft += actions.moreBuys;
+				this.updateActionsLeft(this.buysLeft + actions.moreBuys);
 			}
 			if(actions.moreGold !== 0){
-				this.money += actions.moreGold;
+				this.updateMoney(this.money + actions.moreGold);
 			}
 			this.checkIfPhaseDone(moreActionCards); // Make sure this runs AFTER actionsLeft += line above
 
@@ -181,7 +197,6 @@ function Hand(deckOfCards){
 
 	this.getHand = function(){ // TODO: Add some sorting to this area for each section, treasure cards sorted by rarity
 		var listOfCards = this.action.concat(this.treasure).concat(this.victory);
-		updateTextPrint(this.deckOfCards.playerIndex, 'Hand contains ' + listOfCards.length + ' cards for Player ' + this.deckOfCards.playerIndex);
 		return listOfCards;
 	}
 
@@ -190,6 +205,7 @@ function Hand(deckOfCards){
 		this.treasure = [];
 		this.victory = [];
 		this.action = [];
+		this.amount = 0;
 		return listOfCards;
 	}
 }

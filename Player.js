@@ -5,7 +5,6 @@ var cardHandAmount = 5;
 
 function Player(index){
 	this.index = index;
-	this.cards = new DeckOfCards(index);
 
 	this.startTurn = function(){
 		console.log('DEBUG: Starting turn for Player with index ' + this.index);
@@ -21,14 +20,32 @@ function Player(index){
 		}
 	}
 
+	this.getCssClassCard = function(el, card){
+		switch(card.cardType){
+			case CardType.ACTION_CARD:
+				addCSSClassEl(el, 'card_action');
+				break;
+			case CardType.VICTORY_CARD:
+				addCSSClassEl(el, 'card_victory');
+				break;
+			case CardType.TREASURE_CARD:
+			default:
+				addCSSClassEl(el, 'card_treasure');
+				break;
+		}
+	}
+
 	this.displayHand = function(){
 		var hand = this.cards.hand.getHand();
+		updateTextPrint(this.index, 'Hand contains ' + hand.length + ' cards for Player ' + (this.index + 1));
 		var handElement = document.getElementById('hand' + this.index);
 		//updateTextPrint(this.index, 'DEBUG: Displaying hand! ');
 		for(var i = 0; i < hand.length; i++){
 			var el = document.createElement('div');
 			el.id = "card_" + this.index + "_" + i;
 			el.innerHTML = hand[i].name;
+			this.getCssClassCard(el, hand[i]);
+			el.classList.add('card');
 			handElement.appendChild(el);
 			el.addEventListener('click', function(res){
 				var tempEl = document.getElementById(res.srcElement.id);
@@ -90,13 +107,6 @@ function Player(index){
 		}
 	}
 
-	this.initPlayerDiv = function(){
-		var playDiv = document.getElementById('playArea');
-		var div = document.createElement('div');
-		div.id = 'player' + this.index;
-		playDiv.appendChild(div);
-	}
-
 	this.initTextElement = function(){
 		var div = document.getElementById('player' + this.index);
 		var el = document.createElement('div');
@@ -111,30 +121,29 @@ function Player(index){
 		text1.id = textid + "_1";
 		text2.id = textid + "_2";
 		text3.id = textid + "_3";
+		text1.classList.add('bold');
+		text3.classList.add('third-message');
 		el.appendChild(text1);
 		el.appendChild(text2);
 		el.appendChild(text3);
 		div.appendChild(el);
 	}
 
-	this.initNewUIElement = function(id, parentID = 'player' + this.index){
-		var div = document.getElementById(parentID);
-		var el = document.createElement('div');
-		el.id = id;
-		div.appendChild(el);
-	}
+
 
 	this.initPlayer = function(){
-		this.cards.initDeck();	// Init Deck of Cards
 		// Init HTML Elements
-		this.initPlayerDiv();
+		initNewUIElement('player' + this.index, 'playArea', 'margin_bottom');
 		this.initTextElement();
-		this.initNewUIElement("board" + this.index);
-		this.initNewUIElement("hand" + this.index);
-		this.initNewUIElement("info" + this.index);
-		this.initNewUIElement('money' + this.index, "info" + this.index);
-		this.initNewUIElement('buysLeft' + this.index, "info" + this.index);
-		this.initNewUIElement('actionsLeft' + this.index, "info" + this.index);
+		initNewUIElement("board" + this.index, 'player' + this.index);
+		initNewUIElement("hand" + this.index, 'player' + this.index, 'hand');
+		initNewUIElement("info" + this.index, 'player' + this.index);
+		initNewUIElement('money' + this.index, "info" + this.index);
+		initNewUIElement('buysLeft' + this.index, "info" + this.index);
+		initNewUIElement('actionsLeft' + this.index, "info" + this.index);
+		// Init Deck of Cards
+		this.cards = new DeckOfCards(index);
+		this.cards.initDeck();
 		console.log('Player ' + (this.index + 1) + ' created');
 	}
 }

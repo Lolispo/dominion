@@ -1,1 +1,42 @@
-style.css
+/* Author Petter Andersson */
+
+.bold {
+    font-weight: bold;
+}
+
+.third-message {
+    color: grey;
+}
+
+.card {
+	line-height: 45px;
+    width: 100px;
+    text-align: center;	
+}
+
+.card_treasure {
+	border: chocolate;
+    border-style: solid;
+}
+
+.card_victory {
+	border: green;
+    border-style: solid;
+}
+
+.card_action {
+	border: blue;
+    border-style: solid;
+}
+
+.hand {
+	display: inline-flex;
+}
+
+.margin_bottom {
+	margin-bottom: 30px;
+}
+
+.skipButtonCss {
+	width: 100px;
+}

@@ -28,8 +28,13 @@ function startGame(){
 		players[i].drawHand();
 	}
 	turn = Math.floor(Math.random() * players.length);
-	document.getElementById("info").innerHTML = "Player " + (turn+1) + ":s turn";
+	initNewUIElement('turn', 'info', 'bold');
+	updateTurnUI();
 	players[turn].startTurn();
+}
+
+function updateTurnUI(){
+	document.getElementById('turn').innerHTML = 'Player ' + (turn+1) + ':s turn';
 }
 
 function changeTurn(){
@@ -38,8 +43,8 @@ function changeTurn(){
 	} else {
 		turn++;
 	}
+	updateTurnUI();
 	players[turn].startTurn();
-	document.getElementById("info").innerHTML = "Player " + (turn+1) + ":s turn";
 }
 
 function backMainMenu(){
@@ -84,7 +89,17 @@ function isTurn(playerIndex){
 	return false;
 }
 
-function createButton(text, parentID, id, callback){
+// HTML Stuff
+
+function initNewUIElement(id, parentID, cssClass = ''){
+	var div = document.getElementById(parentID);
+	var el = document.createElement('div');
+	el.id = id;
+	addCSSClassEl(el, cssClass);
+	div.appendChild(el);
+}
+
+function createButton(text, parentID, id, callback, cssClass){
 	//console.log('DEBUG @createButton');
 	var el = document.getElementById(parentID);
 	var button = document.createElement('button');
@@ -95,13 +110,42 @@ function createButton(text, parentID, id, callback){
 	button.addEventListener('click', function(){
 		callback();
 	});
+	addCSSClassEl(button, cssClass);
 }
 
 function deleteButton(id, parentID){
-	var handEl = document.getElementById(parentID); // Remove the skip action button
+	var handEl = document.getElementById(parentID); // Remove the button from parentID with id = id
+	console.log(handEl);
 	handEl.removeChild(document.getElementById(id));
 }
 
+function removeChildren(id){
+	var el = document.getElementById(id);
+	for(var i = el.childNodes.length-1; i >= 0; i--){
+		el.removeChild(el.childNodes[i]);
+	}
+}
+
+function addCSSClassID(id, cssClass){
+	var el = document.getElementById(id);
+	addCSSClassEl(el, cssClass);
+}
+
+function addCSSClassEl(el, cssClass){
+	if(Array.isArray(cssClass)){
+		for(var i = 0; i < cssClass.length; i++){
+			el.classList.add(cssClass[i]);
+		}
+	}else if(cssClass !== ''){
+		el.classList.add(cssClass);		
+	}
+}
+
+
 function changeButtonText(id, text){
 	document.getElementById(id).innerHTML = text;
+}
+
+function getPlayer(pid){
+	return players[pid];
 }
