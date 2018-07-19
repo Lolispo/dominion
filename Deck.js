@@ -51,10 +51,10 @@ function DeckOfCards(playerIndex){
 		addCSSClassID('text' + this.playerIndex, 'invis');
 
 		for(var i = 0; i < 7; i++){
-			this.discard.push(generateNewCard(Cards.get('Copper')));
+			this.discard.push(generateNewCard(cards_global.get('Copper')));
 		}
 		for(var i = 0; i < 3; i++){
-			this.discard.push(generateNewCard(Cards.get('Estate')));
+			this.discard.push(generateNewCard(cards_global.get('Estate')));
 		}
 		if(this.discard.length !== 10){
 			throw 'Wrong size of ' + this.discard.length + ' on ' + this.discard;
@@ -92,7 +92,6 @@ function DeckOfCards(playerIndex){
 		el.addEventListener('click', function(res){
 			var card_id = res.srcElement.id;
 			var tempEl = document.getElementById(card_id); // This wont work? TODO Check
-			console.log('DEBUG Check me', tempEl, card_id);
 			if(isTurn(getPlayerFromCard(card_id))) {
 				var card = this.hand.getCard(card_id);
 				if(card.cardType === CardType.ACTION_CARD){
@@ -111,7 +110,7 @@ function DeckOfCards(playerIndex){
 		var discardedCards = this.hand.discardedHand();
 		updateTextPrint(this.playerIndex, 'Discarding hand!');
 		this.discard = this.discard.concat(discardedCards);				
-		cleanUp();
+		this.cleanUp();
 	}
 
 	// Cleanup phase

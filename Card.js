@@ -1,10 +1,10 @@
 // Author Petter Andersson
 'use strict'
 
-var Cards = new Map();
-var Cards_Treasure = new Map();
-var Cards_Victory = new Map();
-var Cards_Action = new Map();
+var cards_global = new Map();
+var cards_treasure = new Map();
+var cards_victory = new Map();
+var cards_action = new Map();
 
 var CardType = {
 	TREASURE_CARD: 0,
@@ -20,9 +20,8 @@ var CardType = {
 var global_card_id = 0;
 
 function generateNewCard(card){
-	var newCard = Object.assign({id: global_card_id}, card);
+	var newCard = Object.assign({}, card);
 	newCard.id = global_card_id++;
-	console.log(newCard.id);
 	return newCard;
 }
 
@@ -76,6 +75,7 @@ function Card(name, cardType){
 	}
 }
 
+// Init Cards
 function initCards(){
 	// Treasure Cards
 	var copper = new Card('Copper', CardType.TREASURE_CARD);
@@ -119,37 +119,34 @@ function initCards(){
 	smithy.setCost(4);
 	smithy.addDrawCards(3);
 	
-
 	// Add Cards
-	Cards = new Map();
-	Cards.set('Copper', copper);
-	Cards.set('Silver', silver);
-	Cards.set('Gold', gold);
+	cards_global = new Map();
+	cards_global.set('Copper', copper);
+	cards_global.set('Silver', silver);
+	cards_global.set('Gold', gold);
 
-	Cards.set('Estate', estate);
-	Cards.set('Duchey', duchey);
-	Cards.set('Province', province);
+	cards_global.set('Estate', estate);
+	cards_global.set('Duchey', duchey);
+	cards_global.set('Province', province);
 
-	Cards.set('Market', market);
-	Cards.set('Laboratory', laboratory);
-	Cards.set('Village', village);
-	Cards.set('Smithy', smithy);
+	cards_global.set('Market', market);
+	cards_global.set('Laboratory', laboratory);
+	cards_global.set('Village', village);
+	cards_global.set('Smithy', smithy);
 
-	Cards_Treasure = new Map();
-	Cards_Treasure.set('Copper', copper);
-	Cards_Treasure.set('Silver', silver);
-	Cards_Treasure.set('Gold', gold);
+	cards_treasure = new Map();
+	cards_treasure.set('Copper', copper);
+	cards_treasure.set('Silver', silver);
+	cards_treasure.set('Gold', gold);
 
-	Cards_Victory = new Map();
-	Cards_Victory.set('Estate', estate);
-	Cards_Victory.set('Duchey', duchey);
-	Cards_Victory.set('Province', province);
+	cards_victory = new Map();
+	cards_victory.set('Estate', estate);
+	cards_victory.set('Duchey', duchey);
+	cards_victory.set('Province', province);
 
-	Cards_Action = new Map();
-	Cards_Action.set('Market', market);
-	Cards_Action.set('Laboratory', laboratory);
-	Cards_Action.set('Village', village);
-	Cards_Action.set('Smithy', smithy);
-
-	console.log('DEBUG @Card @initCards: ', Cards);
+	cards_action = new Map();
+	cards_action.set('Market', market);
+	cards_action.set('Laboratory', laboratory);
+	cards_action.set('Village', village);
+	cards_action.set('Smithy', smithy);
 }

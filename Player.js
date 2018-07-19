@@ -39,7 +39,7 @@ function Player(index){
 
 	this.buyCard = function(){
 		if(this.cards.getPhase() === 1){
-			var card = generateNewCard(Cards.get('Copper'));
+			var card = generateNewCard(cards_global.get('Copper'));
 			// Choose card, generate a list of all available cards or something
 			// 3 lists, one for every type
 

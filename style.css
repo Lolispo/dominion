@@ -58,10 +58,10 @@
 	/*
 	justify-content: center;
 	align-items: center;
-
 	*/
 }
 
 .invis {
-	visibility:hidden
+	display: none;
+	/*visibility:hidden*/
 }

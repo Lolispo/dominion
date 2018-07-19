@@ -16,8 +16,16 @@ var turn = 0;
 */
 
 function startGame(){
-	playingPlayers = sessionStorage.playersPlaying;
-	initCards();
+	// Init players
+	playingPlayers = sessionStorage.getItem('playersPlaying');;
+	// Init Cards
+/*
+	Cards = JSON.parse(sessionStorage.getItem('Cards'));
+	Cards_Treasure = JSON.parse(sessionStorage.getItem('Cards_Treasure'));
+	Cards_Action = JSON.parse(sessionStorage.getItem('Cards_Action'));
+	Cards_Victory = JSON.parse(sessionStorage.getItem('Cards_Victory'));
+*/
+	initCardsGlobal();
 	for(var i = 0; i < playingPlayers; i++){
 		var tempPlayer = new Player(i);
 		tempPlayer.initPlayer();
@@ -26,10 +34,29 @@ function startGame(){
 	for(var i = 0; i < players.length; i++){
 		players[i].drawHand();
 	}
+
+
+	// Choosing turn and start
 	turn = Math.floor(Math.random() * players.length);
 	initNewUIElement('div', new Map().set('id', 'turn'), 'info', 'bold');
 	updateTurnUI();
 	players[turn].startTurn();
+}
+
+// Init cards
+async function initCardsGlobal(){
+	initCards();
+	console.log('Cards should be done - Shop Init');
+	initShopHTML();
+}
+
+function initShopHTML(){
+	var cards = cards_global;
+	initNewUIElement('ul', new Map().set('id', 'mainShop'), 'shop');
+	cards.forEach(function(value, key){
+		console.log(key + ' = ' + value);
+		initNewUIElement('li', new Map().set('id', value.name), 'mainShop').innerHTML = value.name;				
+	});
 }
 
 function updateTurnUI(){
@@ -54,9 +81,9 @@ function backMainMenu(){
 function updateTextPrint(playerIndex, message, printEverywhere = true){
 	console.log('P' + (playerIndex+1) + ': ' + message);
 	if(printEverywhere){
-		document.getElementById("text"+playerIndex+"_3").innerHTML = document.getElementById("text"+playerIndex+"_2").innerHTML;
-		document.getElementById("text"+playerIndex+"_2").innerHTML = document.getElementById("text"+playerIndex+"_1").innerHTML;
-		document.getElementById("text"+playerIndex+"_1").innerHTML = message;		
+		document.getElementById('text'+playerIndex+'_3').innerHTML = document.getElementById('text'+playerIndex+'_2').innerHTML;
+		document.getElementById('text'+playerIndex+'_2').innerHTML = document.getElementById('text'+playerIndex+'_1').innerHTML;
+		document.getElementById('text'+playerIndex+'_1').innerHTML = message;		
 	}
 }
 
@@ -107,7 +134,7 @@ function createButton(text, parentID, id, callback, cssClass){
 	//console.log('DEBUG @createButton');
 	var el = document.getElementById(parentID);
 	var button = document.createElement('button');
-	button.type = "button";
+	button.type = 'button';
 	button.innerHTML = text;
 	button.id = id;
 	el.appendChild(button);
@@ -119,7 +146,6 @@ function createButton(text, parentID, id, callback, cssClass){
 
 function deleteButton(id, parentID){
 	var handEl = document.getElementById(parentID); // Remove the button from parentID with id = id
-	console.log(handEl);
 	handEl.removeChild(document.getElementById(id));
 }
 
