@@ -8,12 +8,11 @@ var turn = 0;
 
 /*
 	TODO
+	Scalable card sizes
+	sortable hand (instant and on command, when new cards are added)
 	Dropdowns of cards for buying, 4 different - All and the 3 categories
-		Only affordable cards in each category should show
+		Only affordable cards in main category should show, rest all cards in that category
 	Add chosen card choice to Player.js buyCard
-	Info to HTML, money buyleft actionleft. Added id:s, need to be used on update in Deck.js
-
-	Test
 */
 
 function startGame(){
@@ -28,7 +27,7 @@ function startGame(){
 		players[i].drawHand();
 	}
 	turn = Math.floor(Math.random() * players.length);
-	initNewUIElement('turn', 'info', 'bold');
+	initNewUIElement('div', new Map().set('id', 'turn'), 'info', 'bold');
 	updateTurnUI();
 	players[turn].startTurn();
 }
@@ -52,11 +51,13 @@ function backMainMenu(){
 	// Reset variables
 }
 
-function updateTextPrint(playerIndex, message){
+function updateTextPrint(playerIndex, message, printEverywhere = true){
 	console.log('P' + (playerIndex+1) + ': ' + message);
-	document.getElementById("text"+playerIndex+"_3").innerHTML = document.getElementById("text"+playerIndex+"_2").innerHTML;
-	document.getElementById("text"+playerIndex+"_2").innerHTML = document.getElementById("text"+playerIndex+"_1").innerHTML;
-	document.getElementById("text"+playerIndex+"_1").innerHTML = message;
+	if(printEverywhere){
+		document.getElementById("text"+playerIndex+"_3").innerHTML = document.getElementById("text"+playerIndex+"_2").innerHTML;
+		document.getElementById("text"+playerIndex+"_2").innerHTML = document.getElementById("text"+playerIndex+"_1").innerHTML;
+		document.getElementById("text"+playerIndex+"_1").innerHTML = message;		
+	}
 }
 
 function shuffle(array) {
@@ -91,12 +92,15 @@ function isTurn(playerIndex){
 
 // HTML Stuff
 
-function initNewUIElement(id, parentID, cssClass = ''){
+function initNewUIElement(typeEl, properties = new Map(), parentID, cssClass = ''){
 	var div = document.getElementById(parentID);
-	var el = document.createElement('div');
-	el.id = id;
+	var el = document.createElement(typeEl);
+	properties.forEach(function(value, key) {
+		el.setAttribute(key, value);
+	});
 	addCSSClassEl(el, cssClass);
 	div.appendChild(el);
+	return el;
 }
 
 function createButton(text, parentID, id, callback, cssClass){
@@ -131,6 +135,11 @@ function addCSSClassID(id, cssClass){
 	addCSSClassEl(el, cssClass);
 }
 
+function removeCSSClassID(id, cssClass){
+	var el = document.getElementById(id);
+	removeCSSClassEl(el, cssClass);
+}
+
 function addCSSClassEl(el, cssClass){
 	if(Array.isArray(cssClass)){
 		for(var i = 0; i < cssClass.length; i++){
@@ -141,6 +150,15 @@ function addCSSClassEl(el, cssClass){
 	}
 }
 
+function removeCSSClassEl(el, cssClass){
+	if(Array.isArray(cssClass)){
+		for(var i = 0; i < cssClass.length; i++){
+			el.classList.remove(cssClass[i]);
+		}
+	}else if(cssClass !== ''){
+		el.classList.remove(cssClass);		
+	}
+}
 
 function changeButtonText(id, text){
 	document.getElementById(id).innerHTML = text;
@@ -148,4 +166,25 @@ function changeButtonText(id, text){
 
 function getPlayer(pid){
 	return players[pid];
+}
+
+function getCorrectImage(card){
+	var sPre = 'res/';
+	var sPost = '.png';
+	return sPre + card.name + sPost;
+}
+
+function getCssClassCard(card){
+	switch(card.cardType){
+		case CardType.ACTION_CARD:
+			return 'card_action';
+			break;
+		case CardType.VICTORY_CARD:
+			return 'card_victory';
+			break;
+		case CardType.TREASURE_CARD:
+		default:
+			return 'card_treasure';
+			break;
+	}
 }

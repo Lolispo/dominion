@@ -11,13 +11,23 @@ var CardType = {
 	VICTORY_CARD: 1,
 	ACTION_CARD: 2,
 	properties: {
-		0: {name: "treasure", value: 0},
-		1: {name: "victory", value: 1},
-		2: {name: "action", value: 2}
+		0: {name: 'treasure', value: 0},
+		1: {name: 'victory', value: 1},
+		2: {name: 'action', value: 2}
 	}
 };
 
+var global_card_id = 0;
+
+function generateNewCard(card){
+	var newCard = Object.assign({id: global_card_id}, card);
+	newCard.id = global_card_id++;
+	console.log(newCard.id);
+	return newCard;
+}
+
 function Card(name, cardType){
+	this.id = global_card_id++;
 	this.name = name;
 	this.cardType = cardType;
 	this.value;
@@ -68,78 +78,78 @@ function Card(name, cardType){
 
 function initCards(){
 	// Treasure Cards
-	var copper = new Card("Copper", CardType.TREASURE_CARD);
+	var copper = new Card('Copper', CardType.TREASURE_CARD);
 	copper.setValue(1);
 	copper.setCost(0);
-	var silver = new Card("Silver", CardType.TREASURE_CARD);
+	var silver = new Card('Silver', CardType.TREASURE_CARD);
 	silver.setValue(2);
 	silver.setCost(3);
-	var gold = new Card("Gold", CardType.TREASURE_CARD);
+	var gold = new Card('Gold', CardType.TREASURE_CARD);
 	gold.setValue(3);
 	gold.setCost(6);
 
 	// Victory Cards
-	var estate = new Card("Estate", CardType.VICTORY_CARD);
+	var estate = new Card('Estate', CardType.VICTORY_CARD);
 	estate.setValue(1);
 	estate.setCost(2);
-	var duchey = new Card("Duchey", CardType.VICTORY_CARD);
+	var duchey = new Card('Duchey', CardType.VICTORY_CARD);
 	duchey.setValue(3);
 	duchey.setCost(5);
-	var province = new Card("Province", CardType.VICTORY_CARD);
+	var province = new Card('Province', CardType.VICTORY_CARD);
 	province.setValue(6);
 	province.setCost(8);
 	// Garden
 
 	// Action Cards
-	var market = new Card("Market", CardType.ACTION_CARD);
+	var market = new Card('Market', CardType.ACTION_CARD);
 	market.setCost(5);
 	market.addDrawCards(1);
 	market.addAction(1);
 	market.addBuys(1);
 	market.addGold(1);
-	var laboratory = new Card("Laboratory", CardType.ACTION_CARD);
+	var laboratory = new Card('Laboratory', CardType.ACTION_CARD);
 	laboratory.setCost(5);
 	laboratory.addDrawCards(2);
 	laboratory.addAction(1);
-	var village = new Card("Village", CardType.ACTION_CARD);
+	var village = new Card('Village', CardType.ACTION_CARD);
 	village.setCost(3);
 	village.addDrawCards(1);
 	village.addAction(2);
-	var smithy = new Card("Smithy", CardType.ACTION_CARD);
+	var smithy = new Card('Smithy', CardType.ACTION_CARD);
 	smithy.setCost(4);
 	smithy.addDrawCards(3);
 	
 
 	// Add Cards
 	Cards = new Map();
-	Cards.set("Copper", copper);
-	Cards.set("Silver", silver);
-	Cards.set("Gold", gold);
+	Cards.set('Copper', copper);
+	Cards.set('Silver', silver);
+	Cards.set('Gold', gold);
 
-	Cards.set("Estate", estate);
-	Cards.set("Duchey", duchey);
-	Cards.set("Province", province);
+	Cards.set('Estate', estate);
+	Cards.set('Duchey', duchey);
+	Cards.set('Province', province);
 
-	Cards.set("Market", market);
-	Cards.set("Laboratory", laboratory);
-	Cards.set("Village", village);
-	Cards.set("Smithy", smithy);
+	Cards.set('Market', market);
+	Cards.set('Laboratory', laboratory);
+	Cards.set('Village', village);
+	Cards.set('Smithy', smithy);
 
 	Cards_Treasure = new Map();
-	Cards_Treasure.set("Copper", copper);
-	Cards_Treasure.set("Silver", silver);
-	Cards_Treasure.set("Gold", gold);
+	Cards_Treasure.set('Copper', copper);
+	Cards_Treasure.set('Silver', silver);
+	Cards_Treasure.set('Gold', gold);
 
 	Cards_Victory = new Map();
-	Cards_Victory.set("Estate", estate);
-	Cards_Victory.set("Duchey", duchey);
-	Cards_Victory.set("Province", province);
+	Cards_Victory.set('Estate', estate);
+	Cards_Victory.set('Duchey', duchey);
+	Cards_Victory.set('Province', province);
 
 	Cards_Action = new Map();
-	Cards_Action.set("Market", market);
-	Cards_Action.set("Laboratory", laboratory);
-	Cards_Action.set("Village", village);
-	Cards_Action.set("Smithy", smithy);
+	Cards_Action.set('Market', market);
+	Cards_Action.set('Laboratory', laboratory);
+	Cards_Action.set('Village', village);
+	Cards_Action.set('Smithy', smithy);
 
 	console.log('DEBUG @Card @initCards: ', Cards);
 }

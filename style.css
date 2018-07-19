@@ -10,8 +10,15 @@
 
 .card {
 	line-height: 45px;
-    width: 100px;
+	height: 228px;
+    width: 128px;
     text-align: center;	
+}
+
+.card_smaller {
+	height: 114px;
+    width: 64px;
+	text-align: center;
 }
 
 .card_treasure {
@@ -38,5 +45,23 @@
 }
 
 .skipButtonCss {
-	width: 100px;
+	border: black;
+    border-style: solid;
+	height: 228px;
+    width: 128px;
+}
+
+.flex-container {
+	display: flex;
+	flex-flow: column wrap;
+	justify-content: flex-start; 
+	/*
+	justify-content: center;
+	align-items: center;
+
+	*/
+}
+
+.invis {
+	visibility:hidden
 }
