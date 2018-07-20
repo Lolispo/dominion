@@ -137,7 +137,8 @@ function DeckOfCards(playerIndex){
 			if(isTurn(playerID)) {
 				var card = players[turn].cards.hand.getCard(card_id);
 				console.log(players[turn].cards.hand);
-				console.log(players[turn].cards.hand.getCard(card_id));
+				console.log(card_id);
+				console.log(players[turn].cards.hand.getCard(card_id)); // TODO Fix Undefined
 				if(card.cardType === CardType.ACTION_CARD){
 					// Add use card button
 					updateTextPrint(players[turn].index, 'Selected Action Card!');
@@ -288,8 +289,6 @@ function Hand(deckOfCards){
 				this.allCards.splice(card.id, 1);
 				var handEl = document.getElementById(id_hand + this.deckOfCards.playerIndex);
 				var el = document.getElementById(id_card + card.id);
-				console.log(handEl);
-				console.log(el);
 				handEl.removeChild(el);
 				return tempCard;
 			}

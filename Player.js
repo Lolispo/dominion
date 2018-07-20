@@ -42,8 +42,8 @@ function Player(index){
 				deleteButton('cancelPurchase', id_interact + this.index);
 				createButton('Confirm Purchase:\n' + card.name, id_interact + this.index, 'confirmPurchase', (function(){
 					// Update money
-					this.cards.money -= card.cost;
-					this.cards.buysLeft--;
+					this.updateMoney(this.cards.money - card.cost);
+					this.updateBuysLeft(this.cards.buysLeft - 1);
 					this.cards.checkIfPhaseDone(false);
 					// Add new card to discard pile
 					this.cards.discard.push(card);

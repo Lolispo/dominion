@@ -11,20 +11,21 @@ var turn = 0;
 	Next parts:
 		Card Capacity
 		win condition
-		
+
 	Make Player own areas more clearer
 		player color, different background color
 		border ?
 	Shop
 		Move button - toggle shop. Change so Open / Close change
 		CSS - Show affordable cards
+			Update on every money change
 		CSS - Show selected card
 	Discard pile
 		Show bought card on top of discard pile
 	
 	CSS - Scalable card sizes
 	sortable hand (instant and on command, when new cards are added)
-
+		Sort on every draw card
 
 	Later:
 		Mine
