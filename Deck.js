@@ -10,26 +10,35 @@ function DeckOfCards(playerIndex){
 	this.hand = new Hand(this);
 
 	this.updateDeckLength = function(){
-		document.getElementById('deck_' + this.playerIndex).innerHTML = 'Deck: ' + this.deckStack.length + ' cards';
+		document.getElementById(id_deck + this.playerIndex).innerHTML = 'Deck: ' + this.deckStack.length + ' cards';
 	}
 
 	this.updateDiscardLength = function(){
-		document.getElementById('discard_' + this.playerIndex).innerHTML = 'Discard: ' + this.discard.length + ' cards';
+		document.getElementById(id_discard + this.playerIndex).innerHTML = 'Discard: ' + this.discard.length + ' cards';
 	}
 
 	this.updateMoney = function(value = this.money){
+		if(value !== this.money){
+			updateTextPrint(this.playerIndex, '+1 Money!', false);
+		}
 		this.money = value;
-		document.getElementById('money_' + this.playerIndex).innerHTML = 'Money: ' + this.money;
+		document.getElementById(id_money + this.playerIndex).innerHTML = 'Money: ' + this.money;
 	}
 
 	this.updateActionsLeft = function(value = this.actionsLeft){
+		if(value !== this.actionsLeft){
+			updateTextPrint(this.playerIndex, '+1 Action!', false);
+		}
 		this.actionsLeft = value;
-		document.getElementById('actionsLeft_' + this.playerIndex).innerHTML = 'Actions Left: ' + this.actionsLeft;
+		document.getElementById(id_actionsLeft + this.playerIndex).innerHTML = 'Actions Left: ' + this.actionsLeft;
 	}
 
 	this.updateBuysLeft = function(value = this.buysLeft){
+		if(value !== this.buysLeft){
+			updateTextPrint(this.playerIndex, '+1 Buy!', false);
+		}
 		this.buysLeft = value;
-		document.getElementById('buysLeft_' + this.playerIndex).innerHTML = 'Buys Left: ' + this.buysLeft;
+		document.getElementById(id_buysLeft + this.playerIndex).innerHTML = 'Buys Left: ' + this.buysLeft;
 	}
 
 	this.updateDeckLength();
@@ -48,21 +57,21 @@ function DeckOfCards(playerIndex){
 
 	this.startTurn = function(){
 		this.phase = 0;
-		removeCSSClassID('board_' + this.playerIndex, 'invis');
-		removeCSSClassID('info_' + this.playerIndex, 'invis');
-		removeCSSClassID('text_' + this.playerIndex, 'invis');
-		removeCSSClassID('actionsLeft_' + this.playerIndex, 'invis');
-		
-		createButton('-> Go To Buy Phase', 'interact_' + this.playerIndex, 'skipButton', (function(){
+		modifyCSSID('remove', id_board + this.playerIndex, 'invis');
+		modifyCSSID('remove', id_info + this.playerIndex, 'invis');
+		modifyCSSID('remove', id_text + this.playerIndex, 'invis');
+		modifyCSSID('remove', id_actionsLeft + this.playerIndex, 'invis');
+
+		createButton(id_phase0, id_interact + this.playerIndex, 'skipButton', (function(){
 			this.checkIfPhaseDone(true); // Go to next stage
-		}).bind(this), 'skipButtonCss');
+		}).bind(this), 'interactButton');
 	}
 
 	// Start Deck
 	this.initDeck = function(){
-		addCSSClassID('board_' + this.playerIndex, 'invis');
-		addCSSClassID('info_' + this.playerIndex, 'invis');
-		addCSSClassID('text_' + this.playerIndex, 'invis');
+		modifyCSSID('add', id_board + this.playerIndex, 'invis');
+		modifyCSSID('add', id_info + this.playerIndex, 'invis');
+		modifyCSSID('add', id_text + this.playerIndex, 'invis');
 
 		for(var i = 0; i < 7; i++){
 			this.discard.push(generateNewCard(cards_global.get('Copper')));
@@ -73,9 +82,8 @@ function DeckOfCards(playerIndex){
 		// Test action cards
 		//this.discard.push(generateNewCard(cards_global.get('Laboratory')));
 		if(this.discard.length !== 10){
-			console.warn('Wrong size of ' + this.discard.length + ' on ' + this.discard);
+			console.warn('Wrong size of ' + this.discard.length);
 		}
-		//console.log('DEBUG: Start Deck: ', this.discard);
 	}
 
 	this.getPhase = function(){
@@ -85,18 +93,17 @@ function DeckOfCards(playerIndex){
 	this.displayEntireHand = function(){
 		var handElement = document.getElementById('hand_' + this.playerIndex);
 		for(var i = 0; i < handElement.childNodes.length; i++){
-			removeCSSClassEl(handElement.childNodes[i], ['card_smaller', 'inactive']);
-			addCSSClassEl(handElement.childNodes[i], 'card');
+			modifyCSSEl('remove', handElement.childNodes[i], ['card_smaller', 'inactive']);
+			modifyCSSEl('add', handElement.childNodes[i], 'card');
 		}		
 	}
 
 	this.displayCard = function(id){
-		removeCSSClassID(id, ['card_smaller', 'inactive']);
-		addCSSClassID(id, 'card');
+		modifyCSSID('remove', id, ['card_smaller', 'inactive']);
+		modifyCSSID('add', id, 'card');
 	}
 
 	this.drawCard = function(){
-		//console.log(this.deckStack, this.discard); // Debug me
 		if(this.deckStack.length === 0){
 			this.deckStack = this.discard;
 			this.discard = [];
@@ -105,12 +112,11 @@ function DeckOfCards(playerIndex){
 		}
 		if(this.deckStack.length > 0){ // No more cards available
 			var tempCard = this.deckStack.pop(); // Read pop
-			//console.log(this.deckStack, this.discard); // Debug me
 			var handAmount = this.hand.newCard(tempCard);
 			updateTextPrint(this.playerIndex, 'Draw a card! ' + tempCard.name + ' (Holding ' + handAmount + ')', false);
 			this.generateCardHTML(tempCard); // Generate Card HTML
 			this.updateHTMLElements();
-			return 'card_' + tempCard.id;
+			return id_card + tempCard.id;
 		} else {
 			updateTextPrint(this.playerIndex, 'Out of cards!'); // TODO: Check game functionality here, assume just get no more card
 		}
@@ -119,9 +125,9 @@ function DeckOfCards(playerIndex){
 	// Generate HTML for Card
 	this.generateCardHTML = function(tempCard){
 		var properties = new Map();
-		properties.set('id', 'card_' + tempCard.id);
+		properties.set('id', id_card + tempCard.id);
 		properties.set('src', getCorrectImage(tempCard));
-		var el = initNewUIElement('img', properties, 'hand_' + this.playerIndex, ['card_smaller', 'inactive', getCssClassCard(tempCard)]);
+		var el = initNewUIElement('img', properties, id_hand + this.playerIndex, ['card_smaller', 'inactive', getCssClassCard(tempCard)]);
 		
 		el.addEventListener('click', function(res){
 			var card_HTMLid = res.srcElement.id;
@@ -135,10 +141,10 @@ function DeckOfCards(playerIndex){
 				if(card.cardType === CardType.ACTION_CARD){
 					// Add use card button
 					updateTextPrint(players[turn].index, 'Selected Action Card!');
-					createButton(card.name + '\nUse?', 'interact_' + players[turn].index, 'playActionID', (function(){
+					createButton(card.name + '\nUse?', id_interact + players[turn].index, 'playActionID', (function(){
 						updateTextPrint(players[turn].index, 'Played Action Card ' + card.name + '!');
 						players[turn].playActionCard(card);
-					}).bind(this), 'skipButtonCss');					
+					}).bind(this), 'interactButton');					
 				}
 			}
 		});
@@ -157,30 +163,30 @@ function DeckOfCards(playerIndex){
 		this.updateActionsLeft(1);
 		this.updateBuysLeft(1);
 
-		removeChildren('board_'+this.playerIndex);
+		removeChildren(id_board + this.playerIndex);
 		this.board = [];
 
-		addCSSClassID('board_' + this.playerIndex, 'invis');
-		addCSSClassID('info_' + this.playerIndex, 'invis');
-		addCSSClassID('text_' + this.playerIndex, 'invis');
-		removeChildren('board_' + this.playerIndex);
-		removeChildren('hand_' + this.playerIndex);
-		removeChildren('interact_' + this.playerIndex);
+		modifyCSSID('add', id_board + this.playerIndex, 'invis');
+		modifyCSSID('add', id_info + this.playerIndex, 'invis');
+		modifyCSSID('add', id_text + this.playerIndex, 'invis');
+		removeChildren(id_board + this.playerIndex);
+		removeChildren(id_hand + this.playerIndex);
+		removeChildren(id_interact + this.playerIndex);
 	}
 
 	this.checkIfPhaseDone = function(nextStage){ // Boolean to see if next stage
 		if(this.phase === 0){
 			if(nextStage || this.actionsLeft === 0 || !this.hand.containsAction()){
 				this.phase++;
-				addCSSClassID('actionsLeft_' + this.playerIndex, 'invis')
+				modifyCSSID('add', id_actionsLeft + this.playerIndex, 'invis')
 				updateTextPrint(this.playerIndex, 'Starting Buying Phase');
-				changeButtonText('skipButton', '-> End Turn');
+				changeText('skipButton', id_phase1);
 			}
 		} else if(this.phase === 1){
 			if(nextStage || this.buysLeft === 0 || this.money === 0){
 				this.phase++;
 				updateTextPrint(this.playerIndex, 'Ending Turn (Money: ' + this.money + ', BuysLeft: ' + this.buysLeft + ', ActionsLeft: ' + this.actionsLeft + ')');
-				deleteButton('skipButton', 'interact_' + this.playerIndex);
+				deleteButton('interactButton', id_interact + this.playerIndex);
 				this.discardHand();
 				getPlayer(this.playerIndex).drawHand();
 				changeTurn();
@@ -205,7 +211,7 @@ function DeckOfCards(playerIndex){
 				this.updateActionsLeft(this.actionsLeft + actions.moreActions);
 			}
 			if(actions.moreBuys !== 0){
-				this.updateActionsLeft(this.buysLeft + actions.moreBuys);
+				this.updateBuysLeft(this.buysLeft + actions.moreBuys);
 			}
 			if(actions.moreGold !== 0){
 				this.updateMoney(this.money + actions.moreGold);
@@ -215,12 +221,12 @@ function DeckOfCards(playerIndex){
 
 			this.board.push(card);			
 			var properties = new Map();
-			properties.set('id', 'board_' + card.id);
+			properties.set('id', id_board + card.id);
 			properties.set('src', getCorrectImage(card));
-			var el = initNewUIElement('img', properties, 'board_' + this.playerIndex, ['card_board', getCssClassCard(card)]);
+			var el = initNewUIElement('img', properties, id_board + this.playerIndex, ['card_board', getCssClassCard(card)]);
 		
 			// Remove Use action button
-			deleteButton('playActionID', 'interact_' + this.playerIndex);
+			deleteButton('playActionID', id_interact + this.playerIndex);
 		}
 	}
 }
@@ -266,7 +272,7 @@ function Hand(deckOfCards){
 		if(card.cardType === CardType.TREASURE_CARD){
 			this.treasure.push(card);
 			this.deckOfCards.money += card.getValue();
-			updateTextPrint(this.deckOfCards.playerIndex, 'Money Update! ( + ' + card.getValue() + ')');
+			//updateTextPrint(this.deckOfCards.playerIndex, 'Money Update! ( + ' + card.getValue() + ')');
 		} else if(card.cardType === CardType.VICTORY_CARD){
 			this.victory.push(card);
 		} else if(card.cardType === CardType.ACTION_CARD){
@@ -280,8 +286,8 @@ function Hand(deckOfCards){
 			if(card.id === this.action[i].id){
 				var tempCard = this.action.splice(i, 1)[0];
 				this.allCards.splice(card.id, 1);
-				var handEl = document.getElementById('hand_' + this.deckOfCards.playerIndex);
-				var el = document.getElementById('card_' + card.id);
+				var handEl = document.getElementById(id_hand + this.deckOfCards.playerIndex);
+				var el = document.getElementById(id_card + card.id);
 				console.log(handEl);
 				console.log(el);
 				handEl.removeChild(el);

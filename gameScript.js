@@ -8,21 +8,34 @@ var turn = 0;
 
 /*
 	TODO
-	Make Player own areas more clearer, border or something
+	Next parts:
+		Card Capacity
+		win condition
+		
+	Make Player own areas more clearer
+		player color, different background color
+		border ?
 	Shop
-		Show affordable cards
-		Show selected card
-	Scalable card sizes
-	Action left -> removed phase > 0
-	Change phase immediately if no actions cards in hand -> immediately to buy phase
+		Move button - toggle shop. Change so Open / Close change
+		CSS - Show affordable cards
+		CSS - Show selected card
+	Discard pile
+		Show bought card on top of discard pile
+	
+	CSS - Scalable card sizes
 	sortable hand (instant and on command, when new cards are added)
-	Dropdowns of cards for buying, 4 different - All and the 3 categories
-		Only affordable cards in main category should show, rest all cards in that category
-	Add chosen card choice to Player.js buyCard
-	HTML_CSS
-		Variables for hand_ etc
-		3 methods into 1 for remove add token in html_css
-	Change skipbuttoncss name
+
+
+	Later:
+		Mine
+		color and name choice in main menu
+
+		netplay - nodejs
+			board cards sent
+			amount of cards sent to all, which cards only to the player
+			Deck updates (buys) are sent
+			Move Player and Deck to server side instead of client side
+
 */
 
 function startGame(){
@@ -51,7 +64,7 @@ function startGame(){
 	// Choosing turn and start
 	turn = Math.floor(Math.random() * players.length);
 	initNewUIElement('div', new Map().set('id', 'turn'), 'info', ['bold', 'bigger_text']);
-	updateTurnUI();
+	changeText('turn', 'Player ' + (turn+1) + ':s turn');
 	players[turn].startTurn();
 }
 
@@ -68,7 +81,7 @@ function changeTurn(){
 	} else {
 		turn++;
 	}
-	updateTurnUI();
+	changeText('turn', 'Player ' + (turn+1) + ':s turn');
 	players[turn].startTurn();
 }
 
@@ -80,9 +93,9 @@ function backMainMenu(){
 function updateTextPrint(playerIndex, message, printEverywhere = true){
 	console.log('P' + (playerIndex+1) + ': ' + message);
 	if(printEverywhere){
-		document.getElementById('text_'+playerIndex+'_3').innerHTML = document.getElementById('text_'+playerIndex+'_2').innerHTML;
-		document.getElementById('text_'+playerIndex+'_2').innerHTML = document.getElementById('text_'+playerIndex+'_1').innerHTML;
-		document.getElementById('text_'+playerIndex+'_1').innerHTML = '> ' + message;		
+		document.getElementById(id_text + playerIndex+'_3').innerHTML = document.getElementById(id_text + playerIndex+'_2').innerHTML;
+		document.getElementById(id_text + playerIndex+'_2').innerHTML = document.getElementById(id_text + playerIndex+'_1').innerHTML;
+		document.getElementById(id_text + playerIndex+'_1').innerHTML = '> ' + message;		
 	}
 }
 
@@ -133,6 +146,7 @@ function getCorrectImage(card){
 	return sPre + card.name + sPost;
 }
 
+// Returns css class for CardType
 function getCssClassCard(card){
 	switch(card.cardType){
 		case CardType.ACTION_CARD:

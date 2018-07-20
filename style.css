@@ -76,11 +76,17 @@
 	margin: 5px;
 }
 
-.skipButtonCss {
+.info_stats {
+	background-color: aqua;
+	border-style: ;
+	border-color: black;
+}
+
+.interactButton {
 	border: black;
     border-style: solid;
 	height: 50px;
-    width: 134px;
+    width: 138px;
     background-color: aqua;
     font-weight: bold;
 }

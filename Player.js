@@ -7,7 +7,6 @@ function Player(index){
 	this.index = index;
 
 	this.startTurn = function(){
-		//console.log('DEBUG: Starting turn for Player ' + (this.index + 1));
 		this.cards.startTurn();
 		this.displayHand();
 		this.cards.checkIfPhaseDone(false);
@@ -37,25 +36,26 @@ function Player(index){
 	this.buyCard = function(card){
 		if(this.cards.getPhase() === 1){
 			// Check if you can afford card
-			console.log('DEBUG: Buy? ' + this.cards.money + ', ' + card.cost);
 			if(this.cards.money >= card.cost){
 				// Confirm purchase
-				createButton('Confirm Purchase:\n' + card.name, 'interact_' + this.index, 'confirmPurchase', (function(){
+				deleteButton('confirmPurchase', id_interact + this.index);
+				deleteButton('cancelPurchase', id_interact + this.index);
+				createButton('Confirm Purchase:\n' + card.name, id_interact + this.index, 'confirmPurchase', (function(){
 					// Update money
 					this.cards.money -= card.cost;
 					this.cards.buysLeft--;
 					this.cards.checkIfPhaseDone(false);
 					// Add new card to discard pile
 					this.cards.discard.push(card);
-					updateTextPrint(this.index, 'Added card to deck: ' + card.name + 
-						'! (' + (this.cards.money + card.cost) + ' - ' + card.cost + ' = ' + this.cards.money + ')');
-					deleteButton('confirmPurchase', 'interact_' + this.index);
-					deleteButton('cancelPurchase', 'interact_' + this.index);
-				}).bind(this), 'skipButtonCss');
-				createButton('Cancel Purchase', 'interact_' + this.index, 'cancelPurchase', (function(){
-					deleteButton('confirmPurchase', 'interact_' + this.index);
-					deleteButton('cancelPurchase', 'interact_' + this.index);
-				}).bind(this), 'skipButtonCss');
+					// Check if good syntax this.cards.money + ', ' + (this.cards.money + card.cost) +
+					updateTextPrint(this.index, 'Added card to deck: ' + card.name + '! (' + ' - ' + card.cost + ')'); 
+					deleteButton('confirmPurchase', id_interact + this.index);
+					deleteButton('cancelPurchase', id_interact + this.index);
+				}).bind(this), 'interactButton');
+				createButton('Cancel Purchase', id_interact + this.index, 'cancelPurchase', (function(){
+					deleteButton('confirmPurchase', id_interact + this.index);
+					deleteButton('cancelPurchase', id_interact + this.index);
+				}).bind(this), 'interactButton');
 			} else{
 				updateTextPrint(this.index, 'Not enough money! (' + this.cards.money + '/' + card.cost + ')');
 			}
@@ -65,30 +65,31 @@ function Player(index){
 	this.initPlayer = function(){
 		// Init HTML Elements
 		initNewUIElement('div', new Map().set('id', 'player_' + this.index), 'playArea', ['margin_bottom', 'player']);
-
-		initNewUIElement('div', new Map().set('id', 'name_' + this.index), 'player_' + this.index, ['bold', 'bigger_text']).innerHTML = 'Player ' + this.index;
-		initNewUIElement('div', new Map().set('id', 'text_' + this.index), 'player_' + this.index);
-		initNewUIElement('div', new Map().set('id', 'text_' + this.index + '_1'), 'text_' + this.index, 'bold')
+		initNewUIElement('div', new Map().set('id', 'name_' + this.index), 'player_' + this.index, ['bold', 'bigger_text'])
+			.innerHTML = 'Player ' + (this.index + 1);
+		
+		initNewUIElement('div', new Map().set('id', id_text + this.index), 'player_' + this.index);
+		initNewUIElement('div', new Map().set('id', id_text + this.index + '_1'), id_text + this.index, 'bold')
 			.innerHTML = 'Player ' + (this.index + 1) + ' fst text\n';
-		initNewUIElement('div', new Map().set('id', 'text_' + this.index + '_2'), 'text_' + this.index)
+		initNewUIElement('div', new Map().set('id', id_text + this.index + '_2'), id_text + this.index)
 			.innerHTML = 'Player ' + (this.index + 1) + ' snd text\n';
-		initNewUIElement('div', new Map().set('id', 'text_' + this.index + '_3'), 'text_' + this.index, 'third-message')
+		initNewUIElement('div', new Map().set('id', id_text + this.index + '_3'), id_text + this.index, 'third-message')
 			.innerHTML = 'Player ' + (this.index + 1) + ' thr text\n';
 
-		initNewUIElement('div', new Map().set('id', 'info_' + this.index), 'player_' + this.index, 'info');
-		initNewUIElement('div', new Map().set('id', 'board_' + this.index), 'player_' + this.index);
-		initNewUIElement('div', new Map().set('id', 'interact_' + this.index), 'player_' + this.index, 'interact');		
-		initNewUIElement('div', new Map().set('id', 'hand_' + this.index), 'player_' + this.index, 'hand');
-		initNewUIElement('div', new Map().set('id', 'info_cards_' + this.index), 'info_' + this.index, 'info_child');
-		initNewUIElement('div', new Map().set('id', 'info_stats_' + this.index), 'info_' + this.index, 'info_child');
-		initNewUIElement('div', new Map().set('id', 'deck_' + this.index), 'info_cards_' + this.index, 'bold');
-		initNewUIElement('div', new Map().set('id', 'discard_' + this.index), 'info_cards_' + this.index, 'bold');
-		initNewUIElement('div', new Map().set('id', 'money_' + this.index), 'info_stats_' + this.index, 'bold');
-		initNewUIElement('div', new Map().set('id', 'buysLeft_' + this.index), 'info_stats_' + this.index, 'bold');
-		initNewUIElement('div', new Map().set('id', 'actionsLeft_' + this.index), 'info_stats_' + this.index, 'bold');
+		initNewUIElement('div', new Map().set('id', id_info + this.index), 'player_' + this.index, 'info');
+		initNewUIElement('div', new Map().set('id', id_board + this.index), 'player_' + this.index);
+		initNewUIElement('div', new Map().set('id', id_interact + this.index), 'player_' + this.index, 'interact');		
+		initNewUIElement('div', new Map().set('id', id_hand + this.index), 'player_' + this.index, 'hand');
+		initNewUIElement('div', new Map().set('id', id_info_cards + this.index), id_info + this.index, 'info_child');
+		initNewUIElement('div', new Map().set('id', id_info_stats + this.index), id_info + this.index, ['info_child', 'info_stats']);
+		initNewUIElement('div', new Map().set('id', id_deck + this.index), id_info_cards + this.index, 'bold');
+		initNewUIElement('div', new Map().set('id', id_discard + this.index), id_info_cards + this.index, 'bold');
+		initNewUIElement('div', new Map().set('id', id_money + this.index), id_info_stats + this.index, 'bold');
+		initNewUIElement('div', new Map().set('id', id_buysLeft + this.index), id_info_stats + this.index, 'bold');
+		initNewUIElement('div', new Map().set('id', id_actionsLeft + this.index), id_info_stats + this.index, 'bold');
 		// Init Deck of Cards
 		this.cards = new DeckOfCards(index);
 		this.cards.initDeck();
-		console.log('Player ' + (this.index + 1) + ' created');
+		updateTextPrint(this.index, 'Player ' + (this.index + 1) + ' created', false);
 	}
 }
