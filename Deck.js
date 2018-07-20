@@ -127,11 +127,12 @@ function DeckOfCards(playerIndex){
 		var properties = new Map();
 		properties.set('id', id_card + tempCard.id);
 		properties.set('src', getCorrectImage(tempCard));
-		var el = initNewUIElement('div', new Map().set('id', id_card + tempCard.id), id_hand + this.playerIndex, getCssClassCard(tempCard));
-		initNewUIElement('div', new Map().set('id', 'value_' + id_card + tempCard.id), id_card + tempCard.id).innerHTML = tempCard.getValue();
-		initNewUIElement('div', new Map().set('id', 'cost_' + id_card + tempCard.id), id_card + tempCard.id).innerHTML = tempCard.getCost();
-		initNewUIElement('div', new Map().set('id', 'desc_' + id_card + tempCard.id), id_card + tempCard.id).innerHTML = 'Default String';
-		//var el = initNewUIElement('img', properties, id_hand + this.playerIndex, ['card_smaller', 'inactive', getCssClassCard(tempCard)]);
+		var el = initNewUIElement('img', properties, id_hand + this.playerIndex, ['card_smaller', 'inactive', getCssClassCard(tempCard)]);
+		/*var el = initNewUIElement('div', new Map().set('id', id_card + tempCard.id), id_hand + this.playerIndex, getCssClassCard(tempCard));
+		initNewUIElement('div', new Map().set('id', 'value_' + id_card + tempCard.id), id_card + tempCard.id, 'value').innerHTML = tempCard.getValue();
+		initNewUIElement('div', new Map().set('id', 'cost_' + id_card + tempCard.id), id_card + tempCard.id, 'cost').innerHTML = tempCard.getCost();
+		initNewUIElement('div', new Map().set('id', 'desc_' + id_card + tempCard.id), id_card + tempCard.id, 'description').innerHTML = 'Default String';
+		*/
 		if(handCard){
 			el.addEventListener('click', function(res){
 				var card_HTMLid = res.srcElement.id;
