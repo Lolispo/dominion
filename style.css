@@ -8,14 +8,26 @@
     color: grey;
 }
 
+.bigger_text {
+	font-size: large;
+}
+
 .card {
 	line-height: 45px;
 	height: 228px;
     width: 128px;
     text-align: center;	
+    margin: 2px;
 }
 
 .card_smaller {
+	height: 114px;
+    width: 64px;
+	text-align: center;
+	margin: 1px;
+}
+
+.card_board {
 	height: 114px;
     width: 64px;
 	text-align: center;
@@ -38,17 +50,39 @@
 
 .hand {
 	display: inline-flex;
+	flex-flow: row wrap;
+	/*padding: 5px;*/
+}
+
+.interact {
+	display: flex;
+	padding-right: 30px;
 }
 
 .margin_bottom {
 	margin-bottom: 30px;
 }
 
+.player {
+	background-color: lightgray;
+}
+
+.info {
+	display: flex;
+	padding: 5px;
+}
+
+.info_child {
+	margin: 5px;
+}
+
 .skipButtonCss {
 	border: black;
     border-style: solid;
-	height: 228px;
-    width: 128px;
+	height: 50px;
+    width: 134px;
+    background-color: aqua;
+    font-weight: bold;
 }
 
 .flex-container {
@@ -59,6 +93,10 @@
 	justify-content: center;
 	align-items: center;
 	*/
+}
+
+.inactive {
+	filter: grayscale(100%);
 }
 
 .invis {

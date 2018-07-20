@@ -13,22 +13,30 @@ var turn = 0;
 		Show affordable cards
 		Show selected card
 	Scalable card sizes
+	Action left -> removed phase > 0
+	Change phase immediately if no actions cards in hand -> immediately to buy phase
 	sortable hand (instant and on command, when new cards are added)
 	Dropdowns of cards for buying, 4 different - All and the 3 categories
 		Only affordable cards in main category should show, rest all cards in that category
 	Add chosen card choice to Player.js buyCard
+	HTML_CSS
+		Variables for hand_ etc
+		3 methods into 1 for remove add token in html_css
+	Change skipbuttoncss name
 */
 
 function startGame(){
 	// Init players
 	playingPlayers = sessionStorage.getItem('playersPlaying');;
 	// Init Cards
-/*
-	Cards = JSON.parse(sessionStorage.getItem('Cards'));
-	Cards_Treasure = JSON.parse(sessionStorage.getItem('Cards_Treasure'));
-	Cards_Action = JSON.parse(sessionStorage.getItem('Cards_Action'));
-	Cards_Victory = JSON.parse(sessionStorage.getItem('Cards_Victory'));
-*/
+	/*
+	// TODO: Add so cards can be loaded before hand, not important
+	cards_global = JSON.parse(sessionStorage.getItem('Cards'));
+	cards_global_id = JSON.parse(sessionStorage.getItem('Cards_id'));
+	cards_treasure = JSON.parse(sessionStorage.getItem('Cards_Treasure'));
+	cards_action = JSON.parse(sessionStorage.getItem('Cards_Action'));
+	cards_victory = JSON.parse(sessionStorage.getItem('Cards_Victory'));
+	*/
 	initCardsGlobal();
 	for(var i = 0; i < playingPlayers; i++){
 		var tempPlayer = new Player(i);
@@ -42,7 +50,7 @@ function startGame(){
 
 	// Choosing turn and start
 	turn = Math.floor(Math.random() * players.length);
-	initNewUIElement('div', new Map().set('id', 'turn'), 'info', 'bold');
+	initNewUIElement('div', new Map().set('id', 'turn'), 'info', ['bold', 'bigger_text']);
 	updateTurnUI();
 	players[turn].startTurn();
 }
@@ -72,9 +80,9 @@ function backMainMenu(){
 function updateTextPrint(playerIndex, message, printEverywhere = true){
 	console.log('P' + (playerIndex+1) + ': ' + message);
 	if(printEverywhere){
-		document.getElementById('text'+playerIndex+'_3').innerHTML = document.getElementById('text'+playerIndex+'_2').innerHTML;
-		document.getElementById('text'+playerIndex+'_2').innerHTML = document.getElementById('text'+playerIndex+'_1').innerHTML;
-		document.getElementById('text'+playerIndex+'_1').innerHTML = message;		
+		document.getElementById('text_'+playerIndex+'_3').innerHTML = document.getElementById('text_'+playerIndex+'_2').innerHTML;
+		document.getElementById('text_'+playerIndex+'_2').innerHTML = document.getElementById('text_'+playerIndex+'_1').innerHTML;
+		document.getElementById('text_'+playerIndex+'_1').innerHTML = '> ' + message;		
 	}
 }
 
@@ -97,8 +105,12 @@ function shuffle(array) {
     return array;
 }
 
-function getPlayerFromCard(id){
-	return id.split('_')[1];
+function getIDFromCard(id){
+	var parsed = id.split('_')[1];
+	if(isNaN(parseInt(parsed))){
+		return parsed;
+	}
+	return parseInt(parsed);
 }
 
 function isTurn(playerIndex){

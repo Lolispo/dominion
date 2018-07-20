@@ -2,6 +2,8 @@
 'use strict'
 
 var cards_global = new Map();
+var cards_global_id = new Map();
+
 var cards_treasure = new Map();
 var cards_victory = new Map();
 var cards_action = new Map();
@@ -20,8 +22,12 @@ var CardType = {
 var global_card_id = 0;
 
 function generateNewCard(card){
+//	console.log('DEBUG @generateNewCard BEFORE');
+//	console.log(card);
 	var newCard = Object.assign({}, card);
 	newCard.id = global_card_id++;
+//	console.log('DEBUG @generateNewCard AFTER');
+//	console.log(newCard);
 	return newCard;
 }
 
@@ -31,6 +37,10 @@ function Card(name, cardType){
 	this.cardType = cardType;
 	this.value;
 	this.cost;
+	this.drawCards = 0;
+	this.moreActions = 0;
+	this.moreBuys = 0;
+	this.moreGold = 0;
 
 	this.setCost = function(value){
 		this.cost = value;
@@ -51,7 +61,7 @@ function Card(name, cardType){
 	this.getValue = function(){
 		if(cardType === CardType.TREASURE_CARD || cardType === CardType.VICTORY_CARD){
 			return this.value;
-		} else if(cardType === ACTION_CARD){
+		} else if(cardType === CardType.ACTION_CARD){
 			console.log(this.drawCards, this.moreActions, this.moreBuys, this.moreGold);
 			// Check if exist
 			return {drawCards: this.drawCards, moreActions: this.moreActions, moreBuys: this.moreBuys, moreGold: this.moreGold};
@@ -133,6 +143,21 @@ function initCards(){
 	cards_global.set('Laboratory', laboratory);
 	cards_global.set('Village', village);
 	cards_global.set('Smithy', smithy);
+
+
+	cards_global_id = new Map();
+	cards_global_id.set(copper.id, copper);
+	cards_global_id.set(silver.id, silver);
+	cards_global_id.set(gold.id, gold);
+
+	cards_global_id.set(estate.id, estate);
+	cards_global_id.set(duchey.id, duchey);
+	cards_global_id.set(province.id, province);
+
+	cards_global_id.set(market.id, market);
+	cards_global_id.set(laboratory.id, laboratory);
+	cards_global_id.set(village.id, village);
+	cards_global_id.set(smithy.id, smithy);
 
 	cards_treasure = new Map();
 	cards_treasure.set('Copper', copper);

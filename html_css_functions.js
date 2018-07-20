@@ -1,6 +1,9 @@
 // Author Petter Andersson
 'use strict'
 
+// TODO
+// Declare variables like 'hand_' etc here to be used everywhere
+
 // HTML Stuff
 
 function initNewUIElement(typeEl, properties = new Map(), parentID, cssClass = ''){
@@ -29,8 +32,10 @@ function createButton(text, parentID, id, callback, cssClass){
 }
 
 function deleteButton(id, parentID){
-	var handEl = document.getElementById(parentID); // Remove the button from parentID with id = id
-	handEl.removeChild(document.getElementById(id));
+	if(document.getElementById(id) != null){
+		var handEl = document.getElementById(parentID); // Remove the button from parentID with id = id
+		handEl.removeChild(document.getElementById(id));
+	}
 }
 
 function removeChildren(id){
@@ -40,7 +45,8 @@ function removeChildren(id){
 	}
 }
 
-// Make all of these into 2 methods with args, taking add, remove toggle. TODO
+// TODO
+// Make all of these into 2 methods with args, taking add, remove toggle
 
 function addCSSClassID(id, cssClass){
 	var el = document.getElementById(id);
@@ -95,10 +101,15 @@ function initShopHTML(){
 		var properties = new Map();
 		properties.set('id', 'card_' + value.id);
 		properties.set('src', getCorrectImage(value));
-		console.log(key + ' = ' + value);
 		var el = initNewUIElement('img', properties, 'shopCards', ['card_smaller', getCssClassCard(value)]);
 		el.addEventListener('click', function(res){
 			// TODO: 
+			console.log(cards_global_id);
+			var card_id = getIDFromCard(res.srcElement.id);
+			var card = generateNewCard(cards_global_id.get(card_id));
+			console.log('DEBUG: ' + card + ', ' + card.name + ', ' + card.cost);
+			console.log(card);
+			players[turn].buyCard(card);
 		});
 	});
 	createButton('Toggle Shop', 'mainShop', 'showShop', (function(){ // Change to Open and Close / Change on toggle TODO
