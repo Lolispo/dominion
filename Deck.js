@@ -114,7 +114,7 @@ function DeckOfCards(playerIndex){
 			var tempCard = this.deckStack.pop(); // Read pop
 			var handAmount = this.hand.newCard(tempCard);
 			updateTextPrint(this.playerIndex, 'Draw a card! ' + tempCard.name + ' (Holding ' + handAmount + ')', false);
-			this.generateCardHTML(tempCard); // Generate Card HTML
+			this.generateCardHTML(tempCard, true); // Generate Card HTML
 			this.updateHTMLElements();
 			return id_card + tempCard.id;
 		} else {
@@ -123,32 +123,37 @@ function DeckOfCards(playerIndex){
 	}
 
 	// Generate HTML for Card
-	this.generateCardHTML = function(tempCard){
+	this.generateCardHTML = function(tempCard, handCard){
 		var properties = new Map();
 		properties.set('id', id_card + tempCard.id);
 		properties.set('src', getCorrectImage(tempCard));
-		var el = initNewUIElement('img', properties, id_hand + this.playerIndex, ['card_smaller', 'inactive', getCssClassCard(tempCard)]);
-		
-		el.addEventListener('click', function(res){
-			var card_HTMLid = res.srcElement.id;
-			var tempEl = document.getElementById(card_HTMLid);
-			var playerID = getIDFromCard(tempEl.parentElement.id);
-			var card_id = getIDFromCard(card_HTMLid);
-			if(isTurn(playerID)) {
-				var card = players[turn].cards.hand.getCard(card_id);
-				console.log(players[turn].cards.hand);
-				console.log(card_id);
-				console.log(players[turn].cards.hand.getCard(card_id)); // TODO Fix Undefined
-				if(card.cardType === CardType.ACTION_CARD){
-					// Add use card button
-					updateTextPrint(players[turn].index, 'Selected Action Card!');
-					createButton(card.name + '\nUse?', id_interact + players[turn].index, 'playActionID', (function(){
-						updateTextPrint(players[turn].index, 'Played Action Card ' + card.name + '!');
-						players[turn].playActionCard(card);
-					}).bind(this), 'interactButton');					
+		var el = initNewUIElement('div', new Map().set('id', id_card + tempCard.id), id_hand + this.playerIndex, getCssClassCard(tempCard));
+		initNewUIElement('div', new Map().set('id', 'value_' + id_card + tempCard.id), id_card + tempCard.id).innerHTML = tempCard.getValue();
+		initNewUIElement('div', new Map().set('id', 'cost_' + id_card + tempCard.id), id_card + tempCard.id).innerHTML = tempCard.getCost();
+		initNewUIElement('div', new Map().set('id', 'desc_' + id_card + tempCard.id), id_card + tempCard.id).innerHTML = 'Default String';
+		//var el = initNewUIElement('img', properties, id_hand + this.playerIndex, ['card_smaller', 'inactive', getCssClassCard(tempCard)]);
+		if(handCard){
+			el.addEventListener('click', function(res){
+				var card_HTMLid = res.srcElement.id;
+				var tempEl = document.getElementById(card_HTMLid);
+				var playerID = getIDFromCard(tempEl.parentElement.id);
+				var card_id = getIDFromCard(card_HTMLid);
+				if(isTurn(playerID)) {
+					var card = players[turn].cards.hand.getCard(card_id);
+					console.log(players[turn].cards.hand);
+					console.log(card_id);
+					console.log(players[turn].cards.hand.getCard(card_id)); // TODO Fix Undefined
+					if(card.cardType === CardType.ACTION_CARD){
+						// Add use card button
+						updateTextPrint(players[turn].index, 'Selected Action Card!');
+						createButton(card.name + '\nUse?', id_interact + players[turn].index, 'playActionID', (function(){
+							updateTextPrint(players[turn].index, 'Played Action Card ' + card.name + '!');
+							players[turn].playActionCard(card);
+						}).bind(this), 'interactButton');					
+					}
 				}
-			}
-		});
+			});			
+		}
 	}
 
 	this.discardHand = function(){
@@ -220,12 +225,16 @@ function DeckOfCards(playerIndex){
 			this.updateHTMLElements();
 			this.checkIfPhaseDone(false); // Make sure this runs AFTER actionsLeft += line above
 
-			this.board.push(card);			
+			this.board.push(card);
+			
+			// TODO: Use function
+			//this.generateCardHTML(card, false);
+			
 			var properties = new Map();
 			properties.set('id', id_board + card.id);
 			properties.set('src', getCorrectImage(card));
 			var el = initNewUIElement('img', properties, id_board + this.playerIndex, ['card_board', getCssClassCard(card)]);
-		
+			
 			// Remove Use action button
 			deleteButton('playActionID', id_interact + this.playerIndex);
 		}

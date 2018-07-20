@@ -104,6 +104,7 @@ function initShopHTML(){
 	initNewUIElement('div', new Map().set('id', 'mainShop'), 'shop').innerHTML = 'Shop';
 	initNewUIElement('div', new Map().set('id', 'shopCards'), 'mainShop');
 	cards.forEach(function(value, key){
+		// TODO: Use method here
 		var properties = new Map();
 		properties.set('id', 'card_' + value.id);
 		properties.set('src', getCorrectImage(value));
