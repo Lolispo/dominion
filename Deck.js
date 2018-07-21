@@ -137,6 +137,7 @@ function DeckOfCards(playerIndex){
 			this.deckStack = this.discard;
 			this.discard = [];
 			shuffle(this.deckStack);
+			removeChildren(id_discard_top + this.playerIndex);
 			updateTextPrint(this.playerIndex, 'Shuffled Deck! (' + this.deckStack.length + ' cards)');
 		}
 		if(this.deckStack.length > 0){ // No more cards available
@@ -326,7 +327,7 @@ function Hand(deckOfCards){
 		for(var i = 0; i < this.action.length; i++){
 			if(card.id === this.action[i].id){
 				var tempCard = this.action.splice(i, 1)[0];
-				this.allCards.splice(card.id, 1);
+				this.allCards[card.id] = undefined; // TODO Unassign this value so it has no impact on length, was splice before
 				var handEl = document.getElementById(id_hand + this.deckOfCards.playerIndex);
 				var el = document.getElementById(id_card + card.id);
 				handEl.removeChild(el);
