@@ -159,12 +159,10 @@ function DeckOfCards(playerIndex){
 			var card_id = getIDFromCard(card_HTMLid);
 			if(isTurn(playerID)) {
 				var card = getPlayer(turn).cards.hand.getCard(card_id);
-				console.log(getPlayer(turn).cards.hand);
-				console.log(card_id);
-				console.log(getPlayer(turn).cards.hand.getCard(card_id)); // TODO Fix Undefined
-				if(card.cardType === CardType.ACTION_CARD){
+				if(card.cardType === CardType.ACTION_CARD && this.phase === 0){
 					// Add use card button
 					updateTextPrint(getPlayer(turn).index, 'Selected Action Card!');
+					deleteButton(id_interact + getPlayer(turn).index, 'playActionID');
 					createButton(card.name + '\nUse?', id_interact + getPlayer(turn).index, 'playActionID', (function(){
 						updateTextPrint(getPlayer(turn).index, 'Played Action Card ' + card.name + '!');
 						getPlayer(turn).playActionCard(card);
@@ -275,14 +273,14 @@ function DeckOfCards(playerIndex){
 
 function Hand(deckOfCards){
 	this.amount = 0;
-	this.allCards = []; // Array mapping Card.id -> Card
+	this.allCards = new Map(); // Change me into a map
 	this.treasure = [];
 	this.victory = [];
 	this.action = [];
 	this.deckOfCards = deckOfCards;
 
 	this.getCard = function(id){
-		return this.allCards[id];
+		return this.allCards.get(id);
 	}
 
 	this.getAmount = function(){
@@ -310,7 +308,7 @@ function Hand(deckOfCards){
 
 	this.newCard = function(card){
 		this.amount++;
-		this.allCards[card.id] = card;
+		this.allCards.set(card.id, card);
 		if(card.cardType === CardType.TREASURE_CARD){
 			this.treasure.push(card);
 			this.deckOfCards.updateMoney(this.deckOfCards.money + card.getValue());
@@ -327,7 +325,7 @@ function Hand(deckOfCards){
 		for(var i = 0; i < this.action.length; i++){
 			if(card.id === this.action[i].id){
 				var tempCard = this.action.splice(i, 1)[0];
-				this.allCards[card.id] = undefined; // TODO Unassign this value so it has no impact on length, was splice before
+				this.allCards.delete(card.id); 
 				var handEl = document.getElementById(id_hand + this.deckOfCards.playerIndex);
 				var el = document.getElementById(id_card + card.id);
 				handEl.removeChild(el);

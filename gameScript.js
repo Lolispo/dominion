@@ -8,10 +8,10 @@ var turn = 0;
 
 /*
 	TODO
-	Discard pile
-		Show bought card on top of discard pile
 	sortable hand (instant and on command, when new cards are added)
 		Sort on every draw card
+	Dont add action button in phase != 0
+		Multiple buttons for action shouldnt be added
 
 	Estetic
 		Add messages to update for shop? 
