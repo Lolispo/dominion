@@ -21,6 +21,9 @@ var id_card = 'card_'
 var id_phase0 = '> Go To Buy Phase';
 var id_phase1 = '> End Turn';
 
+var openShop = 'Open Shop';
+var closeShop = 'Close Shop';
+
 // HTML Stuff
 
 function initNewUIElement(typeEl, properties = new Map(), parentID, cssClass = ''){
@@ -112,11 +115,21 @@ function initShopHTML(){
 		el.addEventListener('click', function(res){
 			var card_id = getIDFromCard(res.srcElement.id);
 			var card = generateNewCard(cards_global_id.get(card_id));
-			players[turn].buyCard(card);
+			if(card === null){ // Out of this card, capacity reached
+				updateTextPrint(getPlayer(turn).index, 'Out of this cardtype!'); // TODO: Move this to shop messages instead
+			} else { 
+				getPlayer(turn).buyCard(card);			
+			}
 		});
 	});
-	createButton('Toggle Shop', 'mainShop', 'showShop', (function(){ // Change to Open and Close / Change on toggle TODO
+	createButton(closeShop, 'mainShop', 'showShop', (function(){ // Change to Open and Close / Change on toggle TODO
 		// Show / dont show shop
+		var currentName = document.getElementById('showShop').innerHTML;
+		if(currentName === openShop){
+			changeText('showShop', closeShop);
+		} else{
+			changeText('showShop', openShop)
+		}
 		modifyCSSID('toggle', 'shopCards', 'invis');
-	}).bind(this));	
+	}).bind(this), 'normalButton');	
 }

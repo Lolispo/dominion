@@ -109,6 +109,13 @@
 	border-color: black;
 }
 
+.normalButton {
+	border: black;
+    border-style: solid;
+	height: 25px;
+    width: 100px;	
+}
+
 .interactButton {
 	border: black;
     border-style: solid;

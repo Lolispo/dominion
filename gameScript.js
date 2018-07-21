@@ -8,27 +8,26 @@ var turn = 0;
 
 /*
 	TODO
-	Next parts:
-		Card Capacity
-		win condition
-
-	Make Player own areas more clearer
-		player color, different background color
-		border ?
-	Shop
-		Move button - toggle shop. Change so Open / Close change
-		CSS - Show affordable cards
-			Update on every money change
-		CSS - Show selected card
 	Discard pile
 		Show bought card on top of discard pile
-	
-	CSS - Scalable card sizes
 	sortable hand (instant and on command, when new cards are added)
 		Sort on every draw card
 
+	Estetic
+		Add messages to update for shop? 
+		Make Player own areas more clearer
+			player color, different background color
+			border ?
+		Shop
+			CSS - Show affordable cards
+				Update on every money change
+			CSS - Show selected card
+		
+		CSS - Scalable card sizes
+
 	Later:
 		Mine
+		Garden (functionality already added)
 		color and name choice in main menu
 
 		netplay - nodejs
@@ -134,9 +133,6 @@ function isTurn(playerIndex){
 	return false;
 }
 
-
-
-
 function getPlayer(pid){
 	return players[pid];
 }
@@ -160,5 +156,40 @@ function getCssClassCard(card){
 		default:
 			return 'card_treasure';
 			break;
+	}
+}
+
+// Called when points should be calculated to see who won
+function endGame(){
+	var pointsArray = [];
+	var highestPointPlayer = -1;
+	var highestPoints = -100;
+	for(var i = 0; i < players.length; i++){
+		var cards = players[i].cards.endGetAllCards();
+		var pointsArray[i] = 0;
+		for(var j = 0; j < cards.length; j++){
+			if(cards[j].cardType === CardType.VICTORY_CARD){
+				if(cards[j].name === 'Garden'){
+					// TODO Add garden functionality here
+					var temp = cards.length;
+					temp -= (cards.length % 10);
+					pointsArray[i] += temp / 10;
+				} else{
+					pointsArray[i] += cards[j].getValue();	
+				}
+			}
+		}
+		if(pointsArray[i] > highestPoints){
+			highestPoints = pointsArray[i];
+			highestPointPlayer = i;
+		}
+	}
+
+	// TODO Update correct field with victory text, in html
+
+	console.log('The winner is Player ' + (highestPointPlayer + 1) + ' with ' + highestPoints + ' points!');
+	console.log('All Results:');
+	for(var i = 0; i < players.length; i++){
+		console.log('Player ' + (i + 1) + ': ' + pointsArray[i] + ' points');
 	}
 }

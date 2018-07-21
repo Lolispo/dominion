@@ -42,13 +42,15 @@ function Player(index){
 				deleteButton('cancelPurchase', id_interact + this.index);
 				createButton('Confirm Purchase:\n' + card.name, id_interact + this.index, 'confirmPurchase', (function(){
 					// Update money
-					this.updateMoney(this.cards.money - card.cost);
-					this.updateBuysLeft(this.cards.buysLeft - 1);
+					updateCapacity(card.name, cards_capacity.get(card.name) - 1); // Reduce capacity of this card type
+		
+					this.cards.updateMoney(this.cards.money - card.cost);
+					this.cards.updateBuysLeft(this.cards.buysLeft - 1);
 					this.cards.checkIfPhaseDone(false);
 					// Add new card to discard pile
 					this.cards.discard.push(card);
 					// Check if good syntax this.cards.money + ', ' + (this.cards.money + card.cost) +
-					updateTextPrint(this.index, 'Added card to deck: ' + card.name + '! (' + ' - ' + card.cost + ')'); 
+					updateTextPrint(this.index, 'Added card to deck: ' + card.name + '! (Cap: ' + cards_capacity.get(card.name) + ')'); 
 					deleteButton('confirmPurchase', id_interact + this.index);
 					deleteButton('cancelPurchase', id_interact + this.index);
 				}).bind(this), 'interactButton');

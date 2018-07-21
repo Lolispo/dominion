@@ -3,10 +3,19 @@
 
 var cards_global = new Map();
 var cards_global_id = new Map();
+var cards_capacity = new Map();
 
 var cards_treasure = new Map();
 var cards_victory = new Map();
 var cards_action = new Map();
+
+var card_capacity_action = 10;
+var card_capacity_victory = 12;
+var card_capacity_infinite = 200; // Not more should be required
+
+var global_card_id = 0;
+var emptyPiles = 0;
+var gameEndEmptyPiles = 3;
 
 var CardType = {
 	TREASURE_CARD: 0,
@@ -19,17 +28,32 @@ var CardType = {
 	}
 };
 
-var global_card_id = 0;
 
 function generateNewCard(card){
-//	console.log('DEBUG @generateNewCard BEFORE');
-//	console.log(card);
-	var newCard = Object.assign({}, card);
-	newCard.id = global_card_id++;
-//	console.log('DEBUG @generateNewCard AFTER');
-//	console.log(newCard);
-	return newCard;
+	// Reduce capacity
+	if(cards_capacity.get(card.name) > 0){
+		var newCard = Object.assign({}, card);
+		newCard.id = global_card_id++;
+		return newCard;		
+	} else{
+		return null;
+	}
 }
+
+function updateCapacity(cardName, newValue){
+	cards_capacity.set(cardName, newValue);
+	if(newValue === 0){
+		if(cardName === 'Province'){
+			endGame();
+		} else{
+			emptyPiles++;
+			if(emptyPiles === gameEndEmptyPiles){
+				endGame();
+			}			
+		}
+	}
+}
+
 
 function Card(name, cardType){
 	this.id = global_card_id++;
@@ -159,6 +183,22 @@ function initCards(){
 	cards_global_id.set(village.id, village);
 	cards_global_id.set(smithy.id, smithy);
 
+	
+	cards_capacity = new Map();
+	cards_capacity.set('Copper', card_capacity_infinite);
+	cards_capacity.set('Silver', card_capacity_infinite);
+	cards_capacity.set('Gold', card_capacity_infinite);
+
+	cards_capacity.set('Estate', card_capacity_infinite);
+	cards_capacity.set('Duchey', card_capacity_victory);
+	cards_capacity.set('Province', card_capacity_victory);
+
+	cards_capacity.set('Market', card_capacity_action);
+	cards_capacity.set('Laboratory', card_capacity_action);
+	cards_capacity.set('Village', card_capacity_action);
+	cards_capacity.set('Smithy', card_capacity_action);
+
+	
 	cards_treasure = new Map();
 	cards_treasure.set('Copper', copper);
 	cards_treasure.set('Silver', silver);

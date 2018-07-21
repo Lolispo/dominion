@@ -17,25 +17,25 @@ function DeckOfCards(playerIndex){
 		document.getElementById(id_discard + this.playerIndex).innerHTML = 'Discard: ' + this.discard.length + ' cards';
 	}
 
-	this.updateMoney = function(value = this.money){
-		if(value !== this.money){
-			updateTextPrint(this.playerIndex, '+1 Money!', false);
+	this.updateMoney = function(value = this.money, printMe){
+		if(value > this.money && printMe){
+			updateTextPrint(this.playerIndex, '+' + (value - this.money) +  ' Money!', false);
 		}
 		this.money = value;
 		document.getElementById(id_money + this.playerIndex).innerHTML = 'Money: ' + this.money;
 	}
 
-	this.updateActionsLeft = function(value = this.actionsLeft){
-		if(value !== this.actionsLeft){
-			updateTextPrint(this.playerIndex, '+1 Action!', false);
+	this.updateActionsLeft = function(value = this.actionsLeft, printMe){
+		if(value > this.actionsLeft && printMe){
+			updateTextPrint(this.playerIndex, '+' + (value - this.actionsLeft) + ' Action!', false);
 		}
 		this.actionsLeft = value;
 		document.getElementById(id_actionsLeft + this.playerIndex).innerHTML = 'Actions Left: ' + this.actionsLeft;
 	}
 
-	this.updateBuysLeft = function(value = this.buysLeft){
-		if(value !== this.buysLeft){
-			updateTextPrint(this.playerIndex, '+1 Buy!', false);
+	this.updateBuysLeft = function(value = this.buysLeft, printMe){
+		if(value > this.buysLeft && printMe){
+			updateTextPrint(this.playerIndex, '+' + (value - this.buysLeft) +  ' Buy!', false);
 		}
 		this.buysLeft = value;
 		document.getElementById(id_buysLeft + this.playerIndex).innerHTML = 'Buys Left: ' + this.buysLeft;
@@ -97,7 +97,7 @@ function DeckOfCards(playerIndex){
 			modifyCSSEl('add', handElement.childNodes[i], 'card');
 		}		
 	}
-
+ 
 	this.displayCard = function(id){
 		modifyCSSID('remove', id, ['card_smaller', 'inactive']);
 		modifyCSSID('add', id, 'card');
@@ -140,16 +140,16 @@ function DeckOfCards(playerIndex){
 				var playerID = getIDFromCard(tempEl.parentElement.id);
 				var card_id = getIDFromCard(card_HTMLid);
 				if(isTurn(playerID)) {
-					var card = players[turn].cards.hand.getCard(card_id);
-					console.log(players[turn].cards.hand);
+					var card = getPlayer(turn).cards.hand.getCard(card_id);
+					console.log(getPlayer(turn).cards.hand);
 					console.log(card_id);
-					console.log(players[turn].cards.hand.getCard(card_id)); // TODO Fix Undefined
+					console.log(getPlayer(turn).cards.hand.getCard(card_id)); // TODO Fix Undefined
 					if(card.cardType === CardType.ACTION_CARD){
 						// Add use card button
-						updateTextPrint(players[turn].index, 'Selected Action Card!');
-						createButton(card.name + '\nUse?', id_interact + players[turn].index, 'playActionID', (function(){
-							updateTextPrint(players[turn].index, 'Played Action Card ' + card.name + '!');
-							players[turn].playActionCard(card);
+						updateTextPrint(getPlayer(turn).index, 'Selected Action Card!');
+						createButton(card.name + '\nUse?', id_interact + getPlayer(turn).index, 'playActionID', (function(){
+							updateTextPrint(getPlayer(turn).index, 'Played Action Card ' + card.name + '!');
+							getPlayer(turn).playActionCard(card);
 						}).bind(this), 'interactButton');					
 					}
 				}
@@ -164,11 +164,17 @@ function DeckOfCards(playerIndex){
 		this.cleanUp();
 	}
 
+	// Used on end to get all cards for a player
+	this.endGetAllCards = function(){
+		this.discardHand();
+		return this.deckStack.concat(this.discard);
+	}
+
 	// Cleanup phase
 	this.cleanUp = function(){
-		this.updateMoney(0);	
-		this.updateActionsLeft(1);
-		this.updateBuysLeft(1);
+		this.updateMoney(0, false);	
+		this.updateActionsLeft(1, false);
+		this.updateBuysLeft(1, false);
 
 		removeChildren(id_board + this.playerIndex);
 		this.board = [];
