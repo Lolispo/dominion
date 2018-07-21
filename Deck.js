@@ -159,10 +159,10 @@ function DeckOfCards(playerIndex){
 			var card_id = getIDFromCard(card_HTMLid);
 			if(isTurn(playerID)) {
 				var card = getPlayer(turn).cards.hand.getCard(card_id);
-				if(card.cardType === CardType.ACTION_CARD && this.phase === 0){
+				if(card.cardType === CardType.ACTION_CARD && getPlayer(turn).cards.phase === 0){
 					// Add use card button
-					updateTextPrint(getPlayer(turn).index, 'Selected Action Card!');
-					deleteButton(id_interact + getPlayer(turn).index, 'playActionID');
+					updateTextPrint(getPlayer(turn).index, 'Selected Action Card!', false);
+					deleteButton('playActionID', id_interact + getPlayer(turn).index);
 					createButton(card.name + '\nUse?', id_interact + getPlayer(turn).index, 'playActionID', (function(){
 						updateTextPrint(getPlayer(turn).index, 'Played Action Card ' + card.name + '!');
 						getPlayer(turn).playActionCard(card);
@@ -200,6 +200,8 @@ function DeckOfCards(playerIndex){
 
 	// Cleanup phase
 	this.cleanUp = function(){
+		this.updateDeckLength();
+		this.updateDiscardLength();
 		this.updateMoney(0, false);	
 		this.updateActionsLeft(1, false);
 		this.updateBuysLeft(1, false);
@@ -227,11 +229,13 @@ function DeckOfCards(playerIndex){
 		} else if(this.phase === 1){
 			if(nextStage || this.buysLeft === 0 || this.money === 0){
 				this.phase++;
-				updateTextPrint(this.playerIndex, 'Ending Turn (Money: ' + this.money + ', BuysLeft: ' + this.buysLeft + ', ActionsLeft: ' + this.actionsLeft + ')');
-				deleteButton('interactButton', id_interact + this.playerIndex);
-				this.discardHand();
-				getPlayer(this.playerIndex).drawHand();
-				changeTurn();
+				if(!gameEnded){
+					updateTextPrint(this.playerIndex, 'Ending Turn (Money: ' + this.money + ', BuysLeft: ' + this.buysLeft + ', ActionsLeft: ' + this.actionsLeft + ')');
+					deleteButton('interactButton', id_interact + this.playerIndex);
+					this.discardHand();
+					getPlayer(this.playerIndex).drawHand();
+					changeTurn();
+				}
 			}			
 		}
 	}

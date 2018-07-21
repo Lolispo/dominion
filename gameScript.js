@@ -5,22 +5,34 @@ var playingPlayers;
 
 var players = [];
 var turn = 0;
+var gameEnded = false;
 
 /*
 	TODO
-	sortable hand (instant and on command, when new cards are added)
-		Sort on every draw card
+	Sort
+		Use javascript style.order = value
+		Hand
+			On every draw card
+		Shop
+			On affordable cards check and type
 	Dont add action button in phase != 0
 		Multiple buttons for action shouldnt be added
+	Out of stock cards should be filtered DIFFERENTLY, so they are always shown out of stock when cap = 0
+		Add to affordable card check
+
+	End
+		Prevent drawing a new hand after end
+		Add information to more than just console
 
 	Estetic
 		Add messages to update for shop? 
 		Make Player own areas more clearer
 			player color, different background color
-			border ?
-		Shop
-			CSS - Show selected card
-		
+			border ? 
+		Active player always on top
+			Requires unique colors, 
+			color and name choice in main menu
+
 		CSS - Scalable card sizes
 
 	Later:
@@ -32,13 +44,13 @@ var turn = 0;
 			Garden (functionality already added)
 			Rest listed in Deck.js
 
-		color and name choice in main menu
 
 		netplay - nodejs
 			board cards sent
 			amount of cards sent to all, which cards only to the player
 			Deck updates (buys) are sent
 			Move Player and Deck to server side instead of client side
+
 		Private variables (var instead of this.)
 			Gather variables in one place
 */
@@ -169,8 +181,10 @@ function endGame(){
 	var pointsArray = [];
 	var highestPointPlayer = -1;
 	var highestPoints = -100;
+	var allPlayerCards = []; 
 	for(var i = 0; i < players.length; i++){
 		var cards = players[i].cards.endGetAllCards();
+		allPlayerCards[i] = cards;
 		pointsArray[i] = 0;
 		for(var j = 0; j < cards.length; j++){
 			if(cards[j].cardType === CardType.VICTORY_CARD){
@@ -191,10 +205,25 @@ function endGame(){
 	}
 
 	// TODO Update correct field with victory text, in html
+	// Can add functionality to check for total cost of hand, in treasure, victory & actions cards etc
 
 	console.log('The winner is Player ' + (highestPointPlayer + 1) + ' with ' + highestPoints + ' points!');
 	console.log('All Results:');
 	for(var i = 0; i < players.length; i++){
+		var cards = allPlayerCards[i];
 		console.log('Player ' + (i + 1) + ': ' + pointsArray[i] + ' points');
+		console.log(cards.length + ' cards total');
+		var map = new Map();
+		for(var j = 0; j < cards.length; j++){
+			if(typeof map.get(cards[j].name) === 'undefined'){
+				map.set(cards[j].name, 1);
+			} else {
+				map.set(cards[j].name, map.get(cards[j].name) + 1);
+			}
+		}
+		map.forEach(function(value, key){ // Unknown order of these cards
+			console.log(value + ' ' + key);
+		});
+		console.log('--------------------------');
 	}
 }

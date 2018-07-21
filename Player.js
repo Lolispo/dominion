@@ -27,7 +27,6 @@ function Player(index){
 	}
 
 	this.playActionCard = function(card){
-		console.log('DEBUG: @playActionCard ' + (this.cards.getPhase() === 0 && isTurn(this.index)));
 		if(this.cards.getPhase() === 0 && isTurn(this.index)){
 			this.cards.useCard(card);
 		}
@@ -51,7 +50,6 @@ function Player(index){
 					// Update money
 					this.cards.updateMoney(this.cards.money - card.cost);
 					this.cards.updateBuysLeft(this.cards.buysLeft - 1);
-					updateCapacity(card.name, cards_capacity.get(card.name) - 1); // Reduce capacity of this card type
 		
 					// Add new card to discard pile
 					this.cards.discard.push(card);
@@ -60,6 +58,9 @@ function Player(index){
 					this.cards.checkIfPhaseDone(false);
 					
 					updateTextPrint(this.index, 'Added card to deck: ' + card.name + '! (Cap: ' + cards_capacity.get(card.name) + ')'); 
+
+					updateCapacity(card.name, cards_capacity.get(card.name) - 1); // Reduce capacity of this card type
+
 					modifyCSSID('remove', id_card + cardId, 'selected');
 					deleteButton('confirmPurchase', id_interact + this.index);
 					deleteButton('cancelPurchase', id_interact + this.index);

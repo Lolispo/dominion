@@ -44,10 +44,14 @@ function updateCapacity(cardName, newValue){
 	cards_capacity.set(cardName, newValue);
 	if(newValue === 0){
 		if(cardName === 'Province'){
+			console.log('Game ending!');
+			gameEnded = true;
 			endGame();
 		} else{
 			emptyPiles++;
 			if(emptyPiles === gameEndEmptyPiles){
+				console.log('Game ending!');
+				gameEnded = true;
 				endGame();
 			}			
 		}
@@ -86,7 +90,7 @@ function Card(name, cardType){
 		if(cardType === CardType.TREASURE_CARD || cardType === CardType.VICTORY_CARD){
 			return this.value;
 		} else if(cardType === CardType.ACTION_CARD){
-			console.log(this.drawCards, this.moreActions, this.moreBuys, this.moreGold);
+			//console.log(this.drawCards, this.moreActions, this.moreBuys, this.moreGold);
 			// Check if exist
 			return {drawCards: this.drawCards, moreActions: this.moreActions, moreBuys: this.moreBuys, moreGold: this.moreGold};
 		}

@@ -54,7 +54,7 @@ function createButton(text, parentID, id, callback, cssClass){
 function deleteButton(id, parentID){
 	if(document.getElementById(id) != null){
 		var handEl = document.getElementById(parentID); // Remove the button from parentID with id = id
-		handEl.removeChild(document.getElementById(id));
+		handEl.removeChild(document.getElementById(id));		
 	}
 }
 
