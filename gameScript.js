@@ -19,8 +19,6 @@ var turn = 0;
 			player color, different background color
 			border ?
 		Shop
-			CSS - Show affordable cards
-				Update on every money change
 			CSS - Show selected card
 		
 		CSS - Scalable card sizes
@@ -166,7 +164,7 @@ function endGame(){
 	var highestPoints = -100;
 	for(var i = 0; i < players.length; i++){
 		var cards = players[i].cards.endGetAllCards();
-		var pointsArray[i] = 0;
+		pointsArray[i] = 0;
 		for(var j = 0; j < cards.length; j++){
 			if(cards[j].cardType === CardType.VICTORY_CARD){
 				if(cards[j].name === 'Garden'){

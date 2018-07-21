@@ -27,6 +27,12 @@
 	margin: 1px;
 }
 
+.card_discard {
+	height: 57px;
+    width: 32px;
+	text-align: center;
+}
+
 .card_board {
 	height: 114px;
     width: 64px;
@@ -133,6 +139,11 @@
 	justify-content: center;
 	align-items: center;
 	*/
+}
+
+.selected {
+	border: yellow;
+    border-style: solid;
 }
 
 .inactive {

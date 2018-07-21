@@ -13,6 +13,7 @@ var id_interact = 'interact_';
 var id_hand = 'hand_';
 var id_deck = 'deck_';
 var id_discard = 'discard_';
+var id_discard_top = 'info_discard_';
 var id_money = 'money_';
 var id_buysLeft = 'buysLeft_';
 var id_actionsLeft = 'actionsLeft_';
@@ -106,24 +107,20 @@ function initShopHTML(){
 	var cards = cards_global;
 	initNewUIElement('div', new Map().set('id', 'mainShop'), 'shop').innerHTML = 'Shop';
 	initNewUIElement('div', new Map().set('id', 'shopCards'), 'mainShop');
-	cards.forEach(function(value, key){
-		// TODO: Use method here
-		var properties = new Map();
-		properties.set('id', 'card_' + value.id);
-		properties.set('src', getCorrectImage(value));
-		var el = initNewUIElement('img', properties, 'shopCards', ['card_smaller', getCssClassCard(value)]);
-		el.addEventListener('click', function(res){
-			var card_id = getIDFromCard(res.srcElement.id);
+	cards.forEach(function(card, key){
+		generateCardHTML(card, id_card + card.id, 'shopCards', ['card_smaller', getCssClassCard(card)], function(card_HTMLid){
+			var card_id = getIDFromCard(card_HTMLid);
 			var card = generateNewCard(cards_global_id.get(card_id));
 			if(card === null){ // Out of this card, capacity reached
 				updateTextPrint(getPlayer(turn).index, 'Out of this cardtype!'); // TODO: Move this to shop messages instead
 			} else { 
-				getPlayer(turn).buyCard(card);			
+				getPlayer(turn).buyCard(card, card_id);			
 			}
 		});
 	});
-	createButton(closeShop, 'mainShop', 'showShop', (function(){ // Change to Open and Close / Change on toggle TODO
-		// Show / dont show shop
+
+	// Show / dont show shop
+	createButton(closeShop, 'mainShop', 'showShop', (function(){
 		var currentName = document.getElementById('showShop').innerHTML;
 		if(currentName === openShop){
 			changeText('showShop', closeShop);
@@ -133,3 +130,26 @@ function initShopHTML(){
 		modifyCSSID('toggle', 'shopCards', 'invis');
 	}).bind(this), 'normalButton');	
 }
+
+
+// Generate HTML for Card - More generic
+function generateCardHTML(tempCard, id, parentID, cssClass, callback = ''){
+	var properties = new Map();
+	properties.set('id', id);
+	properties.set('src', getCorrectImage(tempCard));
+	var el = initNewUIElement('img', properties, parentID, cssClass);
+	if(callback != ''){
+		el.addEventListener('click', function(res){
+			var card_HTMLid = res.srcElement.id;
+			callback(card_HTMLid);
+		});		
+	}
+}
+
+// Gustav
+	/*var el = initNewUIElement('div', new Map().set('id', id_card + tempCard.id), id_hand + this.playerIndex, getCssClassCard(tempCard));
+	initNewUIElement('div', new Map().set('id', 'value_' + id_card + tempCard.id), id_card + tempCard.id, 'value').innerHTML = tempCard.getValue();
+	initNewUIElement('div', new Map().set('id', 'cost_' + id_card + tempCard.id), id_card + tempCard.id, 'cost').innerHTML = tempCard.getCost();
+	initNewUIElement('div', new Map().set('id', 'desc_' + id_card + tempCard.id), id_card + tempCard.id, 'description').innerHTML = 'Default String';
+	*/
+

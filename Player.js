@@ -27,34 +27,45 @@ function Player(index){
 	}
 
 	this.playActionCard = function(card){
-		console.log('DEBUG: @playActionCard ' + this.cards.getPhase() === 0 && isTurn(this.index));
+		console.log('DEBUG: @playActionCard ' + (this.cards.getPhase() === 0 && isTurn(this.index)));
 		if(this.cards.getPhase() === 0 && isTurn(this.index)){
 			this.cards.useCard(card);
 		}
 	}
 
-	this.buyCard = function(card){
+	this.buyCard = function(card, cardId){
 		if(this.cards.getPhase() === 1){
 			// Check if you can afford card
 			if(this.cards.money >= card.cost){
 				// Confirm purchase
 				deleteButton('confirmPurchase', id_interact + this.index);
 				deleteButton('cancelPurchase', id_interact + this.index);
+				// Remove selected TODO
+				var el = document.getElementById('shopCards');
+				for(var i = 0; i < el.childNodes.length; i++){
+					modifyCSSEl('remove', el.childNodes[i], 'selected');				
+				}
+				// Add selected
+				modifyCSSID('add', id_card + cardId, 'selected');
 				createButton('Confirm Purchase:\n' + card.name, id_interact + this.index, 'confirmPurchase', (function(){
 					// Update money
-					updateCapacity(card.name, cards_capacity.get(card.name) - 1); // Reduce capacity of this card type
-		
 					this.cards.updateMoney(this.cards.money - card.cost);
 					this.cards.updateBuysLeft(this.cards.buysLeft - 1);
-					this.cards.checkIfPhaseDone(false);
+					updateCapacity(card.name, cards_capacity.get(card.name) - 1); // Reduce capacity of this card type
+		
 					// Add new card to discard pile
 					this.cards.discard.push(card);
-					// Check if good syntax this.cards.money + ', ' + (this.cards.money + card.cost) +
+
+					// Check if done with buy phase
+					this.cards.checkIfPhaseDone(false);
+					
 					updateTextPrint(this.index, 'Added card to deck: ' + card.name + '! (Cap: ' + cards_capacity.get(card.name) + ')'); 
+					modifyCSSID('remove', id_card + cardId, 'selected');
 					deleteButton('confirmPurchase', id_interact + this.index);
 					deleteButton('cancelPurchase', id_interact + this.index);
 				}).bind(this), 'interactButton');
 				createButton('Cancel Purchase', id_interact + this.index, 'cancelPurchase', (function(){
+					modifyCSSID('remove', id_card + cardId, 'selected');
 					deleteButton('confirmPurchase', id_interact + this.index);
 					deleteButton('cancelPurchase', id_interact + this.index);
 				}).bind(this), 'interactButton');
@@ -82,13 +93,18 @@ function Player(index){
 		initNewUIElement('div', new Map().set('id', id_board + this.index), 'player_' + this.index);
 		initNewUIElement('div', new Map().set('id', id_interact + this.index), 'player_' + this.index, 'interact');		
 		initNewUIElement('div', new Map().set('id', id_hand + this.index), 'player_' + this.index, 'hand');
+
+		initNewUIElement('div', new Map().set('id', id_info_stats + this.index), id_info + this.index, 'info_child');
+		initNewUIElement('div', new Map().set('id', id_money + this.index), id_info_stats + this.index, ['bold', 'info_stats']);
+		initNewUIElement('div', new Map().set('id', id_buysLeft + this.index), id_info_stats + this.index, ['bold', 'info_stats']);
+		initNewUIElement('div', new Map().set('id', id_actionsLeft + this.index), id_info_stats + this.index, ['bold', 'info_stats']);
+
 		initNewUIElement('div', new Map().set('id', id_info_cards + this.index), id_info + this.index, 'info_child');
-		initNewUIElement('div', new Map().set('id', id_info_stats + this.index), id_info + this.index, ['info_child', 'info_stats']);
 		initNewUIElement('div', new Map().set('id', id_deck + this.index), id_info_cards + this.index, 'bold');
 		initNewUIElement('div', new Map().set('id', id_discard + this.index), id_info_cards + this.index, 'bold');
-		initNewUIElement('div', new Map().set('id', id_money + this.index), id_info_stats + this.index, 'bold');
-		initNewUIElement('div', new Map().set('id', id_buysLeft + this.index), id_info_stats + this.index, 'bold');
-		initNewUIElement('div', new Map().set('id', id_actionsLeft + this.index), id_info_stats + this.index, 'bold');
+
+		initNewUIElement('div', new Map().set('id', id_discard_top + this.index), id_info + this.index);
+
 		// Init Deck of Cards
 		this.cards = new DeckOfCards(index);
 		this.cards.initDeck();

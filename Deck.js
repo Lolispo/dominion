@@ -17,15 +17,33 @@ function DeckOfCards(playerIndex){
 		document.getElementById(id_discard + this.playerIndex).innerHTML = 'Discard: ' + this.discard.length + ' cards';
 	}
 
-	this.updateMoney = function(value = this.money, printMe){
+	this.checkShopCostInactive = function(){
+		var shop = document.getElementById('shopCards');
+		for(var i = 0; i < shop.childNodes.length; i++){
+			var card = cards_global_id.get(getIDFromCard(shop.childNodes[i].id));
+			var cardCost = card.cost;
+			//console.log('DEBUG ' + card.name + ', ' + (this.money >= cardCost) + ', ' + this.money + ', ' + cardCost);
+			if(this.money >= cardCost){
+				modifyCSSEl('remove', shop.childNodes[i], 'inactive')				
+			} else if(this.money < cardCost){ // Can't afford card
+				modifyCSSEl('add', shop.childNodes[i], 'inactive')
+			}
+		}
+	}
+
+	// Printme = true on new hand drawn or action card used
+	this.updateMoney = function(value = this.money, printMe = false){
 		if(value > this.money && printMe){
 			updateTextPrint(this.playerIndex, '+' + (value - this.money) +  ' Money!', false);
 		}
 		this.money = value;
 		document.getElementById(id_money + this.playerIndex).innerHTML = 'Money: ' + this.money;
+		if(printMe){
+			this.checkShopCostInactive();		
+		}
 	}
 
-	this.updateActionsLeft = function(value = this.actionsLeft, printMe){
+	this.updateActionsLeft = function(value = this.actionsLeft, printMe = false){
 		if(value > this.actionsLeft && printMe){
 			updateTextPrint(this.playerIndex, '+' + (value - this.actionsLeft) + ' Action!', false);
 		}
@@ -33,7 +51,7 @@ function DeckOfCards(playerIndex){
 		document.getElementById(id_actionsLeft + this.playerIndex).innerHTML = 'Actions Left: ' + this.actionsLeft;
 	}
 
-	this.updateBuysLeft = function(value = this.buysLeft, printMe){
+	this.updateBuysLeft = function(value = this.buysLeft, printMe = false){
 		if(value > this.buysLeft && printMe){
 			updateTextPrint(this.playerIndex, '+' + (value - this.buysLeft) +  ' Buy!', false);
 		}
@@ -41,16 +59,18 @@ function DeckOfCards(playerIndex){
 		document.getElementById(id_buysLeft + this.playerIndex).innerHTML = 'Buys Left: ' + this.buysLeft;
 	}
 
+	// Init variable values and set them in HTML
 	this.updateDeckLength();
 	this.updateDiscardLength();
 	this.updateActionsLeft(1);
 	this.updateBuysLeft(1);
 	this.updateMoney(0);	
 
+	// Used on new hand or action used
 	this.updateHTMLElements = function(){
 		this.updateDeckLength();
 		this.updateDiscardLength();
-		this.updateMoney();
+		this.updateMoney(this.money, true);
 		this.updateActionsLeft();
 		this.updateBuysLeft();
 	}
@@ -58,9 +78,15 @@ function DeckOfCards(playerIndex){
 	this.startTurn = function(){
 		this.phase = 0;
 		modifyCSSID('remove', id_board + this.playerIndex, 'invis');
-		modifyCSSID('remove', id_info + this.playerIndex, 'invis');
+		modifyCSSID('remove', id_info_stats + this.playerIndex, 'invis');
+		modifyCSSID('remove', id_info_cards + this.playerIndex, 'invis');
 		modifyCSSID('remove', id_text + this.playerIndex, 'invis');
 		modifyCSSID('remove', id_actionsLeft + this.playerIndex, 'invis');
+
+		var el = document.getElementById(id_discard_top + id_card + this.playerIndex);
+		if(el !== null){
+			modifyCSSEl('remove', el, 'inactive')		
+		}
 
 		createButton(id_phase0, id_interact + this.playerIndex, 'skipButton', (function(){
 			this.checkIfPhaseDone(true); // Go to next stage
@@ -70,7 +96,8 @@ function DeckOfCards(playerIndex){
 	// Start Deck
 	this.initDeck = function(){
 		modifyCSSID('add', id_board + this.playerIndex, 'invis');
-		modifyCSSID('add', id_info + this.playerIndex, 'invis');
+		modifyCSSID('add', id_info_stats + this.playerIndex, 'invis');
+		modifyCSSID('add', id_info_cards + this.playerIndex, 'invis');
 		modifyCSSID('add', id_text + this.playerIndex, 'invis');
 
 		for(var i = 0; i < 7; i++){
@@ -90,12 +117,14 @@ function DeckOfCards(playerIndex){
 		return this.phase;
 	}
 
+
 	this.displayEntireHand = function(){
 		var handElement = document.getElementById('hand_' + this.playerIndex);
 		for(var i = 0; i < handElement.childNodes.length; i++){
 			modifyCSSEl('remove', handElement.childNodes[i], ['card_smaller', 'inactive']);
 			modifyCSSEl('add', handElement.childNodes[i], 'card');
-		}		
+		}
+		this.updateHTMLElements();
 	}
  
 	this.displayCard = function(id){
@@ -114,54 +143,54 @@ function DeckOfCards(playerIndex){
 			var tempCard = this.deckStack.pop(); // Read pop
 			var handAmount = this.hand.newCard(tempCard);
 			updateTextPrint(this.playerIndex, 'Draw a card! ' + tempCard.name + ' (Holding ' + handAmount + ')', false);
-			this.generateCardHTML(tempCard, true); // Generate Card HTML
-			this.updateHTMLElements();
+			this.generateHandCard(tempCard); // Generate Hand Card HTML
 			return id_card + tempCard.id;
 		} else {
 			updateTextPrint(this.playerIndex, 'Out of cards!'); // TODO: Check game functionality here, assume just get no more card
 		}
 	}
 
-	// Generate HTML for Card
-	this.generateCardHTML = function(tempCard, handCard){
-		var properties = new Map();
-		properties.set('id', id_card + tempCard.id);
-		properties.set('src', getCorrectImage(tempCard));
-		var el = initNewUIElement('img', properties, id_hand + this.playerIndex, ['card_smaller', 'inactive', getCssClassCard(tempCard)]);
-		/*var el = initNewUIElement('div', new Map().set('id', id_card + tempCard.id), id_hand + this.playerIndex, getCssClassCard(tempCard));
-		initNewUIElement('div', new Map().set('id', 'value_' + id_card + tempCard.id), id_card + tempCard.id, 'value').innerHTML = tempCard.getValue();
-		initNewUIElement('div', new Map().set('id', 'cost_' + id_card + tempCard.id), id_card + tempCard.id, 'cost').innerHTML = tempCard.getCost();
-		initNewUIElement('div', new Map().set('id', 'desc_' + id_card + tempCard.id), id_card + tempCard.id, 'description').innerHTML = 'Default String';
-		*/
-		if(handCard){
-			el.addEventListener('click', function(res){
-				var card_HTMLid = res.srcElement.id;
-				var tempEl = document.getElementById(card_HTMLid);
-				var playerID = getIDFromCard(tempEl.parentElement.id);
-				var card_id = getIDFromCard(card_HTMLid);
-				if(isTurn(playerID)) {
-					var card = getPlayer(turn).cards.hand.getCard(card_id);
-					console.log(getPlayer(turn).cards.hand);
-					console.log(card_id);
-					console.log(getPlayer(turn).cards.hand.getCard(card_id)); // TODO Fix Undefined
-					if(card.cardType === CardType.ACTION_CARD){
-						// Add use card button
-						updateTextPrint(getPlayer(turn).index, 'Selected Action Card!');
-						createButton(card.name + '\nUse?', id_interact + getPlayer(turn).index, 'playActionID', (function(){
-							updateTextPrint(getPlayer(turn).index, 'Played Action Card ' + card.name + '!');
-							getPlayer(turn).playActionCard(card);
-						}).bind(this), 'interactButton');					
-					}
+	// Generate HTML for Card in hand
+	this.generateHandCard = function(tempCard){
+		generateCardHTML(tempCard, id_card + tempCard.id, id_hand + this.playerIndex, ['card_smaller', 'inactive', getCssClassCard(tempCard)], function(card_HTMLid){
+			var tempEl = document.getElementById(card_HTMLid);
+			var playerID = getIDFromCard(tempEl.parentElement.id);
+			var card_id = getIDFromCard(card_HTMLid);
+			if(isTurn(playerID)) {
+				var card = getPlayer(turn).cards.hand.getCard(card_id);
+				console.log(getPlayer(turn).cards.hand);
+				console.log(card_id);
+				console.log(getPlayer(turn).cards.hand.getCard(card_id)); // TODO Fix Undefined
+				if(card.cardType === CardType.ACTION_CARD){
+					// Add use card button
+					updateTextPrint(getPlayer(turn).index, 'Selected Action Card!');
+					createButton(card.name + '\nUse?', id_interact + getPlayer(turn).index, 'playActionID', (function(){
+						updateTextPrint(getPlayer(turn).index, 'Played Action Card ' + card.name + '!');
+						getPlayer(turn).playActionCard(card);
+					}).bind(this), 'interactButton');					
 				}
-			});			
-		}
+			}
+		});
 	}
 
 	this.discardHand = function(){
 		var discardedCards = this.hand.discardedHand();
 		updateTextPrint(this.playerIndex, 'Discarding hand!');
-		this.discard = this.discard.concat(discardedCards);				
+		var currentTop = '';
+		if(this.discard.length > 0){ // TODO && Buy has been made
+			currentTop = this.discard[this.discard.length - 1]; // TODO: test me
+		}
+		this.discard = this.discard.concat(discardedCards);
+		if(currentTop === ''){
+			currentTop = this.discard[this.discard.length - 1];
+		}
+		this.showTopOfDiscard(currentTop)		
 		this.cleanUp();
+	}
+
+	this.showTopOfDiscard = function(tempCard){
+		removeChildren(id_discard_top + this.playerIndex);
+		generateCardHTML(tempCard, id_discard_top + id_card + this.playerIndex, id_discard_top + this.playerIndex, ['card_discard', getCssClassCard(tempCard)]);
 	}
 
 	// Used on end to get all cards for a player
@@ -180,8 +209,9 @@ function DeckOfCards(playerIndex){
 		this.board = [];
 
 		modifyCSSID('add', id_board + this.playerIndex, 'invis');
-		modifyCSSID('add', id_info + this.playerIndex, 'invis');
+		modifyCSSID('add', id_info_stats + this.playerIndex, 'invis');
 		modifyCSSID('add', id_text + this.playerIndex, 'invis');
+		modifyCSSID('add', id_discard_top + id_card + this.playerIndex, 'inactive');
 		removeChildren(id_board + this.playerIndex);
 		removeChildren(id_hand + this.playerIndex);
 		removeChildren(id_interact + this.playerIndex);
@@ -234,14 +264,8 @@ function DeckOfCards(playerIndex){
 
 			this.board.push(card);
 			
-			// TODO: Use function
-			//this.generateCardHTML(card, false);
-			
-			var properties = new Map();
-			properties.set('id', id_board + card.id);
-			properties.set('src', getCorrectImage(card));
-			var el = initNewUIElement('img', properties, id_board + this.playerIndex, ['card_board', getCssClassCard(card)]);
-			
+			generateCardHTML(card, id_board + card.id, id_board + this.playerIndex, ['card_board', getCssClassCard(card)]);
+
 			// Remove Use action button
 			deleteButton('playActionID', id_interact + this.playerIndex);
 		}
@@ -288,7 +312,7 @@ function Hand(deckOfCards){
 		this.allCards[card.id] = card;
 		if(card.cardType === CardType.TREASURE_CARD){
 			this.treasure.push(card);
-			this.deckOfCards.money += card.getValue();
+			this.deckOfCards.updateMoney(this.deckOfCards.money + card.getValue());
 			//updateTextPrint(this.deckOfCards.playerIndex, 'Money Update! ( + ' + card.getValue() + ')');
 		} else if(card.cardType === CardType.VICTORY_CARD){
 			this.victory.push(card);
