@@ -24,8 +24,14 @@ var turn = 0;
 		CSS - Scalable card sizes
 
 	Later:
-		Mine
-		Garden (functionality already added)
+		New Cards:
+			Festival, +2 act, 1 buy, +2 gold
+			WoodCutter, +1 buy, +2 gold
+			Curse, -1 points
+				Witch ez
+			Garden (functionality already added)
+			Rest listed in Deck.js
+
 		color and name choice in main menu
 
 		netplay - nodejs

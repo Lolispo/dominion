@@ -258,6 +258,29 @@ function DeckOfCards(playerIndex){
 			if(actions.moreGold !== 0){
 				this.updateMoney(this.money + actions.moreGold);
 			}
+
+			// Special Card handling
+			// (T) Trash Functionality
+			// (C) Choose cards in hand functionality
+			// (B) Basic yes / no
+			// (U) Unique
+			// (S) Choose a card in shop
+
+			// (TC) Mine: Trash a Treasure Card, gain one with higher value (not gold to be chosen)
+			// (C) Cellar: Discard any number of cards, +1 Card per card discarded
+			// (B) Chancellor: You may immediately put your entire deck into discard pile
+			// (TC) Chapel: Trash up to 4 cards from your hand
+			// (U) Council Room: Each other player draws a card
+			// (TS) Feast: Trash this card, Gain a card costing up to 5
+			// (C) Militia: (Attack) Each other player discards down to 3 cards in their hand
+			// (U) Moat: If attack is used, you can show this card to prevent being affected
+			// (TC) MoneyLender: Trash a Copper from your hand, +3 Gold
+			// (U) Spy: (Attack) Show top of deck, placer chooses if discard or put back on top of deck
+			// (U) Thief:
+			// (UC) Throne Room: Choose action card from hand, play twice.
+			// Witch: Each other player gains a curse card
+			// (S) Workshop: Gain a card costing up to 4
+
 			this.updateHTMLElements();
 			this.checkIfPhaseDone(false); // Make sure this runs AFTER actionsLeft += line above
 
