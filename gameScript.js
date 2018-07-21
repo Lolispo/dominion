@@ -39,7 +39,8 @@ var turn = 0;
 			amount of cards sent to all, which cards only to the player
 			Deck updates (buys) are sent
 			Move Player and Deck to server side instead of client side
-
+		Private variables (var instead of this.)
+			Gather variables in one place
 */
 
 function startGame(){
