@@ -9,13 +9,14 @@ var cards_treasure = new Map();
 var cards_victory = new Map();
 var cards_action = new Map();
 
-var card_capacity_action = 10;
+var card_capacity_action = 2; //10; // Testing
 var card_capacity_victory = 12;
 var card_capacity_infinite = 200; // Not more should be required
 
 var global_card_id = 0;
 var emptyPiles = 0;
 var gameEndEmptyPiles = 3;
+var card_capacity_show = 40;
 
 var CardType = {
 	TREASURE_CARD: 0,
@@ -28,12 +29,13 @@ var CardType = {
 	}
 };
 
-
 function generateNewCard(card){
 	// Reduce capacity
 	if(cards_capacity.get(card.name) > 0){
-		var newCard = Object.assign({}, card);
-		newCard.id = global_card_id++;
+		var newCard = {  // Copy of card, with id field being new
+			...card,
+			id: global_card_id++
+		};
 		return newCard;		
 	} else{
 		return null;

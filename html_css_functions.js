@@ -18,7 +18,9 @@ var id_money = 'money_';
 var id_buysLeft = 'buysLeft_';
 var id_actionsLeft = 'actionsLeft_';
 
-var id_card = 'card_'
+var id_img = '_img';
+var id_shop = 'shop_';
+var id_card = 'card_';
 var id_phase0 = '> Go To Buy Phase';
 var id_phase1 = '> End Turn';
 
@@ -105,22 +107,24 @@ function modifyCSSEl(mode, el, cssClass){
 
 function initShopHTML(){
 	var cards = cards_global;
-	initNewUIElement('div', new Map().set('id', 'mainShop'), 'shop').innerHTML = 'Shop';
-	initNewUIElement('div', new Map().set('id', 'shopCards'), 'mainShop');
+	initNewUIElement('div', new Map().set('id', 'mainShop'), 'shop');
+	initNewUIElement('div', new Map().set('id', 'shopTitle'), 'mainShop', ['big_text', 'margin_left', 'bold', 'strokeme']).innerHTML = 'Shop';
+	initNewUIElement('div', new Map().set('id', 'shopCards'), 'mainShop', 'hand');
 	cards.forEach(function(card, key){
 		generateCardHTML(card, id_card + card.id, 'shopCards', ['card_smaller', getCssClassCard(card)], function(card_HTMLid){
 			var card_id = getIDFromCard(card_HTMLid);
-			var card = generateNewCard(cards_global_id.get(card_id));
-			if(card === null){ // Out of this card, capacity reached
-				updateTextPrint(getPlayer(turn).index, 'Out of this cardtype!'); // TODO: Move this to shop messages instead
+			var newCard = generateNewCard(cards_global_id.get(card_id));
+			if(newCard === null){ // Out of this card, capacity reached
+				updateShopText('Out of this cardtype!'); // TODO: Move this to shop messages instead
 			} else { 
-				getPlayer(turn).buyCard(card, card_id);			
+				getPlayer(turn).buyCard(newCard, card_id);			
 			}
-		});
+		}, 2);
 	});
 
+	initNewUIElement('div', new Map().set('id', 'shopPanel'), 'mainShop', 'shopPanel');
 	// Show / dont show shop
-	createButton(closeShop, 'mainShop', 'showShop', (function(){
+	createButton(closeShop, 'shopPanel', 'showShop', (function(){
 		var currentName = document.getElementById('showShop').innerHTML;
 		if(currentName === openShop){
 			changeText('showShop', closeShop);
@@ -129,15 +133,23 @@ function initShopHTML(){
 		}
 		modifyCSSID('toggle', 'shopCards', 'invis');
 	}).bind(this), 'normalButton');	
+	initNewUIElement('div', new Map().set('id', id_shop + 'texts'), 'shopPanel', 'shopText');
+	initNewUIElement('div', new Map().set('id', id_shop + id_text + '1'), id_shop + 'texts', ['big_text', 'bold', 'margin_left', 'strokeme'])
+		.innerHTML = 'Shop Message\n';
 }
 
 
 // Generate HTML for Card - More generic
-function generateCardHTML(tempCard, id, parentID, cssClass, callback = ''){
+function generateCardHTML(tempCard, id, parentID, cssClass, callback = '', orderNum = '4'){
 	var properties = new Map();
 	properties.set('id', id);
 	properties.set('src', getCorrectImage(tempCard));
+	// TODO: Choose id design, needs adjustment at other places
+	//var div = initNewUIElement('div', new Map().set('id', id + id_img), parentID, cssClass);
+	//var el = initNewUIElement('img', properties, id + id_img, cssClass);
+	//div.style.order = orderNum;
 	var el = initNewUIElement('img', properties, parentID, cssClass);
+	el.style.order = orderNum;
 	if(callback != ''){
 		el.addEventListener('click', function(res){
 			var card_HTMLid = res.srcElement.id;

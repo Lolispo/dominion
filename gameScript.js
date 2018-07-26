@@ -9,14 +9,10 @@ var gameEnded = false;
 
 /*
 	TODO
-	Sort
-		Use javascript style.order = value
-		Hand
-			On every draw card
-		Shop
-			On affordable cards check and type
-	Dont add action button in phase != 0
-		Multiple buttons for action shouldnt be added
+	Start to Center stuff in css
+	Redo images, div with images inside
+		Allows out of stock image with absolute position and z index
+		Figure out so cards cost, cap and value in middle can be configured in html
 	Out of stock cards should be filtered DIFFERENTLY, so they are always shown out of stock when cap = 0
 		Add to affordable card check
 
@@ -25,15 +21,15 @@ var gameEnded = false;
 		Add information to more than just console
 
 	Estetic
-		Add messages to update for shop? 
 		Make Player own areas more clearer
 			player color, different background color
 			border ? 
-		Active player always on top
-			Requires unique colors, 
-			color and name choice in main menu
+		color and name choice in main menu
 
 		CSS - Scalable card sizes
+	
+	CSS
+		Better name for text sizes
 
 	Later:
 		New Cards:
@@ -80,8 +76,13 @@ function startGame(){
 
 	// Choosing turn and start
 	turn = Math.floor(Math.random() * players.length);
-	initNewUIElement('div', new Map().set('id', 'turn'), 'info', ['bold', 'bigger_text']);
-	changeText('turn', 'Player ' + (turn+1) + ':s turn');
+	initNewUIElement('div', new Map().set('id', 'turn'), 'info', ['inline', 'bold', 'big_text', 'strokeme']);
+	changeText('turn', players[turn].name + ':s turn');
+	document.getElementById('turn').style.backgroundColor = getPlayerColor(turn);
+	for(var i = 0; i < players.length; i++){
+		document.getElementById(id_player + i).style.order = 2;
+	}
+	document.getElementById(id_player + turn).style.order = 1;
 	players[turn].startTurn();
 }
 
@@ -98,7 +99,12 @@ function changeTurn(){
 	} else {
 		turn++;
 	}
-	changeText('turn', 'Player ' + (turn+1) + ':s turn');
+	changeText('turn', players[turn].name + ':s turn');
+	document.getElementById('turn').style.backgroundColor = getPlayerColor(turn);
+	for(var i = 0; i < players.length; i++){
+		document.getElementById(id_player + i).style.order = 2;
+	}
+	document.getElementById(id_player + turn).style.order = 1;
 	players[turn].startTurn();
 }
 
@@ -114,6 +120,10 @@ function updateTextPrint(playerIndex, message, printEverywhere = true){
 		document.getElementById(id_text + playerIndex+'_2').innerHTML = document.getElementById(id_text + playerIndex+'_1').innerHTML;
 		document.getElementById(id_text + playerIndex+'_1').innerHTML = '> ' + message;		
 	}
+}
+
+function updateShopText(message){
+	document.getElementById(id_shop + id_text + '1').innerHTML = message;
 }
 
 function shuffle(array) {
@@ -176,6 +186,40 @@ function getCssClassCard(card){
 	}
 }
 
+// Returns orderNum for card, style.order
+function getCssOrderCard(card, phase){
+	switch(card.cardType){
+		case CardType.ACTION_CARD:
+			if(phase === 0 || phase === 2){
+				return 1;				
+			} else {
+				return 4;
+			}
+		case CardType.TREASURE_CARD:
+			return 2;
+		case CardType.VICTORY_CARD:
+			return 3;
+		default:
+			return 4;
+	}
+}
+
+// Returns background player color for HTML
+function getPlayerColor(index){
+	switch(index){
+		case 0: 
+			return 'aquamarine'
+		case 1:
+			return 'greenyellow'
+		case 2:
+			return 'lightblue'
+		case 3:
+			return 'lightpink';
+		default:
+			return 'lightgray'
+	}
+}
+
 // Called when points should be calculated to see who won
 function endGame(){
 	var pointsArray = [];
@@ -211,7 +255,7 @@ function endGame(){
 	console.log('All Results:');
 	for(var i = 0; i < players.length; i++){
 		var cards = allPlayerCards[i];
-		console.log('Player ' + (i + 1) + ': ' + pointsArray[i] + ' points');
+		console.log(players[i].name + ': ' + pointsArray[i] + ' points');
 		console.log(cards.length + ' cards total');
 		var map = new Map();
 		for(var j = 0; j < cards.length; j++){

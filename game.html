@@ -3,26 +3,26 @@
 <html>
 <head>
 	<title>Dominion Game</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
+    <link rel='stylesheet' type='text/css' href='style.css'>
     </head>
-<body onLoad="startGame();">
-<h2>Dominion</h2>
+<body onLoad='startGame();' background='res/forest.jpg'>
+<h1 class='strokeme biggest_text'>Dominion</h1>
 <div class='margin_bottom' id='info'></div>
 <div class='margin_bottom' id='shop'>
 </div>
-<div id='playArea'>
+<div id='playArea' class='playArea'>
 	
 </div>
 
-<button type="button" class='normalButton' onClick="backMainMenu();">Main Menu</button>
+<button type='button' class='normalButton' onClick='backMainMenu();'>Main Menu</button>
 
 <div>
-	<script src="gameScript.js"></script>
-	<script src="Player.js"></script>
-	<script src="Card.js"></script>
-	<script src="Deck.js"></script>
-	<script src="html_css_functions.js"></script>
+	<script src='gameScript.js'></script>
+	<script src='Player.js'></script>
+	<script src='Card.js'></script>
+	<script src='Deck.js'></script>
+	<script src='html_css_functions.js'></script>
 </div>
 </body>
 </html>
