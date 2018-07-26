@@ -1,11 +1,11 @@
 /* Author Petter Andersson */
 
-.bold {
-    font-weight: bold;
+.defaultTextSize {
+	font-size: xx-small;
 }
 
-.third-message {
-    color: grey;
+.cardBigSize {
+	font-size: xx-large;
 }
 
 .bigger_text {
@@ -20,19 +20,33 @@
 	font-size: 24pt;
 }
 
+.bold {
+    font-weight: bold;
+}
+
+.third-message {
+    color: grey;
+}
+
 .card {
-	line-height: 45px;
 	height: 228px;
     width: 128px;
+	/*line-height: 45px;
     text-align: center;	
-    margin: 2px;
+    margin: 2px;*/
 }
 
 .card_smaller {
 	height: 114px;
     width: 64px;
+	/*text-align: center;
+	margin: 1px;*/
+}
+
+.card_board {
+	height: 114px;
+    width: 64px;
 	text-align: center;
-	margin: 1px;
 }
 
 .card_discard {
@@ -41,11 +55,6 @@
 	text-align: center;
 }
 
-.card_board {
-	height: 114px;
-    width: 64px;
-	text-align: center;
-}
 
 .card_treasure {
 	/*background-image: url('res/Gold.png');*/
@@ -89,11 +98,47 @@
 }
 */
 
+.container {
+    position: relative;
+    text-align: center;
+    color: white;
+}
+
+/* Centered text */
+.centered {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Centered text */
+.centered-top {
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Bottom left text */
+.bottom-left {
+    position: absolute;
+    bottom: 8px;
+    left: 16px;
+}
+
+/* Bottom right text */
+.bottom-right {
+    position: absolute;
+    bottom: 8px;
+    right: 16px;
+}
+
 .inline {
 	display: inline;
 }
 
-.hand {
+.card_container {
 	display: inline-flex;
 	flex-flow: row wrap;
 	/*padding: 5px;*/
@@ -114,6 +159,14 @@
 
 .margin_left {
 	margin-left: 5px;
+}
+
+.margin_left_1 {
+	margin-left: 1px;
+}
+
+.margin_left_2 {
+	margin-left: 2px;
 }
 
 .strokeme {
@@ -186,7 +239,7 @@
     1px -1px 0 #000,
     -1px 1px 0 #000,
     1px 1px 0 #000; 
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(1, 1, 1, 0.7);
     font-weight: bold;
     font-size: 16pt;
 }
@@ -194,9 +247,10 @@
 .interactButton {
 	border: black;
     border-style: solid;
+    border-width: 4px;
 	height: 50px;
     width: 138px;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.75);
     font-weight: bold;
     color: white;
     text-shadow:
@@ -231,8 +285,22 @@
 	filter: grayscale(100%);
 }
 
+.position_relative {
+	position: relative;
+}
+
+.position_absolute {
+	position: absolute;
+}
+
+.noclick {
+	pointer-events: none
+}
+
+/*height: 114px;
+    width: 64px;*/
 .outOfStock {
-	opacity: 0.6;
+	z-index: 
 }
 
 .invis {

@@ -41,9 +41,9 @@ function Player(index){
 				deleteButton('cancelPurchase', id_interact + this.index);
 				var el = document.getElementById('shopCards');
 				for(var i = 0; i < el.childNodes.length; i++){
-					modifyCSSEl('remove', el.childNodes[i], 'selected');				
+					modifyCSSID('remove', getIDImgFromDiv(el.childNodes[i].id), 'selected');				
 				}
-				var cap = cards_capacity.get(card.name);
+				var cap = getCapacity(card);
 				var capString = ')';
 				if(cap < card_capacity_show){
 					capString = ', cap: ' + cap + ')';
@@ -59,14 +59,15 @@ function Player(index){
 					// Add new card to discard pile
 					this.cards.discard.push(card);
 
+					var cap = getCapacity(card);
+					updateCapacity(card.name, cap - 1); // Reduce capacity of this card type
+					changeText(id_card + cardId + id_bottomRight, cap - 1);
+
 					// Check if done with buy phase
 					this.cards.checkIfPhaseDone(false);
+					updateTextPrint(this.index, 'Added card to deck: ' + card.name + '! (Cap: ' + cap + ')'); 
+					updateShopText(this.name + ' bought a ' + card.name + ' card! (Cap: ' + cap + ')');
 					
-					updateTextPrint(this.index, 'Added card to deck: ' + card.name + '! (Cap: ' + cards_capacity.get(card.name) + ')'); 
-					updateShopText(this.name + ' bought a ' + card.name + ' card! (Cap: ' + cards_capacity.get(card.name) + ')');
-					
-					updateCapacity(card.name, cards_capacity.get(card.name) - 1); // Reduce capacity of this card type
-
 					modifyCSSID('remove', id_card + cardId, 'selected');
 					deleteButton('confirmPurchase', id_interact + this.index);
 					deleteButton('cancelPurchase', id_interact + this.index);
@@ -89,7 +90,7 @@ function Player(index){
 		//player.style.borderStyle = 'solid';
 		//player.style.borderColor = color;
 		//player.style.backgroundColor = color;
-		var name = initNewUIElement('div', new Map().set('id', id_name + this.index), id_player + this.index, ['inline', 'bold', 'biggest_text', 'strokeme', 'margin_left']);
+		var name = initNewUIElement('div', new Map().set('id', id_name_pre + this.index), id_player + this.index, ['inline', 'bold', 'biggest_text', 'strokeme', 'margin_left']);
 		name.innerHTML = this.name;
 		name.style.backgroundColor = color;
 
@@ -102,9 +103,9 @@ function Player(index){
 			.innerHTML = this.name + ' thr text\n';
 
 		initNewUIElement('div', new Map().set('id', id_info + this.index), id_player + this.index, 'info');
-		initNewUIElement('div', new Map().set('id', id_board + this.index), id_player + this.index);
+		initNewUIElement('div', new Map().set('id', id_board + this.index), id_player + this.index, ['card_container', 'margin_left']);
 		initNewUIElement('div', new Map().set('id', id_interact + this.index), id_player + this.index, 'interact');		
-		initNewUIElement('div', new Map().set('id', id_hand + this.index), id_player + this.index, ['hand', 'margin_left']);
+		initNewUIElement('div', new Map().set('id', id_hand + this.index), id_player + this.index, ['card_container', 'margin_left']);
 
 		initNewUIElement('div', new Map().set('id', id_info_stats + this.index), id_info + this.index, 'info_child');
 		initNewUIElement('div', new Map().set('id', id_money + this.index), id_info_stats + this.index, ['bold', 'info_stats', 'strokeme', 'bigger_text']);

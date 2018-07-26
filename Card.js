@@ -29,6 +29,19 @@ var CardType = {
 	}
 };
 
+
+function getCapacity(card){
+	return cards_capacity.get(card.name);
+}
+
+function getCapacityString(card){
+	var cap = getCapacity(card);
+	if(cap < card_capacity_show){
+		return cap;
+	}
+	return '';
+}
+
 function generateNewCard(card){
 	// Reduce capacity
 	if(cards_capacity.get(card.name) > 0){
@@ -67,6 +80,7 @@ function Card(name, cardType){
 	this.cardType = cardType;
 	this.value;
 	this.cost;
+	this.additionalDesc = '';
 	this.drawCards = 0;
 	this.moreActions = 0;
 	this.moreBuys = 0;
@@ -92,8 +106,29 @@ function Card(name, cardType){
 		if(cardType === CardType.TREASURE_CARD || cardType === CardType.VICTORY_CARD){
 			return this.value;
 		} else if(cardType === CardType.ACTION_CARD){
-			//console.log(this.drawCards, this.moreActions, this.moreBuys, this.moreGold);
-			// Check if exist
+			var s = '';
+			if(this.drawCards != 0){
+				s += '+' + this.drawCards + ' Cards\n';
+			}
+			if(this.moreActions != 0){
+				s += '+' + this.moreActions + ' Actions\n';
+			}
+			if(this.moreBuys != 0){
+				s += '+' + this.moreBuys + ' Buys\n';
+			}
+			if(this.moreGold != 0){
+				s += '+' + this.moreGold + ' Gold\n';
+			}
+			if(this.additionalDesc !== ''){
+				s += this.additionalDesc;
+			}
+			return s;
+		}
+	}
+
+	// New method, get actions, change getvalue to printable stuff / or other way around
+	this.getActions = function(){
+		if(cardType === CardType.ACTION_CARD){
 			return {drawCards: this.drawCards, moreActions: this.moreActions, moreBuys: this.moreBuys, moreGold: this.moreGold};
 		}
 	}
@@ -216,8 +251,8 @@ function initCards(){
 	cards_victory.set('Province', province);
 
 	cards_action = new Map();
-	cards_action.set('Market', market);
-	cards_action.set('Laboratory', laboratory);
 	cards_action.set('Village', village);
 	cards_action.set('Smithy', smithy);
+	cards_action.set('Laboratory', laboratory);
+	cards_action.set('Market', market);
 }

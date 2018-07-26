@@ -3,7 +3,8 @@
 
 // Declare variables like 'hand_' etc here to be used everywhere
 var id_player = 'player_';
-var id_name = 'name_';
+var id_name_pre = 'name_';
+var id_name_post = '_name';
 var id_text = 'text_';
 var id_info = 'info_';
 var id_info_cards = 'info_cards_';
@@ -19,6 +20,10 @@ var id_buysLeft = 'buysLeft_';
 var id_actionsLeft = 'actionsLeft_';
 
 var id_img = '_img';
+var id_div = '_div';
+var id_centeredText = '_centered'
+var id_bottomLeft = '_bottomLeft'
+var id_bottomRight = '_bottomRight'
 var id_shop = 'shop_';
 var id_card = 'card_';
 var id_phase0 = '> Go To Buy Phase';
@@ -109,9 +114,9 @@ function initShopHTML(){
 	var cards = cards_global;
 	initNewUIElement('div', new Map().set('id', 'mainShop'), 'shop');
 	initNewUIElement('div', new Map().set('id', 'shopTitle'), 'mainShop', ['big_text', 'margin_left', 'bold', 'strokeme']).innerHTML = 'Shop';
-	initNewUIElement('div', new Map().set('id', 'shopCards'), 'mainShop', 'hand');
+	initNewUIElement('div', new Map().set('id', 'shopCards'), 'mainShop', 'card_container');
 	cards.forEach(function(card, key){
-		generateCardHTML(card, id_card + card.id, 'shopCards', ['card_smaller', getCssClassCard(card)], function(card_HTMLid){
+		generateCardHTML(card, id_card + card.id, 'shopCards', 'card_smaller', [getCssClassCard(card)], function(card_HTMLid){
 			var card_id = getIDFromCard(card_HTMLid);
 			var newCard = generateNewCard(cards_global_id.get(card_id));
 			if(newCard === null){ // Out of this card, capacity reached
@@ -138,20 +143,51 @@ function initShopHTML(){
 		.innerHTML = 'Shop Message\n';
 }
 
+// Returns width size for cards size
+function getWidthCard(cardType){
+	switch(cardType){
+		case 'card_discard':
+			return '32px';
+		case 'card_smaller':
+		case 'card_board':
+			return '64px';
+		case 'card':
+		default:
+			return '128px';
+	}
+}
 
 // Generate HTML for Card - More generic
-function generateCardHTML(tempCard, id, parentID, cssClass, callback = '', orderNum = '4'){
+function generateCardHTML(tempCard, id, parentID, cardType, cssClass, callback = '', orderNum = '4'){
+	var div = initNewUIElement('div', new Map().set('id', id + id_div), parentID, ['container', 'margin_left_1', 'position_relative']);
+	div.style.order = orderNum;
+	var centeredTextCSSClass = getCssFontSize(tempCard); // Should take card or card_smaller into account (More)
+	
 	var properties = new Map();
 	properties.set('id', id);
-	properties.set('src', getCorrectImage(tempCard));
-	// TODO: Choose id design, needs adjustment at other places
-	//var div = initNewUIElement('div', new Map().set('id', id + id_img), parentID, cssClass);
-	//var el = initNewUIElement('img', properties, id + id_img, cssClass);
-	//div.style.order = orderNum;
-	var el = initNewUIElement('img', properties, parentID, cssClass);
-	el.style.order = orderNum;
+	properties.set('src', getCorrectImage(tempCard)); // Background image, todo update
+	var img = initNewUIElement('img', properties, id + id_div, cssClass);
+	modifyCSSEl('add', img, [cardType, 'position_relative', 'noclick']);
+	initNewUIElement('div', new Map().set('id', id + id_name_post), id + id_div, ['centered-top', 'noclick']).innerHTML = tempCard.name;
+	var centerWidth = getWidthCard(cardType);
+	var center = initNewUIElement('div', new Map().set('id', id + id_centeredText), id + id_div, ['centered', 'noclick', centeredTextCSSClass]);
+	center.style.width = centerWidth;
+	var stringActions = String(tempCard.getValue());
+	var splitted = stringActions.split('\n');
+	console.log(splitted.length);
+	if(splitted.length > 0){
+		for(var i = 0; i < splitted.length; i++){
+			var el = initNewUIElement('div', new Map().set('id', id + id_centeredText + '_' + i), id + id_centeredText, ['noclick', centeredTextCSSClass]);
+			el.innerHTML = splitted[i];
+		}		
+	} else {
+		center.innerHTML = stringActions;
+	}
+	initNewUIElement('div', new Map().set('id', id + id_bottomLeft), id + id_div, ['bottom-left', 'noclick']).innerHTML = tempCard.getCost();
+	var cap = getCapacityString(tempCard);
+	initNewUIElement('div', new Map().set('id', id + id_bottomRight), id + id_div, ['bottom-right', 'noclick']).innerHTML = cap;
 	if(callback != ''){
-		el.addEventListener('click', function(res){
+		div.addEventListener('click', function(res){
 			var card_HTMLid = res.srcElement.id;
 			callback(card_HTMLid);
 		});		

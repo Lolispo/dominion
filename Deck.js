@@ -20,23 +20,27 @@ function DeckOfCards(playerIndex){
 	this.checkShopCostInactive = function(){
 		var shop = document.getElementById('shopCards');
 		for(var i = 0; i < shop.childNodes.length; i++){
-			var card = cards_global_id.get(getIDFromCard(shop.childNodes[i].id));
+			var imgID = getIDImgFromDiv(shop.childNodes[i].id);
+			var card = cards_global_id.get(getIDFromCard(imgID));
 			var cardCost = card.cost;
-			if(cards_capacity.get(card.name) === 0){
+			if(getCapacity(card) === 0){
+				shop.childNodes[i].style.order = 3; // Order set
 				// Mark out of stock
-				// TODO: Change card section to div that features 2 images instead
-				var properties = new Map();
-				properties.set('id', shop.childNodes[i].id + '_out');
-				properties.set('src', getCorrectImage(card));
-				var el = initNewUIElement('img', properties, shop.childNodes[i].id, 'outOfStock');
-			}
-			//console.log('DEBUG ' + card.name + ', ' + (this.money >= cardCost) + ', ' + this.money + ', ' + cardCost);
-			if(this.money >= cardCost){
+				if(document.getElementById(imgID + '_out') === null){
+					var properties = new Map();
+					properties.set('id', imgID + '_out');
+					properties.set('src', 'res/outOfStockSmaller.png');
+					modifyCSSID('add', imgID, 'inactive');				
+					var el = initNewUIElement('img', properties, shop.childNodes[i].id, ['outOfStock', 'position_absolute']);
+					el.style.left = '0px';
+					el.style.top = '0px';
+				}
+			} else if(this.money >= cardCost){
 				shop.childNodes[i].style.order = 1; // Order set
-				modifyCSSEl('remove', shop.childNodes[i], 'inactive');
+				modifyCSSID('remove', imgID, 'inactive');
 			} else if(this.money < cardCost){ // Can't afford card
 				shop.childNodes[i].style.order = 2; // Order set
-				modifyCSSEl('add', shop.childNodes[i], 'inactive');
+				modifyCSSID('add', imgID, 'inactive');
 			}
 		}
 	}
@@ -138,8 +142,11 @@ function DeckOfCards(playerIndex){
 	this.displayEntireHand = function(){
 		var handElement = document.getElementById('hand_' + this.playerIndex);
 		for(var i = 0; i < handElement.childNodes.length; i++){
-			modifyCSSEl('remove', handElement.childNodes[i], ['card_smaller', 'inactive']);
-			modifyCSSEl('add', handElement.childNodes[i], 'card');
+			var id = handElement.childNodes[i].id;
+			modifyCSSID('remove', id, 'margin_left_1');
+			modifyCSSID('add', id, 'margin_left_2');
+			var imgID = getIDImgFromDiv(id);
+			this.displayCard(imgID);
 		}
 		this.updateHTMLElements();
 	}
@@ -162,6 +169,7 @@ function DeckOfCards(playerIndex){
 			if(nextStage || this.buysLeft === 0 || this.money === 0){
 				this.phase++;
 				if(!gameEnded){
+					// TODO: @Ending Only show stats != 0
 					updateTextPrint(this.playerIndex, 'Ending Turn (Money: ' + this.money + ', BuysLeft: ' + this.buysLeft + ', ActionsLeft: ' + this.actionsLeft + ')');
 					deleteButton('interactButton', id_interact + this.playerIndex);
 					this.discardHand();
@@ -193,7 +201,7 @@ function DeckOfCards(playerIndex){
 
 	// Generate HTML for Card in hand
 	this.generateHandCard = function(tempCard){
-		generateCardHTML(tempCard, id_card + tempCard.id, id_hand + this.playerIndex, ['card_smaller', 'inactive', getCssClassCard(tempCard)], function(card_HTMLid){
+		generateCardHTML(tempCard, id_card + tempCard.id, id_hand + this.playerIndex, 'card_smaller', ['inactive', getCssClassCard(tempCard)], function(card_HTMLid){
 			var tempEl = document.getElementById(card_HTMLid);
 			var playerID = getIDFromCard(tempEl.parentElement.id);
 			var card_id = getIDFromCard(card_HTMLid);
@@ -229,7 +237,7 @@ function DeckOfCards(playerIndex){
 
 	this.showTopOfDiscard = function(tempCard){
 		removeChildren(id_discard_top + this.playerIndex);
-		generateCardHTML(tempCard, id_discard_top + id_card + this.playerIndex, id_discard_top + this.playerIndex, ['card_discard', getCssClassCard(tempCard)]);
+		generateCardHTML(tempCard, id_discard_top + id_card + this.playerIndex, id_discard_top + this.playerIndex, 'card_discard', [getCssClassCard(tempCard)]);
 	}
 
 	// Used on end to get all cards for a player
@@ -264,7 +272,7 @@ function DeckOfCards(playerIndex){
 			this.actionsLeft--;
 			var card = this.hand.useCard(cardParam);
 
-			var actions = card.getValue();
+			var actions = card.getActions();
 			updateTextPrint(this.playerIndex, 'Using Card ' + card.name + '!');
 			if(actions.drawCards !== 0){
 				for(var i = 0; i < actions.drawCards; i++){
@@ -309,7 +317,7 @@ function DeckOfCards(playerIndex){
 
 			this.board.push(card);
 			
-			generateCardHTML(card, id_board + card.id, id_board + this.playerIndex, ['card_board', getCssClassCard(card)]);
+			generateCardHTML(card, id_board + card.id, id_board + this.playerIndex, 'card_board', [getCssClassCard(card)]);
 
 			// Remove Use action button
 			deleteButton('playActionID', id_interact + this.playerIndex);
@@ -373,7 +381,7 @@ function Hand(deckOfCards){
 				var tempCard = this.action.splice(i, 1)[0];
 				this.allCards.delete(card.id); 
 				var handEl = document.getElementById(id_hand + this.deckOfCards.playerIndex);
-				var el = document.getElementById(id_card + card.id);
+				var el = document.getElementById(id_card + card.id + id_div);
 				handEl.removeChild(el);
 				return tempCard;
 			}
