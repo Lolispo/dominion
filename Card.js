@@ -11,7 +11,7 @@ var cards_victory = new Map();
 var cards_action = new Map();
 */
 
-var card_capacity_action = 2; //10; // Testing
+var card_capacity_action = 10; //10; // Testing
 var card_capacity_victory = 12;
 var card_capacity_infinite = 200; // Not more should be required
 
