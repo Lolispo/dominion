@@ -9,6 +9,9 @@ var id_text = 'text_';
 var id_info = 'info_';
 var id_info_cards = 'info_cards_';
 var id_info_stats = 'info_stats_';
+var id_info_stats_main = 'info_stats_main_';
+var id_info_stats_cards = 'info_stats_cards_';
+var id_infoBoard = 'infoboard_';
 var id_board = 'board_';
 var id_interact = 'interact_';
 var id_hand = 'hand_';
@@ -28,6 +31,12 @@ var id_shop = 'shop_';
 var id_card = 'card_';
 var id_phase0 = '> Go To Buy Phase';
 var id_phase1 = '> End Turn';
+var id_startBuyString = 'Starting Buying Phase';
+var id_statusMessageString = 'Status Messages'
+
+var width_smallest = '32px';
+var width_middle = '64px';
+var width_biggest = '128px';
 
 var openShop = 'Open Shop';
 var closeShop = 'Close Shop';
@@ -116,7 +125,7 @@ function initShopHTML(){
 	initNewUIElement('div', new Map().set('id', 'shopTitle'), 'mainShop', ['big_text', 'margin_left', 'bold', 'strokeme']).innerHTML = 'Shop';
 	initNewUIElement('div', new Map().set('id', 'shopCards'), 'mainShop', 'card_container');
 	cards.forEach(function(card, key){
-		generateCardHTML(card, id_card + card.id, 'shopCards', 'card_smaller', [getCssClassCard(card)], function(card_HTMLid){
+		generateCardHTML(card, id_card + card.id, 'shopCards', true, 'card_smaller', [getCssClassCard(card)], function(card_HTMLid){
 			var card_id = getIDFromCard(card_HTMLid);
 			var newCard = generateNewCard(cards_global_id.get(card_id));
 			if(newCard === null){ // Out of this card, capacity reached
@@ -147,45 +156,51 @@ function initShopHTML(){
 function getWidthCard(cardType){
 	switch(cardType){
 		case 'card_discard':
-			return '32px';
+			return width_smallest;
 		case 'card_smaller':
 		case 'card_board':
-			return '64px';
-		case 'card':
 		default:
-			return '128px';
+			return width_middle;
 	}
 }
 
 // Generate HTML for Card - More generic
-function generateCardHTML(tempCard, id, parentID, cardType, cssClass, callback = '', orderNum = '4'){
+function generateCardHTML(tempCard, id, parentID, isShopCard, cardType, cssClass, callback = '', orderNum = '4'){
 	var div = initNewUIElement('div', new Map().set('id', id + id_div), parentID, ['container', 'margin_left_1', 'position_relative']);
 	div.style.order = orderNum;
-	var centeredTextCSSClass = getCssFontSize(tempCard); // Should take card or card_smaller into account (More)
-	
+	var centerWidth = getWidthCard(cardType);
+	var centeredTextCSSClass = getCssFontSize(tempCard.cardType, centerWidth, true); 
+	var normalTextCSSClass = getCssFontSize(tempCard.cardType, centerWidth, false);
+
+	// Img element
 	var properties = new Map();
 	properties.set('id', id);
-	properties.set('src', getCorrectImage(tempCard)); // Background image, todo update
+	properties.set('src', getCorrectImage(tempCard));
 	var img = initNewUIElement('img', properties, id + id_div, cssClass);
 	modifyCSSEl('add', img, [cardType, 'position_relative', 'noclick']);
-	initNewUIElement('div', new Map().set('id', id + id_name_post), id + id_div, ['centered-top', 'noclick']).innerHTML = tempCard.name;
-	var centerWidth = getWidthCard(cardType);
+	
+	// Name
+	initNewUIElement('div', new Map().set('id', id + id_name_post), id + id_div, [getCssAlign('centered_top', centerWidth), 'strokeme', 'noclick', normalTextCSSClass]).innerHTML = tempCard.name;
+	// Center text
 	var center = initNewUIElement('div', new Map().set('id', id + id_centeredText), id + id_div, ['centered', 'noclick', centeredTextCSSClass]);
 	center.style.width = centerWidth;
 	var stringActions = String(tempCard.getValue());
 	var splitted = stringActions.split('\n');
-	console.log(splitted.length);
 	if(splitted.length > 0){
 		for(var i = 0; i < splitted.length; i++){
-			var el = initNewUIElement('div', new Map().set('id', id + id_centeredText + '_' + i), id + id_centeredText, ['noclick', centeredTextCSSClass]);
+			var el = initNewUIElement('div', new Map().set('id', id + id_centeredText + '_' + i), id + id_centeredText, ['noclick', 'strokeme', centeredTextCSSClass]);
 			el.innerHTML = splitted[i];
 		}		
 	} else {
 		center.innerHTML = stringActions;
 	}
-	initNewUIElement('div', new Map().set('id', id + id_bottomLeft), id + id_div, ['bottom-left', 'noclick']).innerHTML = tempCard.getCost();
-	var cap = getCapacityString(tempCard);
-	initNewUIElement('div', new Map().set('id', id + id_bottomRight), id + id_div, ['bottom-right', 'noclick']).innerHTML = cap;
+	// Bottom texts
+	initNewUIElement('div', new Map().set('id', id + id_bottomLeft), id + id_div, [getCssAlign('bottom_left', centerWidth), 'noclick', 'strokeme', normalTextCSSClass]).innerHTML = tempCard.getCost();
+	if(isShopCard){ // Only shop cards should have capacity
+		var cap = getCapacityString(tempCard);
+		initNewUIElement('div', new Map().set('id', id + id_bottomRight), id + id_div, [getCssAlign('bottom_right', centerWidth), 'noclick', 'strokeme', normalTextCSSClass]).innerHTML = cap;
+	}
+	// Event
 	if(callback != ''){
 		div.addEventListener('click', function(res){
 			var card_HTMLid = res.srcElement.id;
@@ -193,11 +208,3 @@ function generateCardHTML(tempCard, id, parentID, cardType, cssClass, callback =
 		});		
 	}
 }
-
-// Gustav
-	/*var el = initNewUIElement('div', new Map().set('id', id_card + tempCard.id), id_hand + this.playerIndex, getCssClassCard(tempCard));
-	initNewUIElement('div', new Map().set('id', 'value_' + id_card + tempCard.id), id_card + tempCard.id, 'value').innerHTML = tempCard.getValue();
-	initNewUIElement('div', new Map().set('id', 'cost_' + id_card + tempCard.id), id_card + tempCard.id, 'cost').innerHTML = tempCard.getCost();
-	initNewUIElement('div', new Map().set('id', 'desc_' + id_card + tempCard.id), id_card + tempCard.id, 'description').innerHTML = 'Default String';
-	*/
-

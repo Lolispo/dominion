@@ -38,9 +38,10 @@ function changePage(){
 	sessionStorage.setItem('playersPlaying', playingPlayers);
 	sessionStorage.setItem('Cards', JSON.stringify(cards_global));
 	sessionStorage.setItem('Cards_id', JSON.stringify(cards_global_id));
-	sessionStorage.setItem('Cards_Treasure', JSON.stringify(cards_treasure));
+	/*sessionStorage.setItem('Cards_Treasure', JSON.stringify(cards_treasure));
 	sessionStorage.setItem('Cards_Action', JSON.stringify(cards_action));
 	sessionStorage.setItem('Cards_Victory', JSON.stringify(cards_victory));
+	*/
 	location.replace('game.html');
 }
 

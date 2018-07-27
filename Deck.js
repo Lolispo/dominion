@@ -93,6 +93,7 @@ function DeckOfCards(playerIndex){
 		this.phase = 0;
 		modifyCSSID('remove', id_board + this.playerIndex, 'invis');
 		modifyCSSID('remove', id_info_stats + this.playerIndex, 'invis');
+		modifyCSSID('remove', id_info_stats_main + this.playerIndex, 'invis');
 		modifyCSSID('remove', id_info_cards + this.playerIndex, 'invis');
 		modifyCSSID('remove', id_text + this.playerIndex, 'invis');
 		modifyCSSID('remove', id_actionsLeft + this.playerIndex, 'invis');
@@ -143,8 +144,6 @@ function DeckOfCards(playerIndex){
 		var handElement = document.getElementById('hand_' + this.playerIndex);
 		for(var i = 0; i < handElement.childNodes.length; i++){
 			var id = handElement.childNodes[i].id;
-			modifyCSSID('remove', id, 'margin_left_1');
-			modifyCSSID('add', id, 'margin_left_2');
 			var imgID = getIDImgFromDiv(id);
 			this.displayCard(imgID);
 		}
@@ -154,6 +153,22 @@ function DeckOfCards(playerIndex){
 	this.displayCard = function(id){
 		modifyCSSID('remove', id, ['card_smaller', 'inactive']);
 		modifyCSSID('add', id, 'card');
+		modifyCSSID('remove', id, 'margin_left_1');
+		modifyCSSID('add', id, 'margin_left_2');
+		modifyCSSID('remove', id + id_bottomLeft, 'size2_text_medium');
+		modifyCSSID('add', id + id_bottomLeft, 'size3_text_medium');
+		modifyCSSID('remove', id + id_bottomLeft, 'size2_bottom_left');
+		modifyCSSID('add', id + id_bottomLeft, 'size3_bottom_left');
+		modifyCSSID('remove', id + id_name_post, 'size2_text_medium');
+		modifyCSSID('add', id + id_name_post, 'size3_text_medium');
+		modifyCSSID('remove', id + id_name_post, 'size2_centered_top');
+		modifyCSSID('add', id + id_name_post, 'size3_centered_top');
+		var newSize = getCssFontSize(this.hand.getCard(getIDFromCard(id)).cardType, width_biggest, true);
+		var centerTexts = document.getElementById(id + id_centeredText);
+		centerTexts.style.width = width_biggest;
+		for(var j = 0; j < centerTexts.childNodes.length; j++){
+			modifyCSSEl('add', centerTexts.childNodes[j], newSize);			
+		}		
 	}
 
 	this.checkIfPhaseDone = function(nextStage){ // Boolean to see if next stage
@@ -162,7 +177,7 @@ function DeckOfCards(playerIndex){
 				this.phase++;
 				this.updateHandCardOrder();
 				modifyCSSID('add', id_actionsLeft + this.playerIndex, 'invis')
-				updateTextPrint(this.playerIndex, 'Starting Buying Phase');
+				updateTextPrint(this.playerIndex, id_startBuyString);
 				changeText('skipButton', id_phase1);
 			}
 		} else if(this.phase === 1){
@@ -201,7 +216,7 @@ function DeckOfCards(playerIndex){
 
 	// Generate HTML for Card in hand
 	this.generateHandCard = function(tempCard){
-		generateCardHTML(tempCard, id_card + tempCard.id, id_hand + this.playerIndex, 'card_smaller', ['inactive', getCssClassCard(tempCard)], function(card_HTMLid){
+		generateCardHTML(tempCard, id_card + tempCard.id, id_hand + this.playerIndex, false, 'card_smaller', ['inactive', getCssClassCard(tempCard)], function(card_HTMLid){
 			var tempEl = document.getElementById(card_HTMLid);
 			var playerID = getIDFromCard(tempEl.parentElement.id);
 			var card_id = getIDFromCard(card_HTMLid);
@@ -237,7 +252,7 @@ function DeckOfCards(playerIndex){
 
 	this.showTopOfDiscard = function(tempCard){
 		removeChildren(id_discard_top + this.playerIndex);
-		generateCardHTML(tempCard, id_discard_top + id_card + this.playerIndex, id_discard_top + this.playerIndex, 'card_discard', [getCssClassCard(tempCard)]);
+		generateCardHTML(tempCard, id_discard_top + id_card + this.playerIndex, id_discard_top + this.playerIndex, false, 'card_discard', [getCssClassCard(tempCard)]);
 	}
 
 	// Used on end to get all cards for a player
@@ -258,7 +273,7 @@ function DeckOfCards(playerIndex){
 		this.board = [];
 
 		modifyCSSID('add', id_board + this.playerIndex, 'invis');
-		modifyCSSID('add', id_info_stats + this.playerIndex, 'invis');
+		modifyCSSID('add', id_info_stats_main + this.playerIndex, 'invis');
 		modifyCSSID('add', id_text + this.playerIndex, 'invis');
 		modifyCSSID('add', id_discard_top + id_card + this.playerIndex, 'inactive');
 		removeChildren(id_board + this.playerIndex);
@@ -317,7 +332,7 @@ function DeckOfCards(playerIndex){
 
 			this.board.push(card);
 			
-			generateCardHTML(card, id_board + card.id, id_board + this.playerIndex, 'card_board', [getCssClassCard(card)]);
+			generateCardHTML(card, id_board + card.id, id_board + this.playerIndex, false, 'card_smaller', [getCssClassCard(card)]);
 
 			// Remove Use action button
 			deleteButton('playActionID', id_interact + this.playerIndex);

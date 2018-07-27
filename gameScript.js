@@ -11,36 +11,26 @@ var gameEnded = false;
 	TODO
 	Start to Center stuff in css
 	
-	Sort cards after cost in Cards.js
-
 	Better background color to buttons so they are more easily spottable
-	Gör action value rader en i taget till HTML, olika element
 	Decks @Ending Only show stats != 0
-	sizes cap showing < 200
 	updateShopText on end doesn't work
-
-	End
-		Allow ties
-		Add information to more than just console
-			Hide shop
-			Shop Message contain winner message
-			Add information regarding the players cards to their region
+		test end, added print
+		Allow ties, test
 
 	Estetic
 		Make Player own areas more clearer
-			player color, different background color
-			border ? 
-		color and name choice in main menu
+	Choose color and name
 
-		CSS - Scalable card sizes
 	
 	CSS
+		Scalable card sizes
+			Use 3 existing card sizes, when card amount in hand goes over a certain limit
 		Better name for text sizes
+			Remove bigger_text etc
 		More consistent names in general
 
 	Later:
 		New Cards:
-			Festival, +2 act, 1 buy, +2 gold
 			WoodCutter, +1 buy, +2 gold
 			Curse, -1 points
 				Witch ez
@@ -130,6 +120,7 @@ function updateTextPrint(playerIndex, message, printEverywhere = true){
 }
 
 function updateShopText(message){
+	console.log('DEBUG END', message)
 	document.getElementById(id_shop + id_text + '1').innerHTML = message;
 }
 
@@ -203,15 +194,55 @@ function getCssClassCard(card){
 	}
 }
 
-// Returns Font size for center text
-function getCssFontSize(card){
-	switch(card.cardType){
-		case CardType.ACTION_CARD:
-			return 'defaultTextSize';
-		case CardType.VICTORY_CARD:
-		case CardType.TREASURE_CARD:
+function getCssAlign(string, width){
+	switch(width){
+		case width_smallest:
+			return 'size1_' + string;
+		case width_biggest:
+			return 'size3_' + string;
+		case width_middle:
 		default:
-			return 'cardBigSize';
+			return 'size2_' + string;			
+	}
+}
+
+// Returns Font size for center text
+function getCssFontSize(cardType, width, isCenter){
+	if(isCenter){
+		switch(cardType){
+			case CardType.ACTION_CARD:
+				switch(width){
+					case width_smallest:
+						return 'size1_text_small';
+					case width_biggest:
+						return 'size3_text_small';
+					case width_middle:
+					default:
+						return 'size2_text_small';			
+				}
+			case CardType.VICTORY_CARD:
+			case CardType.TREASURE_CARD:
+			default:
+				switch(width){
+					case width_smallest:
+						return 'size1_text_big';
+					case width_biggest:
+						return 'size3_text_big';
+					case width_middle:
+					default:
+						return 'size2_text_big';			
+				}
+		}
+	} else{
+		switch(width){
+			case width_smallest:
+				return 'size1_text_medium';
+			case width_biggest:
+				return 'size3_text_medium';
+			case width_middle:
+			default:
+				return 'size2_text_medium';			
+		}
 	}
 }
 
@@ -251,11 +282,13 @@ function getPlayerColor(index){
 
 // Called when points should be calculated to see who won
 function endGame(){
+	modifyCSSID('add', 'shopCards', 'invis')
 	var pointsArray = [];
 	var highestPointPlayer = [];
 	var highestPoints = -100;
 	var allPlayerCards = []; 
 	for(var i = 0; i < players.length; i++){
+		modifyCSSID('add', id_info_cards + i, 'invis');
 		var cards = players[i].cards.endGetAllCards();
 		allPlayerCards[i] = cards;
 		pointsArray[i] = 0;
@@ -271,8 +304,11 @@ function endGame(){
 				}
 			}
 		}
-		if(pointsArray[i] >= highestPoints){
+		if(pointsArray[i] === highestPoints){
+			highestPointPlayer.push(i);
+		} else if(pointsArray[i] > highestPoints){
 			highestPoints = pointsArray[i];
+			highestPointPlayer = [];
 			highestPointPlayer.push(i);
 		}
 	}
@@ -281,10 +317,10 @@ function endGame(){
 	// Can add functionality to check for total cost of hand, in treasure, victory & actions cards etc
 	// TODO Loop over highestPointPlayer names
 	var s = '';
-	if(highestPointPlayer.length > 0){
+	if(highestPointPlayer.length > 1){
 		s += 'The winners are ';
 	} else{
-		s += 'The winner is';
+		s += 'The winner is ';
 	}
 	for(var i = 0; i < highestPointPlayer.length; i++){
 		if(i !== 0){
@@ -292,14 +328,21 @@ function endGame(){
 		}
 		s += players[highestPointPlayer[i]].name + ' ';
 	}
-	s += ' with ' + highestPoints + ' points!';
+	s += 'with ' + highestPoints + ' points!';
 	console.log(s);
-	updateShopText(s);
+	updateShopText(String(s));
 	console.log('All Results:');
 	// TODO Add data to player areas
 	// Current Data: info_cards, info_discard
 	for(var i = 0; i < players.length; i++){
+		removeChildren(id_info_stats + i);
+		var el = document.getElementById(id_info_stats + i);
+		modifyCSSEl('add', el, 'flex-container')
 		var cards = allPlayerCards[i];
+		var newEl = initNewUIElement('div', new Map(), id_info_stats + i, ['noclick', 'strokeme', 'big_text']);
+		newEl.innerHTML = players[i].name + ': ' + pointsArray[i] + ' points';
+		var newEl2 = initNewUIElement('div', new Map(), id_info_stats + i, ['noclick', 'strokeme', 'big_text']);
+		newEl2.innerHTML = cards.length + ' cards total';
 		console.log(players[i].name + ': ' + pointsArray[i] + ' points');
 		console.log(cards.length + ' cards total');
 		var map = new Map();
@@ -311,6 +354,8 @@ function endGame(){
 			}
 		}
 		map.forEach(function(value, key){ // Unknown order of these cards
+			var tempEl = initNewUIElement('div', new Map(), id_info_stats + i, ['noclick', 'strokeme', 'big_text']);
+			tempEl.innerHTML = value + ' ' + key;
 			console.log(value + ' ' + key);
 		});
 		console.log('--------------------------');

@@ -1,11 +1,41 @@
 /* Author Petter Andersson */
 
-.defaultTextSize {
-	font-size: xx-small;
+/* Font Sizes */
+
+.size1_text_small {
+	font-size: 3pt;
 }
 
-.cardBigSize {
-	font-size: xx-large;
+.size1_text_medium {
+	font-size: 6pt;
+}
+
+.size1_text_big {
+	font-size: 10pt;
+}
+
+.size2_text_small {
+	font-size: 7pt;
+}
+
+.size2_text_medium {
+	font-size: 11pt;
+}
+
+.size2_text_big {
+	font-size: 20pt;
+}
+
+.size3_text_small {
+	font-size: 14pt;
+}
+
+.size3_text_medium {
+	font-size: 20pt;
+}
+
+.size3_text_big {
+	font-size: 40pt;
 }
 
 .bigger_text {
@@ -20,6 +50,8 @@
 	font-size: 24pt;
 }
 
+/* Text Change */
+
 .bold {
     font-weight: bold;
 }
@@ -28,81 +60,111 @@
     color: grey;
 }
 
+.strokeme {
+    color: white;
+    text-shadow:
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;  
+}
+
+/* HTML Element Sizes, cards */
+
 .card {
 	height: 228px;
     width: 128px;
-	/*line-height: 45px;
-    text-align: center;	
-    margin: 2px;*/
 }
 
 .card_smaller {
 	height: 114px;
     width: 64px;
-	/*text-align: center;
-	margin: 1px;*/
-}
-
-.card_board {
-	height: 114px;
-    width: 64px;
-	text-align: center;
 }
 
 .card_discard {
 	height: 57px;
     width: 32px;
-	text-align: center;
 }
 
+/* Card borders */
 
 .card_treasure {
-	/*background-image: url('res/Gold.png');*/
 	border: chocolate;
     border-style: solid;
 }
 
 .card_victory {
-	/*background-image: url('res/Estate.png');*/
 	border: green;
     border-style: solid;
 }
 
 .card_action {
-	/*background-image: url('res/Laboratory.png');*/
 	border: blue;
     border-style: solid;
 }
 
-.card_treasure .value {
-	position: relative;
-	top: 40%;
-	width: 100%;
-	text-align: center;
-
-	color: black;
-	font-size: 5px;
-
-}
-
-.card_treasure .cost {
-
-}
-/*
-.card_treasure::before {
-	content: '';
-	display: block;
-	width: 100%;
-	height: 100%;
-	background: pink;
-}
-*/
+/* Containers */
 
 .container {
     position: relative;
     text-align: center;
     color: white;
 }
+
+.card_container {
+	display: inline-flex;
+	flex-flow: row wrap;
+}
+
+.flex-container {
+	display: flex;
+	flex-flow: column wrap;
+	justify-content: flex-start; 
+	/*
+	justify-content: center;
+	align-items: center;
+	*/
+}
+
+/* Specific containers - make these use generic instead TODO*/
+
+.interact {
+	display: flex;
+	padding-right: 30px;
+}
+
+.info {
+	display: flex;
+	padding: 5px;
+}
+
+.info_child { /* TODO RENAME*/
+	margin: 5px;
+}
+
+.info_stats_main {
+	border-style: solid;
+	border-color: black;
+	border-width: 1px;
+}
+
+.border_bottom {
+	border-bottom-style: solid;
+	border-bottom-color: white;
+	border-bottom-width: 1px;
+}
+
+.info_stats {
+	background-color: darkslateblue;
+}
+
+.shopPanel {
+	display: flex;
+	padding: 5px;
+	margin-right: 5px;
+}
+
+/* Scaleable positions*/
 
 /* Centered text */
 .centered {
@@ -112,42 +174,67 @@
     transform: translate(-50%, -50%);
 }
 
-/* Centered text */
-.centered-top {
+/* Centered text top*/
+.size1_centered_top {
     position: absolute;
     top: 8px;
     left: 50%;
     transform: translate(-50%, -50%);
 }
 
+.size2_centered_top {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.size3_centered_top {
+    position: absolute;
+    top: 16px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
 /* Bottom left text */
-.bottom-left {
+.size1_bottom_left {
     position: absolute;
     bottom: 8px;
-    left: 16px;
+    left: 4px;
+}
+
+.size2_bottom_left {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+}
+
+.size3_bottom_left {
+    position: absolute;
+    bottom: 8px;
+    left: 12px;
 }
 
 /* Bottom right text */
-.bottom-right {
+.size1_bottom_right {
+    position: absolute;
+    bottom: 8px;
+    right: 4px;
+}
+
+.size2_bottom_right {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+}
+
+.size3_bottom_right {
     position: absolute;
     bottom: 8px;
     right: 16px;
 }
 
-.inline {
-	display: inline;
-}
-
-.card_container {
-	display: inline-flex;
-	flex-flow: row wrap;
-	/*padding: 5px;*/
-}
-
-.interact {
-	display: flex;
-	padding-right: 30px;
-}
+/* Margins */
 
 .margin_bottom {
 	margin-bottom: 30px;
@@ -169,48 +256,15 @@
 	margin-left: 2px;
 }
 
-.strokeme {
-    color: white;
-    text-shadow:
-    -1px -1px 0 #000,
-    1px -1px 0 #000,
-    -1px 1px 0 #000,
-    1px 1px 0 #000;  
+.margin_left_30 {
+	margin-left: 30px;
 }
 
-.strokeme_white {
-    color: black;
-    text-shadow:
-    -1px -1px 0 #FFF,
-    1px -1px 0 #FFF,
-    -1px 1px 0 #FFF,
-    1px 1px 0 #FFF;  
+.margin_top_2 {
+	margin-top: 2px;
 }
 
-.info {
-	display: flex;
-	padding: 5px;
-}
-
-.info_child {
-	margin: 5px;
-}
-
-.info_stats {
-	background-color: darkslateblue;
-	border-style: ;
-	border-color: black;
-}
-
-.shopPanel {
-	display: flex;
-	padding: 5px;
-	margin-right: 5px;
-}
-
-.shopText { /* Make it better aligned to button*/
-	height: 25px;
-}
+/* Buttons */
 
 .normalButton {
 	border: black;
@@ -261,28 +315,10 @@
 
 }
 
-.flex-container {
-	display: flex;
-	flex-flow: column wrap;
-	justify-content: flex-start; 
-	/*
-	justify-content: center;
-	align-items: center;
-	*/
-}
+/* Reusable 1-liners */
 
-.playArea {
-	display: flex;
-	flex-direction: column;
-}
-
-.selected {
-	border: yellow;
-    border-style: solid;
-}
-
-.inactive {
-	filter: grayscale(100%);
+.inline {
+	display: inline;
 }
 
 .position_relative {
@@ -293,17 +329,30 @@
 	position: absolute;
 }
 
-.noclick {
-	pointer-events: none
+/* Specific Classes */
+
+.shopText { /* Make it better aligned to button*/
+	height: 25px;
 }
 
-/*height: 114px;
-    width: 64px;*/
-.outOfStock {
-	z-index: 
+.selected {
+	border: yellow;
+    border-style: solid;
 }
 
 .invis {
 	display: none;
-	/*visibility:hidden*/
 }
+
+.inactive {
+	filter: grayscale(100%);
+}
+
+.noclick {
+	pointer-events: none
+}
+
+.outOfStock {
+	/* TODO: Something to align image;*/
+}
+

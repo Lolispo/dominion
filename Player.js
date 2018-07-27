@@ -61,7 +61,7 @@ function Player(index){
 
 					var cap = getCapacity(card);
 					updateCapacity(card.name, cap - 1); // Reduce capacity of this card type
-					changeText(id_card + cardId + id_bottomRight, cap - 1);
+					changeText(id_card + cardId + id_bottomRight, getCapacityString(card));
 
 					// Check if done with buy phase
 					this.cards.checkIfPhaseDone(false);
@@ -94,29 +94,35 @@ function Player(index){
 		name.innerHTML = this.name;
 		name.style.backgroundColor = color;
 
-		initNewUIElement('div', new Map().set('id', id_text + this.index), id_player + this.index);
-		initNewUIElement('div', new Map().set('id', id_text + this.index + '_1'), id_text + this.index, ['bold', 'strokeme', 'margin_left'])
-			.innerHTML = this.name + ' fst text\n';
-		initNewUIElement('div', new Map().set('id', id_text + this.index + '_2'), id_text + this.index, ['strokeme', 'margin_left'])
-			.innerHTML = this.name + ' snd text\n';
-		initNewUIElement('div', new Map().set('id', id_text + this.index + '_3'), id_text + this.index, ['third-message', 'strokeme', 'margin_left'])
-			.innerHTML = this.name + ' thr text\n';
 
-		initNewUIElement('div', new Map().set('id', id_info + this.index), id_player + this.index, 'info');
-		initNewUIElement('div', new Map().set('id', id_board + this.index), id_player + this.index, ['card_container', 'margin_left']);
+		initNewUIElement('div', new Map().set('id', id_infoBoard + this.index), id_player + this.index, ['flex-container', 'margin_top_2']);
+		initNewUIElement('div', new Map().set('id', id_info + this.index), id_infoBoard + this.index, 'card_container');
+		initNewUIElement('div', new Map().set('id', id_board + this.index), id_infoBoard + this.index, ['card_container', 'margin_left']);
 		initNewUIElement('div', new Map().set('id', id_interact + this.index), id_player + this.index, 'interact');		
 		initNewUIElement('div', new Map().set('id', id_hand + this.index), id_player + this.index, ['card_container', 'margin_left']);
 
-		initNewUIElement('div', new Map().set('id', id_info_stats + this.index), id_info + this.index, 'info_child');
-		initNewUIElement('div', new Map().set('id', id_money + this.index), id_info_stats + this.index, ['bold', 'info_stats', 'strokeme', 'bigger_text']);
-		initNewUIElement('div', new Map().set('id', id_buysLeft + this.index), id_info_stats + this.index, ['bold', 'info_stats', 'strokeme', 'bigger_text']);
-		initNewUIElement('div', new Map().set('id', id_actionsLeft + this.index), id_info_stats + this.index, ['bold', 'info_stats', 'strokeme', 'bigger_text']);
+		initNewUIElement('div', new Map().set('id', id_info_stats + this.index), id_info + this.index, ['info_child', 'card_container']);
+		initNewUIElement('div', new Map().set('id', id_info_stats_main + this.index), id_info_stats + this.index);
+		initNewUIElement('div', new Map().set('id', id_money + this.index), id_info_stats_main + this.index, ['bold', 'info_stats_main', 'info_stats', 'strokeme', 'bigger_text']);
+		initNewUIElement('div', new Map().set('id', id_buysLeft + this.index), id_info_stats_main + this.index, ['bold', 'info_stats_main', 'info_stats', 'strokeme', 'bigger_text']);
+		initNewUIElement('div', new Map().set('id', id_actionsLeft + this.index), id_info_stats_main + this.index, ['bold', 'info_stats_main', 'info_stats', 'strokeme', 'bigger_text']);
 
-		initNewUIElement('div', new Map().set('id', id_info_cards + this.index), id_info + this.index, 'info_child');
-		initNewUIElement('div', new Map().set('id', id_deck + this.index), id_info_cards + this.index, ['bold', 'strokeme', 'bigger_text']);
-		initNewUIElement('div', new Map().set('id', id_discard + this.index), id_info_cards + this.index, ['bold', 'strokeme', 'bigger_text']);
+		initNewUIElement('div', new Map().set('id', id_info_stats_cards + this.index), id_info_stats + this.index, ['margin_left', 'margin_top_2']);	
+		initNewUIElement('div', new Map().set('id', id_deck + this.index), id_info_stats_cards + this.index, ['bold', 'strokeme', 'bigger_text']);
+		initNewUIElement('div', new Map().set('id', id_discard + this.index), id_info_stats_cards + this.index, ['bold', 'strokeme', 'bigger_text']);
 
-		initNewUIElement('div', new Map().set('id', id_discard_top + this.index), id_info + this.index);
+		initNewUIElement('div', new Map().set('id', id_text + this.index), id_info + this.index);
+		initNewUIElement('div', new Map().set('id', id_text + this.index + '_0'), id_text + this.index, ['bold', 'strokeme', 'margin_left', 'border_bottom'])
+			.innerHTML = id_statusMessageString;
+		initNewUIElement('div', new Map().set('id', id_text + this.index + '_1'), id_text + this.index, ['bold', 'strokeme', 'margin_left'])
+			.innerHTML = '> ' + this.name + ' fst text';
+		initNewUIElement('div', new Map().set('id', id_text + this.index + '_2'), id_text + this.index, ['strokeme', 'margin_left'])
+			.innerHTML = '> ' + this.name + ' snd text';
+		initNewUIElement('div', new Map().set('id', id_text + this.index + '_3'), id_text + this.index, ['third-message', 'strokeme', 'margin_left'])
+			.innerHTML = '> ' + this.name + ' thr text';
+			
+		initNewUIElement('div', new Map().set('id', id_info_cards + this.index), id_info + this.index, 'margin_left_30');
+		initNewUIElement('div', new Map().set('id', id_discard_top + this.index), id_info_cards + this.index);
 
 		// Init Deck of Cards
 		this.cards = new DeckOfCards(index);

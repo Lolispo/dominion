@@ -5,9 +5,11 @@ var cards_global = new Map();
 var cards_global_id = new Map();
 var cards_capacity = new Map();
 
+/*
 var cards_treasure = new Map();
 var cards_victory = new Map();
 var cards_action = new Map();
+*/
 
 var card_capacity_action = 2; //10; // Testing
 var card_capacity_victory = 12;
@@ -176,16 +178,6 @@ function initCards(){
 	// Garden
 
 	// Action Cards
-	var market = new Card('Market', CardType.ACTION_CARD);
-	market.setCost(5);
-	market.addDrawCards(1);
-	market.addAction(1);
-	market.addBuys(1);
-	market.addGold(1);
-	var laboratory = new Card('Laboratory', CardType.ACTION_CARD);
-	laboratory.setCost(5);
-	laboratory.addDrawCards(2);
-	laboratory.addAction(1);
 	var village = new Card('Village', CardType.ACTION_CARD);
 	village.setCost(3);
 	village.addDrawCards(1);
@@ -193,21 +185,37 @@ function initCards(){
 	var smithy = new Card('Smithy', CardType.ACTION_CARD);
 	smithy.setCost(4);
 	smithy.addDrawCards(3);
+	var festival = new Card('Festival', CardType.ACTION_CARD);
+	festival.setCost(5);
+	festival.addAction(2);
+	festival.addBuys(1);
+	festival.addGold(2);
+	var laboratory = new Card('Laboratory', CardType.ACTION_CARD);
+	laboratory.setCost(5);
+	laboratory.addDrawCards(2);
+	laboratory.addAction(1);
+	var market = new Card('Market', CardType.ACTION_CARD);
+	market.setCost(5);
+	market.addDrawCards(1);
+	market.addAction(1);
+	market.addBuys(1);
+	market.addGold(1);
 	
 	// Add Cards
 	cards_global = new Map();
-	cards_global.set('Copper', copper);
-	cards_global.set('Silver', silver);
-	cards_global.set('Gold', gold);
+	cards_global.set(copper.name, copper);
+	cards_global.set(silver.name, silver);
+	cards_global.set(gold.name, gold);
 
-	cards_global.set('Estate', estate);
-	cards_global.set('Duchey', duchey);
-	cards_global.set('Province', province);
+	cards_global.set(estate.name, estate);
+	cards_global.set(duchey.name, duchey);
+	cards_global.set(province.name, province);
 
-	cards_global.set('Market', market);
-	cards_global.set('Laboratory', laboratory);
-	cards_global.set('Village', village);
-	cards_global.set('Smithy', smithy);
+	cards_global.set(village.name, village);
+	cards_global.set(smithy.name, smithy);
+	cards_global.set(festival.name, festival);
+	cards_global.set(laboratory.name, laboratory);
+	cards_global.set(market.name, market);
 
 
 	cards_global_id = new Map();
@@ -219,27 +227,29 @@ function initCards(){
 	cards_global_id.set(duchey.id, duchey);
 	cards_global_id.set(province.id, province);
 
-	cards_global_id.set(market.id, market);
-	cards_global_id.set(laboratory.id, laboratory);
 	cards_global_id.set(village.id, village);
 	cards_global_id.set(smithy.id, smithy);
+	cards_global_id.set(festival.id, festival);
+	cards_global_id.set(laboratory.id, laboratory);
+	cards_global_id.set(market.id, market);
 
 	
 	cards_capacity = new Map();
-	cards_capacity.set('Copper', card_capacity_infinite);
-	cards_capacity.set('Silver', card_capacity_infinite);
-	cards_capacity.set('Gold', card_capacity_infinite);
+	cards_capacity.set(copper.name, card_capacity_infinite);
+	cards_capacity.set(silver.name, card_capacity_infinite);
+	cards_capacity.set(gold.name, card_capacity_infinite);
 
-	cards_capacity.set('Estate', card_capacity_infinite);
-	cards_capacity.set('Duchey', card_capacity_victory);
-	cards_capacity.set('Province', card_capacity_victory);
+	cards_capacity.set(estate.name, card_capacity_infinite);
+	cards_capacity.set(duchey.name, card_capacity_victory);
+	cards_capacity.set(province.name, card_capacity_victory);
 
-	cards_capacity.set('Market', card_capacity_action);
-	cards_capacity.set('Laboratory', card_capacity_action);
-	cards_capacity.set('Village', card_capacity_action);
-	cards_capacity.set('Smithy', card_capacity_action);
+	cards_capacity.set(village.name, card_capacity_action);
+	cards_capacity.set(smithy.name, card_capacity_action);
+	cards_capacity.set(festival.name, card_capacity_action);
+	cards_capacity.set(laboratory.name, card_capacity_action);
+	cards_capacity.set(market.name, card_capacity_action);
 
-	
+	/*
 	cards_treasure = new Map();
 	cards_treasure.set('Copper', copper);
 	cards_treasure.set('Silver', silver);
@@ -255,4 +265,5 @@ function initCards(){
 	cards_action.set('Smithy', smithy);
 	cards_action.set('Laboratory', laboratory);
 	cards_action.set('Market', market);
+	*/
 }
