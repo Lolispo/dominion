@@ -53,7 +53,7 @@ function Player(index){
 				modifyCSSID('add', id_card + cardId, 'selected');
 				createButton('Confirm Purchase:\n' + card.name, id_interact + this.index, 'confirmPurchase', (function(){
 					// Update money
-					this.cards.updateMoney(this.cards.money - card.cost);
+					this.cards.updateMoney(this.cards.money - card.cost, true);
 					this.cards.updateBuysLeft(this.cards.buysLeft - 1);
 		
 					// Add new card to discard pile
@@ -112,13 +112,13 @@ function Player(index){
 		initNewUIElement('div', new Map().set('id', id_discard + this.index), id_info_stats_cards + this.index, ['bold', 'strokeme', 'bigger_text']);
 
 		initNewUIElement('div', new Map().set('id', id_text + this.index), id_info + this.index);
-		initNewUIElement('div', new Map().set('id', id_text + this.index + '_0'), id_text + this.index, ['bold', 'strokeme', 'margin_left', 'border_bottom'])
+		initNewUIElement('div', new Map().set('id', id_text + this.index + id_0), id_text + this.index, ['bold', 'strokeme', 'margin_left', 'border_bottom'])
 			.innerHTML = id_statusMessageString;
-		initNewUIElement('div', new Map().set('id', id_text + this.index + '_1'), id_text + this.index, ['bold', 'strokeme', 'margin_left'])
+		initNewUIElement('div', new Map().set('id', id_text + this.index + id_1), id_text + this.index, ['bold', 'strokeme', 'margin_left'])
 			.innerHTML = '> ' + this.name + ' fst text';
-		initNewUIElement('div', new Map().set('id', id_text + this.index + '_2'), id_text + this.index, ['strokeme', 'margin_left'])
+		initNewUIElement('div', new Map().set('id', id_text + this.index + id_2), id_text + this.index, ['strokeme', 'margin_left'])
 			.innerHTML = '> ' + this.name + ' snd text';
-		initNewUIElement('div', new Map().set('id', id_text + this.index + '_3'), id_text + this.index, ['third-message', 'strokeme', 'margin_left'])
+		initNewUIElement('div', new Map().set('id', id_text + this.index + id_3), id_text + this.index, ['third-message', 'strokeme', 'margin_left'])
 			.innerHTML = '> ' + this.name + ' thr text';
 			
 		initNewUIElement('div', new Map().set('id', id_info_cards + this.index), id_info + this.index, 'margin_left_30');

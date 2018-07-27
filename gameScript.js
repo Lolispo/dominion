@@ -5,6 +5,7 @@ var playingPlayers;
 
 var players = [];
 var turn = 0;
+var gameCounter = 0;
 var gameEnded = false;
 
 /*
@@ -17,10 +18,12 @@ var gameEnded = false;
 		test end, added print
 		Allow ties, test
 
+	update affordable cards on buy
+
 	Estetic
 		Make Player own areas more clearer
 	Choose color and name
-
+	Some way of explaning what cost and cap numbers are
 	
 	CSS
 		Scalable card sizes
@@ -31,7 +34,6 @@ var gameEnded = false;
 
 	Later:
 		New Cards:
-			WoodCutter, +1 buy, +2 gold
 			Curse, -1 points
 				Witch ez
 			Garden (functionality already added)
@@ -74,12 +76,12 @@ function startGame(){
 	// Choosing turn and start
 	turn = Math.floor(Math.random() * players.length);
 	initNewUIElement('div', new Map().set('id', 'turn'), 'info', ['inline', 'bold', 'big_text', 'strokeme']);
-	changeText('turn', players[turn].name + ':s turn');
+	changeText('turn', 'Player ' + (turn + 1) + ':s turn'); // TODO @nameCustom
 	document.getElementById('turn').style.backgroundColor = getPlayerColor(turn);
 	for(var i = 0; i < players.length; i++){
 		document.getElementById(id_player + i).style.order = 2;
 	}
-	document.getElementById(id_player + turn).style.order = 1;
+	document.getElementById(id_player + turn).style.order = 1; // TODO Firefox crash here, because for loops above doesn't have to be done
 	players[turn].startTurn();
 }
 
@@ -113,15 +115,22 @@ function backMainMenu(){
 function updateTextPrint(playerIndex, message, printEverywhere = true){
 	console.log('P' + (playerIndex+1) + ': ' + message);
 	if(printEverywhere){
-		document.getElementById(id_text + playerIndex+'_3').innerHTML = document.getElementById(id_text + playerIndex+'_2').innerHTML;
-		document.getElementById(id_text + playerIndex+'_2').innerHTML = document.getElementById(id_text + playerIndex+'_1').innerHTML;
-		document.getElementById(id_text + playerIndex+'_1').innerHTML = '> ' + message;		
+		document.getElementById(id_text + playerIndex+id_3).innerHTML = document.getElementById(id_text + playerIndex+id_2).innerHTML;
+		document.getElementById(id_text + playerIndex+id_2).innerHTML = document.getElementById(id_text + playerIndex+id_1).innerHTML;
+		document.getElementById(id_text + playerIndex+id_1).innerHTML = '> ' + message;		
 	}
 }
 
 function updateShopText(message){
-	console.log('DEBUG END', message)
-	document.getElementById(id_shop + id_text + '1').innerHTML = message;
+	console.log('DEBUG END', message, gameEnded);
+	if(!gameEnded){
+		document.getElementById(id_shop + id_text + '1').innerHTML = message;
+	} else {
+		if(gameCounter === 0){
+			document.getElementById(id_shop + id_text + '1').innerHTML = message;
+			gameCounter++;
+		}
+	}
 }
 
 function shuffle(array) {
@@ -207,42 +216,21 @@ function getCssAlign(string, width){
 }
 
 // Returns Font size for center text
-function getCssFontSize(cardType, width, isCenter){
+function getCssFontSize(card, width, isCenter){
 	if(isCenter){
-		switch(cardType){
+		switch(card.cardType){
 			case CardType.ACTION_CARD:
-				switch(width){
-					case width_smallest:
-						return 'size1_text_small';
-					case width_biggest:
-						return 'size3_text_small';
-					case width_middle:
-					default:
-						return 'size2_text_small';			
-				}
+				return getCssAlign('text_small', width);
 			case CardType.VICTORY_CARD:
+				if(card.name === 'Garden'){
+					return getCssAlign('text_small', width);
+				}
 			case CardType.TREASURE_CARD:
 			default:
-				switch(width){
-					case width_smallest:
-						return 'size1_text_big';
-					case width_biggest:
-						return 'size3_text_big';
-					case width_middle:
-					default:
-						return 'size2_text_big';			
-				}
+				return getCssAlign('text_big', width);
 		}
 	} else{
-		switch(width){
-			case width_smallest:
-				return 'size1_text_medium';
-			case width_biggest:
-				return 'size3_text_medium';
-			case width_middle:
-			default:
-				return 'size2_text_medium';			
-		}
+		return getCssAlign('text_medium', width);
 	}
 }
 
@@ -278,6 +266,30 @@ function getPlayerColor(index){
 		default:
 			return 'lightgray'
 	}
+}
+
+function getStringNotZero(money, buysLeft, actionsLeft){
+	var s = '(';
+	var added = false;
+	if(money != 0){
+		s += 'Money: ' + money;
+		added = true;
+	}
+	if(buysLeft != 0){
+		if(added){
+			s += ', ';
+		}
+		s += 'BuysLeft: ' + buysLeft;
+		added = true;
+	}
+	if(actionsLeft != 0){
+		if(added){
+			s += ', ';
+		}
+		s += 'ActionsLeft: ' + actionsLeft;
+		added = true;		
+	}
+	s += ')';
 }
 
 // Called when points should be calculated to see who won
@@ -340,7 +352,7 @@ function endGame(){
 		modifyCSSEl('add', el, 'flex-container')
 		var cards = allPlayerCards[i];
 		var newEl = initNewUIElement('div', new Map(), id_info_stats + i, ['noclick', 'strokeme', 'big_text']);
-		newEl.innerHTML = players[i].name + ': ' + pointsArray[i] + ' points';
+		newEl.innerHTML = pointsArray[i] + ' points'; // players[i].name + ': ' + 
 		var newEl2 = initNewUIElement('div', new Map(), id_info_stats + i, ['noclick', 'strokeme', 'big_text']);
 		newEl2.innerHTML = cards.length + ' cards total';
 		console.log(players[i].name + ': ' + pointsArray[i] + ' points');
@@ -354,7 +366,7 @@ function endGame(){
 			}
 		}
 		map.forEach(function(value, key){ // Unknown order of these cards
-			var tempEl = initNewUIElement('div', new Map(), id_info_stats + i, ['noclick', 'strokeme', 'big_text']);
+			var tempEl = initNewUIElement('div', new Map(), id_info_stats + i, ['noclick', 'strokeme', 'bigger_text']);
 			tempEl.innerHTML = value + ' ' + key;
 			console.log(value + ' ' + key);
 		});

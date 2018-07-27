@@ -106,6 +106,9 @@ function Card(name, cardType){
 
 	this.getValue = function(){
 		if(cardType === CardType.TREASURE_CARD || cardType === CardType.VICTORY_CARD){
+			if(this.additionalDesc != ''){
+				return this.additionalDesc;
+			}
 			return this.value;
 		} else if(cardType === CardType.ACTION_CARD){
 			var s = '';
@@ -121,7 +124,7 @@ function Card(name, cardType){
 			if(this.moreGold != 0){
 				s += '+' + this.moreGold + ' Gold\n';
 			}
-			if(this.additionalDesc !== ''){
+			if(this.additionalDesc != ''){
 				s += this.additionalDesc;
 			}
 			return s;
@@ -150,6 +153,16 @@ function Card(name, cardType){
 	this.addGold = function(goldNum){
 		this.moreGold += goldNum;
 	}
+
+	this.addAdditionalDesc = function(string){
+		this.additionalDesc += string + '\n';
+	}
+}
+
+function storeCard(card, card_capacity_value){
+	cards_global.set(card.name, card);
+	cards_global_id.set(card.id, card);
+	cards_capacity.set(card.name, card_capacity_value);
 }
 
 // Init Cards
@@ -175,6 +188,9 @@ function initCards(){
 	var province = new Card('Province', CardType.VICTORY_CARD);
 	province.setValue(6);
 	province.setCost(8);
+	var garden = new Card('Garden', CardType.VICTORY_CARD);
+	garden.setCost(4);
+	garden.addAdditionalDesc('Cards / 10');
 	// Garden
 
 	// Action Cards
@@ -182,6 +198,10 @@ function initCards(){
 	village.setCost(3);
 	village.addDrawCards(1);
 	village.addAction(2);
+	var woodCutter = new Card('WoodCutter', CardType.ACTION_CARD);
+	woodCutter.setCost(3);
+	woodCutter.addBuys(1);
+	woodCutter.addGold(2);
 	var smithy = new Card('Smithy', CardType.ACTION_CARD);
 	smithy.setCost(4);
 	smithy.addDrawCards(3);
@@ -203,67 +223,22 @@ function initCards(){
 	
 	// Add Cards
 	cards_global = new Map();
-	cards_global.set(copper.name, copper);
-	cards_global.set(silver.name, silver);
-	cards_global.set(gold.name, gold);
-
-	cards_global.set(estate.name, estate);
-	cards_global.set(duchey.name, duchey);
-	cards_global.set(province.name, province);
-
-	cards_global.set(village.name, village);
-	cards_global.set(smithy.name, smithy);
-	cards_global.set(festival.name, festival);
-	cards_global.set(laboratory.name, laboratory);
-	cards_global.set(market.name, market);
-
-
 	cards_global_id = new Map();
-	cards_global_id.set(copper.id, copper);
-	cards_global_id.set(silver.id, silver);
-	cards_global_id.set(gold.id, gold);
-
-	cards_global_id.set(estate.id, estate);
-	cards_global_id.set(duchey.id, duchey);
-	cards_global_id.set(province.id, province);
-
-	cards_global_id.set(village.id, village);
-	cards_global_id.set(smithy.id, smithy);
-	cards_global_id.set(festival.id, festival);
-	cards_global_id.set(laboratory.id, laboratory);
-	cards_global_id.set(market.id, market);
-
-	
 	cards_capacity = new Map();
-	cards_capacity.set(copper.name, card_capacity_infinite);
-	cards_capacity.set(silver.name, card_capacity_infinite);
-	cards_capacity.set(gold.name, card_capacity_infinite);
 
-	cards_capacity.set(estate.name, card_capacity_infinite);
-	cards_capacity.set(duchey.name, card_capacity_victory);
-	cards_capacity.set(province.name, card_capacity_victory);
+	storeCard(copper, card_capacity_infinite);
+	storeCard(silver, card_capacity_infinite);
+	storeCard(gold, card_capacity_infinite);
 
-	cards_capacity.set(village.name, card_capacity_action);
-	cards_capacity.set(smithy.name, card_capacity_action);
-	cards_capacity.set(festival.name, card_capacity_action);
-	cards_capacity.set(laboratory.name, card_capacity_action);
-	cards_capacity.set(market.name, card_capacity_action);
+	storeCard(estate, card_capacity_infinite);
+	storeCard(duchey, card_capacity_victory);
+	storeCard(province, card_capacity_victory);
+	storeCard(garden, card_capacity_victory);
 
-	/*
-	cards_treasure = new Map();
-	cards_treasure.set('Copper', copper);
-	cards_treasure.set('Silver', silver);
-	cards_treasure.set('Gold', gold);
-
-	cards_victory = new Map();
-	cards_victory.set('Estate', estate);
-	cards_victory.set('Duchey', duchey);
-	cards_victory.set('Province', province);
-
-	cards_action = new Map();
-	cards_action.set('Village', village);
-	cards_action.set('Smithy', smithy);
-	cards_action.set('Laboratory', laboratory);
-	cards_action.set('Market', market);
-	*/
+	storeCard(village, card_capacity_action);
+	storeCard(woodCutter, card_capacity_action);
+	storeCard(smithy, card_capacity_action);
+	storeCard(festival, card_capacity_action);
+	storeCard(laboratory, card_capacity_action);
+	storeCard(market, card_capacity_action);
 }

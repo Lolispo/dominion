@@ -112,7 +112,6 @@ function DeckOfCards(playerIndex){
 	this.initDeck = function(){
 		modifyCSSID('add', id_board + this.playerIndex, 'invis');
 		modifyCSSID('add', id_info_stats + this.playerIndex, 'invis');
-		modifyCSSID('add', id_info_cards + this.playerIndex, 'invis');
 		modifyCSSID('add', id_text + this.playerIndex, 'invis');
 
 		for(var i = 0; i < 7; i++){
@@ -155,15 +154,11 @@ function DeckOfCards(playerIndex){
 		modifyCSSID('add', id, 'card');
 		modifyCSSID('remove', id, 'margin_left_1');
 		modifyCSSID('add', id, 'margin_left_2');
-		modifyCSSID('remove', id + id_bottomLeft, 'size2_text_medium');
-		modifyCSSID('add', id + id_bottomLeft, 'size3_text_medium');
-		modifyCSSID('remove', id + id_bottomLeft, 'size2_bottom_left');
-		modifyCSSID('add', id + id_bottomLeft, 'size3_bottom_left');
 		modifyCSSID('remove', id + id_name_post, 'size2_text_medium');
 		modifyCSSID('add', id + id_name_post, 'size3_text_medium');
 		modifyCSSID('remove', id + id_name_post, 'size2_centered_top');
 		modifyCSSID('add', id + id_name_post, 'size3_centered_top');
-		var newSize = getCssFontSize(this.hand.getCard(getIDFromCard(id)).cardType, width_biggest, true);
+		var newSize = getCssFontSize(this.hand.getCard(getIDFromCard(id)), width_biggest, true);
 		var centerTexts = document.getElementById(id + id_centeredText);
 		centerTexts.style.width = width_biggest;
 		for(var j = 0; j < centerTexts.childNodes.length; j++){
@@ -185,7 +180,7 @@ function DeckOfCards(playerIndex){
 				this.phase++;
 				if(!gameEnded){
 					// TODO: @Ending Only show stats != 0
-					updateTextPrint(this.playerIndex, 'Ending Turn (Money: ' + this.money + ', BuysLeft: ' + this.buysLeft + ', ActionsLeft: ' + this.actionsLeft + ')');
+					updateTextPrint(this.playerIndex, 'Ending Turn ' + getStringNotZero(this.money, this.buysLeft, this.actionsLeft));
 					deleteButton('interactButton', id_interact + this.playerIndex);
 					this.discardHand();
 					getPlayer(this.playerIndex).drawHand();
@@ -243,6 +238,7 @@ function DeckOfCards(playerIndex){
 			currentTop = this.discard[this.discard.length - 1]; // TODO: test me
 		}
 		this.discard = this.discard.concat(discardedCards);
+		this.discard = this.discard.concat(this.board);
 		if(currentTop === ''){
 			currentTop = this.discard[this.discard.length - 1];
 		}
@@ -258,6 +254,9 @@ function DeckOfCards(playerIndex){
 	// Used on end to get all cards for a player
 	this.endGetAllCards = function(){
 		this.discardHand();
+		console.log('DEBUG @endGetAllCards', this.deckStack.length, this.discard.length);
+		console.log(this.deckStack);
+		console.log(this.discard);
 		return this.deckStack.concat(this.discard);
 	}
 

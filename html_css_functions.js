@@ -22,6 +22,10 @@ var id_money = 'money_';
 var id_buysLeft = 'buysLeft_';
 var id_actionsLeft = 'actionsLeft_';
 
+var id_0 = '_0';
+var id_1 = '_1';
+var id_2 = '_2';
+var id_3 = '_3';
 var id_img = '_img';
 var id_div = '_div';
 var id_centeredText = '_centered'
@@ -169,8 +173,8 @@ function generateCardHTML(tempCard, id, parentID, isShopCard, cardType, cssClass
 	var div = initNewUIElement('div', new Map().set('id', id + id_div), parentID, ['container', 'margin_left_1', 'position_relative']);
 	div.style.order = orderNum;
 	var centerWidth = getWidthCard(cardType);
-	var centeredTextCSSClass = getCssFontSize(tempCard.cardType, centerWidth, true); 
-	var normalTextCSSClass = getCssFontSize(tempCard.cardType, centerWidth, false);
+	var centeredTextCSSClass = getCssFontSize(tempCard, centerWidth, true); 
+	var normalTextCSSClass = getCssFontSize(tempCard, centerWidth, false);
 
 	// Img element
 	var properties = new Map();
@@ -180,7 +184,9 @@ function generateCardHTML(tempCard, id, parentID, isShopCard, cardType, cssClass
 	modifyCSSEl('add', img, [cardType, 'position_relative', 'noclick']);
 	
 	// Name
-	initNewUIElement('div', new Map().set('id', id + id_name_post), id + id_div, [getCssAlign('centered_top', centerWidth), 'strokeme', 'noclick', normalTextCSSClass]).innerHTML = tempCard.name;
+	var name = initNewUIElement('div', new Map().set('id', id + id_name_post), id + id_div, [getCssAlign('centered_top', centerWidth), 'strokeme', 'noclick', normalTextCSSClass]);
+	name.innerHTML = tempCard.name;
+	//name.style.width = centerWidth;
 	// Center text
 	var center = initNewUIElement('div', new Map().set('id', id + id_centeredText), id + id_div, ['centered', 'noclick', centeredTextCSSClass]);
 	center.style.width = centerWidth;
@@ -195,10 +201,11 @@ function generateCardHTML(tempCard, id, parentID, isShopCard, cardType, cssClass
 		center.innerHTML = stringActions;
 	}
 	// Bottom texts
-	initNewUIElement('div', new Map().set('id', id + id_bottomLeft), id + id_div, [getCssAlign('bottom_left', centerWidth), 'noclick', 'strokeme', normalTextCSSClass]).innerHTML = tempCard.getCost();
-	if(isShopCard){ // Only shop cards should have capacity
-		var cap = getCapacityString(tempCard);
-		initNewUIElement('div', new Map().set('id', id + id_bottomRight), id + id_div, [getCssAlign('bottom_right', centerWidth), 'noclick', 'strokeme', normalTextCSSClass]).innerHTML = cap;
+	if(isShopCard){ // Only shop cards have to show cost and capacity
+		var bottomLeft = initNewUIElement('div', new Map().set('id', id + id_bottomLeft), id + id_div, [getCssAlign('bottom_left', centerWidth), 'noclick', 'strokeme', normalTextCSSClass]);
+		var bottomRight = initNewUIElement('div', new Map().set('id', id + id_bottomRight), id + id_div, [getCssAlign('bottom_right', centerWidth), 'noclick', 'strokeme', normalTextCSSClass]);
+		bottomLeft.innerHTML = tempCard.getCost();
+		bottomRight.innerHTML = getCapacityString(tempCard);
 	}
 	// Event
 	if(callback != ''){
