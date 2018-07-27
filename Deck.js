@@ -236,9 +236,10 @@ function DeckOfCards(playerIndex){
 		var currentTop = '';
 		if(this.discard.length > 0){ // TODO && Buy has been made
 			currentTop = this.discard[this.discard.length - 1]; // TODO: test me
+			console.log('DEBUG @currentTop ' + currentTop.name);
 		}
-		this.discard = this.discard.concat(discardedCards);
 		this.discard = this.discard.concat(this.board);
+		this.discard = this.discard.concat(discardedCards);
 		if(currentTop === ''){
 			currentTop = this.discard[this.discard.length - 1];
 		}
@@ -254,9 +255,6 @@ function DeckOfCards(playerIndex){
 	// Used on end to get all cards for a player
 	this.endGetAllCards = function(){
 		this.discardHand();
-		console.log('DEBUG @endGetAllCards', this.deckStack.length, this.discard.length);
-		console.log(this.deckStack);
-		console.log(this.discard);
 		return this.deckStack.concat(this.discard);
 	}
 

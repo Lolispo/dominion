@@ -19,6 +19,8 @@ function Player(index){
 				this.cards.drawCard();
 			}
 		}
+		this.cards.updateDeckLength();
+		this.cards.updateDiscardLength();
 	}
 
 	this.displayHand = function(){

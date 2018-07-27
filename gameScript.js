@@ -122,7 +122,7 @@ function updateTextPrint(playerIndex, message, printEverywhere = true){
 }
 
 function updateShopText(message){
-	console.log('DEBUG END', message, gameEnded);
+	//console.log('DEBUG END', message, gameEnded);
 	if(!gameEnded){
 		document.getElementById(id_shop + id_text + '1').innerHTML = message;
 	} else {
@@ -290,6 +290,7 @@ function getStringNotZero(money, buysLeft, actionsLeft){
 		added = true;		
 	}
 	s += ')';
+	return s;
 }
 
 // Called when points should be calculated to see who won
