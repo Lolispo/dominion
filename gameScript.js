@@ -54,6 +54,9 @@ function startGame(){
 	// Init players
 	playingPlayers = sessionStorage.getItem('playersPlaying');;
 	// Init Cards
+	if(!Number.isInteger(playingPlayers)){
+		playingPlayers = 2;
+	}
 	/*
 	// TODO: Add so cards can be loaded before hand, not important
 	cards_global = JSON.parse(sessionStorage.getItem('Cards'));
@@ -67,21 +70,18 @@ function startGame(){
 		var tempPlayer = new Player(i);
 		tempPlayer.initPlayer();
 		players.push(tempPlayer);
-	}
-	for(var i = 0; i < players.length; i++){
 		players[i].drawHand();
 	}
 
-
 	// Choosing turn and start
-	turn = Math.floor(Math.random() * players.length);
+	turn = Math.floor(Math.random() * playingPlayers);
 	initNewUIElement('div', new Map().set('id', 'turn'), 'info', ['inline', 'bold', 'big_text', 'strokeme']);
 	changeText('turn', 'Player ' + (turn + 1) + ':s turn'); // TODO @nameCustom
 	document.getElementById('turn').style.backgroundColor = getPlayerColor(turn);
-	for(var i = 0; i < players.length; i++){
+	for(var i = 0; i < playingPlayers; i++){
 		document.getElementById(id_player + i).style.order = 2;
 	}
-	document.getElementById(id_player + turn).style.order = 1; // TODO Firefox crash here, because for loops above doesn't have to be done
+	document.getElementById(id_player + turn).style.order = 1;
 	players[turn].startTurn();
 }
 
