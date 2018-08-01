@@ -41,6 +41,7 @@ function Player(index){
 				// Confirm purchase
 				deleteButton('confirmPurchase', id_interact + this.index);
 				deleteButton('cancelPurchase', id_interact + this.index);
+				modifyCSSChildren('remove', 'shopCards', 'selected');
 				var el = document.getElementById('shopCards');
 				for(var i = 0; i < el.childNodes.length; i++){
 					modifyCSSID('remove', getIDImgFromDiv(el.childNodes[i].id), 'selected');				
@@ -59,10 +60,7 @@ function Player(index){
 					this.cards.updateBuysLeft(this.cards.buysLeft - 1);
 		
 					// Add new card to discard pile
-					this.cards.discard.push(card);
-
-					var cap = getCapacity(card);
-					updateCapacity(card.name, cap - 1); // Reduce capacity of this card type
+					this.cards.addNewCard(card);
 					changeText(id_card + cardId + id_bottomRight, getCapacityString(card));
 
 					// Check if done with buy phase

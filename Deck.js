@@ -8,6 +8,7 @@ function DeckOfCards(playerIndex){
 	this.board = [];
 	this.phase = 2;				// 0 = action, 1 = buy, 2 = done, reset hand
 	this.hand = new Hand(this);
+	this.activeActionCard = '';
 
 	this.updateDeckLength = function(){
 		document.getElementById(id_deck + this.playerIndex).innerHTML = 'Deck: ' + this.deckStack.length + ' cards';
@@ -190,21 +191,27 @@ function DeckOfCards(playerIndex){
 		}
 	}
 
+	// Used to add a card to your hand
+	this.addCardToHand = function(tempCard, string = 'Drew a card! '){
+		var handAmount = this.hand.newCard(tempCard);
+		updateTextPrint(this.playerIndex, string + tempCard.name + ' (Holding ' + handAmount + ')', false);
+		this.generateHandCard(tempCard); // Generate Hand Card HTML
+	}
+
 	this.drawCard = function(){
-		if(this.deckStack.length === 0){
+		if(this.deckStack.length === 0){ // No more cards available to draw, needs to shuffle
 			this.deckStack = this.discard;
 			this.discard = [];
 			shuffle(this.deckStack);
 			removeChildren(id_discard_top + this.playerIndex);
 			updateTextPrint(this.playerIndex, 'Shuffled Deck! (' + this.deckStack.length + ' cards)');
 		}
-		if(this.deckStack.length > 0){ // No more cards available
+
+		if(this.deckStack.length > 0){ // Draw a card
 			var tempCard = this.deckStack.pop(); // Read pop
-			var handAmount = this.hand.newCard(tempCard);
-			updateTextPrint(this.playerIndex, 'Draw a card! ' + tempCard.name + ' (Holding ' + handAmount + ')', false);
-			this.generateHandCard(tempCard); // Generate Hand Card HTML
+			this.addCardToHand(tempCard);
 			return id_card + tempCard.id;
-		} else {
+		} else { // If you have shuffled but there are still no cards
 			updateTextPrint(this.playerIndex, 'Out of cards!'); // TODO: Check game functionality here, assume just get no more card
 		}
 	}
@@ -216,14 +223,15 @@ function DeckOfCards(playerIndex){
 			var playerID = getIDFromCard(tempEl.parentElement.id);
 			var card_id = getIDFromCard(card_HTMLid);
 			if(isTurn(playerID) && getPlayer(playerID).cards.phase === 0) {
-				var card = getPlayer(turn).cards.hand.getCard(card_id);
-				if(card.cardType === CardType.ACTION_CARD && getPlayer(turn).cards.phase === 0){
+				var currentPlayer = getPlayer(turn);
+				var card = currentPlayer.cards.hand.getCard(card_id);
+				if(card.cardType === CardType.ACTION_CARD && currentPlayer.cards.phase === 0){
 					// Add use card button
-					updateTextPrint(getPlayer(turn).index, 'Selected Action Card!', false);
-					deleteButton('playActionID', id_interact + getPlayer(turn).index);
-					createButton(card.name + '\nUse?', id_interact + getPlayer(turn).index, 'playActionID', (function(){
-						updateTextPrint(getPlayer(turn).index, 'Played Action Card ' + card.name + '!');
-						getPlayer(turn).playActionCard(card);
+					updateTextPrint(currentPlayer.index, 'Selected Action Card!', false);
+					deleteButton('playActionID', id_interact + currentPlayer.index);
+					createButton('Use <br>' + card.name + '?', id_interact + currentPlayer.index, 'playActionID', (function(){
+						updateTextPrint(currentPlayer.index, 'Played Action Card ' + card.name + '!');
+						currentPlayer.playActionCard(card);
 					}).bind(this), 'interactButton');					
 				}
 			}
@@ -243,7 +251,7 @@ function DeckOfCards(playerIndex){
 		if(currentTop === ''){
 			currentTop = this.discard[this.discard.length - 1];
 		}
-		this.showTopOfDiscard(currentTop)		
+		this.showTopOfDiscard(currentTop);
 		this.cleanUp();
 	}
 
@@ -278,6 +286,20 @@ function DeckOfCards(playerIndex){
 		removeChildren(id_interact + this.playerIndex);
 	}
 
+	// New Card
+	this.addNewCard = function(card, inDiscard = true, string = 'Upgraded! '){
+		if(inDiscard){
+			this.discard.push(card);
+			this.showTopOfDiscard(card);
+		} else {
+			this.addCardToHand(card, string);
+			this.displayCard(id_card + card.id);
+		}
+
+		var cap = getCapacity(card);
+		updateCapacity(card.name, cap - 1); // Reduce capacity of this card type
+	}
+
 	// Use action card
 	this.useCard = function(cardParam){
 		if(this.actionsLeft - 1 >= 0){
@@ -302,6 +324,75 @@ function DeckOfCards(playerIndex){
 				this.updateMoney(this.money + actions.moreGold);
 			}
 
+			// Special card start
+
+			if(card.name === 'Witch'){
+				for(var i = 0; i < players.length; i++){
+					if(i != this.playerIndex){
+						var tempCard = generateNewCard(cards_global.get('Curse'));
+						getPlayer(i).cards.addNewCard(tempCard);
+					}
+				}
+			} else if(card.name === 'CouncilRoom'){
+				for(var i = 0; i < players.length; i++){
+					if(i != this.playerIndex){
+						getPlayer(i).cards.drawCard();
+					}
+				}
+			}
+
+			// Check if more interactions from player is required
+
+			if(card.name === 'Mine'){
+				this.activeActionCard = card.id;
+				createButton('Mine Action: <br> Press to Skip', id_interact + this.playerIndex, 'mineUpgradeIDSkip', (function(){
+					var currentDeck = getPlayer(turn).cards;
+					currentDeck.activeActionCard = '';
+					deleteButton('mineUpgradeID', id_interact + currentDeck.playerIndex);
+					deleteButton('mineUpgradeIDSkip', id_interact + currentDeck.playerIndex);
+					currentDeck.checkIfPhaseDone(false);
+				}).bind(this), 'interactButton');
+				addHandCardClick(this.playerIndex, [CardType.TREASURE_CARD], function(card_HTMLid, actionCardID){
+					var tempEl = document.getElementById(card_HTMLid);
+					var playerID = getIDFromCard(tempEl.parentElement.id);
+					var card_id = getIDFromCard(card_HTMLid);
+					if(isTurn(playerID) && getPlayer(playerID).cards.phase === 0) {
+						var card = getPlayerCard(turn, card_id);
+						var currentDeck = getPlayer(turn).cards;
+						modifyCSSChildren('remove', id_hand + currentDeck.playerIndex, 'selected');
+						if(card.name != 'Gold' && currentDeck.activeActionCard === actionCardID){ // card.id => mine.id
+							// Add use card button
+							updateTextPrint(currentDeck.playerIndex, 'Selected Treasure Card!', false);
+							modifyCSSID('add', id_card + card.id, 'selected');
+							deleteButton('mineUpgradeID', id_interact + currentDeck.playerIndex);
+							createButton('Upgrade ' + card.name + '?', id_interact + currentDeck.playerIndex, 'mineUpgradeID', (function(){
+								deleteButton('mineUpgradeID', id_interact + currentDeck.playerIndex);
+								deleteButton('mineUpgradeIDSkip', id_interact + currentDeck.playerIndex);
+								// Upgrade the chosen treasure card
+								let newCard = '';
+								if(card.name === 'Copper'){
+									currentDeck.updateMoney(currentDeck.money - 1, true);
+									newCard = generateNewCard(cards_global.get('Silver'));
+								} else if(card.name === 'Silver'){
+									currentDeck.updateMoney(currentDeck.money - 2, true);
+									newCard = generateNewCard(cards_global.get('Gold'));
+								}
+								modifyCSSID('remove', id_card + card.id, 'selected');
+								currentDeck.hand.useCard(card); // Trash this card
+								currentDeck.addNewCard(newCard, false); // Add card to hand instead of discard pile
+								currentDeck.activeActionCard = '';
+								updateTextPrint(currentDeck.playerIndex, 'Upgraded ' + card.name + ' to ' + newCard.name + '!');
+								// Check next phase
+								currentDeck.updateHTMLElements();
+								currentDeck.checkIfPhaseDone(false);
+							}).bind(this), 'interactButton');
+						}
+					}
+				});
+			} else{ // Check next phase, no more inputs required from user
+				this.checkIfPhaseDone(false);
+			}
+
 			// Special Card handling
 			// (T) Trash Functionality
 			// (C) Choose cards in hand functionality
@@ -309,23 +400,19 @@ function DeckOfCards(playerIndex){
 			// (U) Unique
 			// (S) Choose a card in shop
 
-			// (TC) Mine: Trash a Treasure Card, gain one with higher value (not gold to be chosen)
-			// (C) Cellar: Discard any number of cards, +1 Card per card discarded
-			// (B) Chancellor: You may immediately put your entire deck into discard pile
-			// (TC) Chapel: Trash up to 4 cards from your hand
-			// (U) Council Room: Each other player draws a card
+			// (2 TC) Chapel: Trash up to 4 cards from your hand
+			// (2 C) Cellar: Discard any number of cards, +1 Card per card discarded
+			// (2 U) Moat: If attack is used, you can show this card to prevent being affected
 			// (TS) Feast: Trash this card, Gain a card costing up to 5
 			// (C) Militia: (Attack) Each other player discards down to 3 cards in their hand
-			// (U) Moat: If attack is used, you can show this card to prevent being affected
 			// (TC) MoneyLender: Trash a Copper from your hand, +3 Gold
 			// (U) Spy: (Attack) Show top of deck, placer chooses if discard or put back on top of deck
 			// (U) Thief:
 			// (UC) Throne Room: Choose action card from hand, play twice.
-			// Witch: Each other player gains a curse card
 			// (S) Workshop: Gain a card costing up to 4
+			// (3 B) Chancellor: You may immediately put your entire deck into discard pile
 
 			this.updateHTMLElements();
-			this.checkIfPhaseDone(false); // Make sure this runs AFTER actionsLeft += line above
 
 			this.board.push(card);
 			
@@ -340,9 +427,9 @@ function DeckOfCards(playerIndex){
 function Hand(deckOfCards){
 	this.amount = 0;
 	this.allCards = new Map(); // Change me into a map
-	this.treasure = [];
-	this.victory = [];
-	this.action = [];
+	this.treasureCards = [];
+	this.victoryCards = [];
+	this.actionCards = [];
 	this.deckOfCards = deckOfCards;
 
 	this.getCard = function(id){
@@ -354,19 +441,19 @@ function Hand(deckOfCards){
 	}
 
 	this.getTreasure = function(){
-		return this.treasure;
+		return this.treasureCards;
 	}
 
 	this.getVictory = function(){
-		return this.victory;
+		return this.victoryCards;
 	}
 
 	this.getAction = function(){
-		return this.action;
+		return this.actionCards;
 	}
 
 	this.containsAction = function(){
-		if(this.action.length > 0){
+		if(this.actionCards.length > 0){
 			return true;
 		}
 		return false;
@@ -376,41 +463,66 @@ function Hand(deckOfCards){
 		this.amount++;
 		this.allCards.set(card.id, card);
 		if(card.cardType === CardType.TREASURE_CARD){
-			this.treasure.push(card);
+			this.treasureCards.push(card);
 			this.deckOfCards.updateMoney(this.deckOfCards.money + card.getValue());
 			//updateTextPrint(this.deckOfCards.playerIndex, 'Money Update! ( + ' + card.getValue() + ')');
 		} else if(card.cardType === CardType.VICTORY_CARD){
-			this.victory.push(card);
+			this.victoryCards.push(card);
 		} else if(card.cardType === CardType.ACTION_CARD){
-			this.action.push(card);
+			this.actionCards.push(card);
 		}
 		return this.amount; // Return can be used for 'Draw until certain amount'
 	}
 
 	this.useCard = function(card){
-		for(var i = 0; i < this.action.length; i++){
-			if(card.id === this.action[i].id){
-				var tempCard = this.action.splice(i, 1)[0];
-				this.allCards.delete(card.id); 
-				var handEl = document.getElementById(id_hand + this.deckOfCards.playerIndex);
-				var el = document.getElementById(id_card + card.id + id_div);
-				handEl.removeChild(el);
-				return tempCard;
-			}
+		var tempCard = this.getCard(card.id);
+		this.removeCardList(tempCard);
+		this.allCards.delete(card.id); 
+		var handEl = document.getElementById(id_hand + this.deckOfCards.playerIndex);
+		var el = document.getElementById(id_card + card.id + id_div);
+		handEl.removeChild(el);
+		return tempCard;
+	}
+
+	// Remove card from the list
+	this.removeCardList = function(card){
+		switch(card.cardType){
+			case CardType.ACTION_CARD: 
+				var index = this.actionCards.indexOf(card);
+				if(index == -1){
+					throw 'index = -1 for ' + card.name + '. Shouldnt happen';
+				}
+				this.actionCards.splice(index, 1)[0]
+				break;
+			case CardType.TREASURE_CARD: 
+				var index = this.treasureCards.indexOf(card);
+				if(index == -1){
+					throw 'index = -1 for ' + card.name + '. Shouldnt happen';
+				}
+				this.treasureCards.splice(index, 1)[0]
+				break;
+			case CardType.VICTORY_CARD: 
+				var index = this.victoryCards.indexOf(card);
+				if(index == -1){
+					throw 'index = -1 for ' + card.name + '. Shouldnt happen';
+				}
+				this.victoryCards.splice(index, 1)[0]
+				break;
 		}
 	}
 
 	this.getHand = function(){ 
-		var listOfCards = this.action.concat(this.treasure).concat(this.victory);
+		var listOfCards = this.actionCards.concat(this.treasureCards).concat(this.victoryCards);
 		return listOfCards;
 	}
 
 	this.discardedHand = function(){
 		var listOfCards = this.getHand();
-		this.treasure = [];
-		this.victory = [];
-		this.action = [];
+		this.treasureCards = [];
+		this.victoryCards = [];
+		this.actionCards = [];
 		this.amount = 0;
+		this.allCards = new Map();
 		return listOfCards;
 	}
 }

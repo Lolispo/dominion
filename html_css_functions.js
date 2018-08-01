@@ -92,6 +92,17 @@ function removeChildren(id){
 	}
 }
 
+function modifyCSSChildren(mode, id, cssClass, isCard = true){
+	var el = document.getElementById(id);
+	for(var i = 0; i < el.childNodes.length; i++){
+		if(isCard){
+			modifyCSSID(mode, getIDImgFromDiv(el.childNodes[i].id), cssClass);				
+		} else{
+			modifyCSSID(mode, el.childNodes[i].id, cssClass);
+		}
+	}	
+}
+
 function modifyCSSID(mode, id, cssClass){
 	var el = document.getElementById(id);
 	modifyCSSEl(mode, el, cssClass);
@@ -124,7 +135,7 @@ function modifyCSSEl(mode, el, cssClass){
 }
 
 function initShopHTML(){
-	var cards = cards_global;
+	var cards = cards_global_shop;
 	initNewUIElement('div', new Map().set('id', 'mainShop'), 'shop');
 	initNewUIElement('div', new Map().set('id', 'shopTitle'), 'mainShop', ['big_text', 'margin_left', 'bold', 'strokeme']).innerHTML = 'Shop';
 	initNewUIElement('div', new Map().set('id', 'shopCards'), 'mainShop', 'card_container');
@@ -213,5 +224,25 @@ function generateCardHTML(tempCard, id, parentID, isShopCard, cardType, cssClass
 			var card_HTMLid = res.srcElement.id;
 			callback(card_HTMLid);
 		});		
+	}
+}
+
+
+// Add eventListener to hand card
+function addHandCardClick(pid, allowedCardTypes, callback){
+	var hand = document.getElementById(id_hand + pid);
+	var cid = getPlayer(pid).cards.activeActionCard;
+	var getActionCardID = function(){ // Called closure to use this
+		return cid;
+	}
+	for(var i = 0; i < hand.childNodes.length; i++){
+		var card = getPlayerCard(pid, getIDFromCard(hand.childNodes[i].id));
+		if(allowedCardTypes.includes(card.cardType)){
+			hand.childNodes[i].addEventListener('click', function(res){
+				let card_HTMLid = res.srcElement.id;
+				let actionCardID = getActionCardID();
+				callback(card_HTMLid, actionCardID);
+			});
+		}
 	}
 }

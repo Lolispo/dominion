@@ -14,11 +14,6 @@ var gameEnded = false;
 	
 	Better background color to buttons so they are more easily spottable
 	Decks @Ending Only show stats != 0
-	updateShopText on end doesn't work
-		test end, added print
-		Allow ties, test
-
-	update affordable cards on buy
 
 	Estetic
 		Make Player own areas more clearer
@@ -26,6 +21,9 @@ var gameEnded = false;
 	Some way of explaning what cost and cap numbers are
 	
 	CSS
+		Add Select to hand cards as well
+			Currently exist for shop cards
+		Make it more obvious in UI when having to choose a card from your hand (currently the skip button appears only)
 		Scalable card sizes
 			Use 3 existing card sizes, when card amount in hand goes over a certain limit
 		Better name for text sizes
@@ -34,11 +32,7 @@ var gameEnded = false;
 
 	Later:
 		New Cards:
-			Curse, -1 points
-				Witch ez
-			Garden (functionality already added)
-			Rest listed in Deck.js
-
+			Listed in Deck.js
 
 		netplay - nodejs
 			board cards sent
@@ -46,7 +40,7 @@ var gameEnded = false;
 			Deck updates (buys) are sent
 			Move Player and Deck to server side instead of client side
 
-		Private variables (var instead of this.)
+		Private variables / exchange var to let / const
 			Gather variables in one place
 */
 
@@ -174,6 +168,10 @@ function isTurn(playerIndex){
 
 function getPlayer(pid){
 	return players[pid];
+}
+
+function getPlayerCard(pid, cardID){
+	return getPlayer(pid).cards.hand.getCard(cardID);
 }
 
 function getCorrectImage(card){

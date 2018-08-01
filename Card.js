@@ -2,6 +2,7 @@
 'use strict'
 
 var cards_global = new Map();
+var cards_global_shop = new Map();
 var cards_global_id = new Map();
 var cards_capacity = new Map();
 
@@ -122,7 +123,7 @@ function Card(name, cardType){
 				s += '+' + this.moreBuys + ' Buys\n';
 			}
 			if(this.moreGold != 0){
-				s += '+' + this.moreGold + ' Gold\n';
+				s += '+$' + this.moreGold + '\n'; // Gold
 			}
 			if(this.additionalDesc != ''){
 				s += this.additionalDesc;
@@ -159,8 +160,11 @@ function Card(name, cardType){
 	}
 }
 
-function storeCard(card, card_capacity_value){
-	cards_global.set(card.name, card);
+function storeCard(card, card_capacity_value, showInShop = true){
+	cards_global.set(card.name, card);	
+	if(showInShop){
+		cards_global_shop.set(card.name, card);
+	}
 	cards_global_id.set(card.id, card);
 	cards_capacity.set(card.name, card_capacity_value);
 }
@@ -191,7 +195,9 @@ function initCards(){
 	var garden = new Card('Garden', CardType.VICTORY_CARD);
 	garden.setCost(4);
 	garden.addAdditionalDesc('Cards / 10');
-	// Garden
+	var curse = new Card('Curse', CardType.VICTORY_CARD);
+	curse.setCost(0);
+	curse.setValue(-1);
 
 	// Action Cards
 	var village = new Card('Village', CardType.ACTION_CARD);
@@ -205,6 +211,11 @@ function initCards(){
 	var smithy = new Card('Smithy', CardType.ACTION_CARD);
 	smithy.setCost(4);
 	smithy.addDrawCards(3);
+	var councilRoom = new Card('CouncilRoom', CardType.ACTION_CARD);
+	councilRoom.setCost(5);
+	councilRoom.addDrawCards(4);
+	councilRoom.addBuys(1);
+	councilRoom.addAdditionalDesc('Each other player draws a card');
 	var festival = new Card('Festival', CardType.ACTION_CARD);
 	festival.setCost(5);
 	festival.addAction(2);
@@ -220,9 +231,18 @@ function initCards(){
 	market.addAction(1);
 	market.addBuys(1);
 	market.addGold(1);
-	
+	var mine = new Card('Mine', CardType.ACTION_CARD);
+	mine.setCost(5);
+	mine.addAdditionalDesc('You may choose a Treasure card from your hand to upgrade to the next tier'); 
+	// Mine original Desc: 'You may trash a Treasure from your hand. Gain a Treasure to your hand costing up to 3 more than it'
+	var witch = new Card('Witch', CardType.ACTION_CARD);
+	witch.setCost(5);
+	witch.addDrawCards(2);
+	witch.addAdditionalDesc('Each other player gains a Curse');
+
 	// Add Cards
 	cards_global = new Map();
+	cards_global_shop = new Map();
 	cards_global_id = new Map();
 	cards_capacity = new Map();
 
@@ -234,11 +254,15 @@ function initCards(){
 	storeCard(duchey, card_capacity_victory);
 	storeCard(province, card_capacity_victory);
 	storeCard(garden, card_capacity_victory);
+	storeCard(curse, card_capacity_infinite, false); // Don't show in shop
 
 	storeCard(village, card_capacity_action);
 	storeCard(woodCutter, card_capacity_action);
 	storeCard(smithy, card_capacity_action);
+	storeCard(councilRoom, card_capacity_action);
 	storeCard(festival, card_capacity_action);
 	storeCard(laboratory, card_capacity_action);
 	storeCard(market, card_capacity_action);
+	storeCard(mine, card_capacity_action);
+	storeCard(witch, card_capacity_action);
 }
