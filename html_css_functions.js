@@ -45,6 +45,23 @@ var width_biggest = '128px';
 
 var openShop = 'Open Shop';
 var closeShop = 'Close Shop';
+const HELP_MESSAGE_OPEN = 'Help';
+const HELP_MESSAGE_CLOSE = 'Close Help';
+
+
+function getHelpString(){
+	var s = '';
+	s += 'Game Information\nAll players start their turn with 1 action and 1 buy to use.\n If they get money on their hand, the money can be used to buy new cards in the shop\n';
+	s += 'When the players deck runs out of cards, the discard pile is shuffled and placed as new deck\n';
+	s += 'When a card is bought, it is put into the players discard pile, which makes it available at a later time\n';
+	s += 'Starting Deck: Every player starts with 7 Copper and 3 Estate\n<br>\n';
+	s += 'Card Information: \nBottom Left: Cost\nBottom right: Capacity\nTop Middle: Name\nMiddle: Value / Effect\n<br>\n';
+	s += 'Treasure Cards: Orange border: Gives the player money equal to its value when equipped on hand\n';
+	s += 'Victory Cards: Green border: Gives the player points at the end of the game equal to its value\n';
+	s += 'Action Cards: Blue border: Can be used at the start of the players turn, effects given on card\n<br>\n';
+	return s;
+}
+
 
 // HTML Stuff
 
@@ -111,18 +128,16 @@ function modifyCSSID(mode, id, cssClass){
 
 function modifyCSSEl(mode, el, cssClass){
 	if(Array.isArray(cssClass)){
-		for(var i = 0; i < cssClass.length; i++){
-			if(mode === 'add'){
-				el.classList.add(cssClass[i]);			
-			} else if(mode === 'remove'){
-				el.classList.remove(cssClass[i]);	
-			} else if(mode === 'toggle'){
-				el.classList.toggle(cssClass[i]);
-			} else{
-				throw 'Invalid cssClassEl type';
-			}
+		if(mode === 'add'){
+			el.classList.add(...cssClass);
+		} else if(mode === 'remove'){
+			el.classList.remove(...cssClass);	
+		} else if(mode === 'toggle'){
+			el.classList.toggle(...cssClass);
+		} else{
+			throw 'Invalid cssClassEl type';
 		}
-	}else if(cssClass !== ''){
+	} else if(cssClass !== ''){
 		if(mode === 'add'){
 			el.classList.add(cssClass);			
 		} else if(mode === 'remove'){
@@ -222,7 +237,7 @@ function generateCardHTML(tempCard, id, parentID, isShopCard, cardType, cssClass
 	// Event
 	if(callback != ''){
 		div.addEventListener('click', function(res){
-			var card_HTMLid = res.srcElement.id;
+			var card_HTMLid = res.target.id;
 			callback(card_HTMLid);
 		});		
 	}
@@ -240,7 +255,7 @@ function addHandCardClick(pid, allowedCardTypes, callback){
 		var card = getPlayerCard(pid, getIDFromCard(hand.childNodes[i].id));
 		if(allowedCardTypes.includes(card.cardType)){
 			hand.childNodes[i].addEventListener('click', function(res){
-				let card_HTMLid = res.srcElement.id;
+				let card_HTMLid = res.target.id;
 				let actionCardID = getActionCardID();
 				callback(card_HTMLid, actionCardID);
 			});

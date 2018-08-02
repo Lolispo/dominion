@@ -11,6 +11,7 @@ function main(){
 	console.log('Welcome to Dominion!');
 	initCardsPrep();
 	updatePlayers();
+	showHelpMessages();
 	document.getElementById('players-').addEventListener('click', function(){
 		if(playingPlayers - 1 >= minPlayers){
 			playingPlayers--;
@@ -32,6 +33,15 @@ function initCardsPrep(){
 
 function updatePlayers(){
 	document.getElementById('playersPlayingID').innerHTML = 'Players playing: ' + playingPlayers;
+}
+
+function showHelpMessages(){
+	var stringActions = getHelpString();
+	var splitted = stringActions.split('\n');
+	for(var i = 0; i < splitted.length; i++){
+		var el = initNewUIElement('div', new Map().set('id', 'helpMessage_' + i), 'helpMessage', ['inline', 'bold', 'size2_text_medium', 'text_shadow']);
+		el.innerHTML = splitted[i];
+	}
 }
 
 function changePage(){

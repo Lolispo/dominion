@@ -307,7 +307,7 @@ function DeckOfCards(playerIndex){
 	}
 
 	// New Card
-	this.addNewCard = function(card, inDiscard = true, updateCapacity = true, string = 'Upgraded! '){
+	this.addNewCard = function(card, inDiscard = true, shouldUpdateCapacity = true, string = 'Upgraded! '){
 		if(inDiscard){	// Go to discard pile or hand directly
 			this.discard.push(card);
 			this.showTopOfDiscard(card);
@@ -315,7 +315,7 @@ function DeckOfCards(playerIndex){
 			this.addCardToHand(card, string); // String is what should be noted in the update string, 'Drew a Card', 'Upgraded! '
 			this.displayCard(id_card + card.id);
 		}
-		if(updateCapacity){ // If a card is received from shop, updateCapacity. Otherwise if its from hand or something false
+		if(shouldUpdateCapacity){ // If a card is received from shop, updateCapacity. Otherwise if its from hand or something false
 			var cap = getCapacity(card);
 			var newCap = updateCapacity(card.name, cap - 1); // Reduce capacity of this card type
 			if(newCap === 0){

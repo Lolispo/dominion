@@ -21,8 +21,11 @@ var gameEnded = false;
 			Cards should show before text 
 			Sort cards in more interesting order, victory cards first
 			Align text in vertical height
+				Card align to text?
 		Some way of explaning what cost and cap numbers are
 	
+	CreateButton : Change PID and ID Position to be consistent
+	Change global vars to Caps / Const
 
 	Estetic
 		Start to Center stuff in css
@@ -75,6 +78,23 @@ function startGame(){
 	// Choosing turn and start
 	turn = Math.floor(Math.random() * playingPlayers);
 	initNewUIElement('div', new Map().set('id', 'turn'), 'info', ['inline', 'bold', 'size3_text_medium', 'text_shadow']);
+	initNewUIElement('div', new Map().set('id', 'helpDiv'), 'info', ['inline']);
+	createButton(HELP_MESSAGE_OPEN, 'helpDiv', 'helpButton', (function(){
+		var currentName = document.getElementById('helpButton').innerHTML;
+		if(currentName === HELP_MESSAGE_OPEN){
+			changeText('helpButton', HELP_MESSAGE_CLOSE);
+		} else{
+			changeText('helpButton', HELP_MESSAGE_OPEN)
+		}
+		modifyCSSID('toggle', 'helpMessage', 'invis');
+	}).bind(this), ['normalButton', 'margin_left_30']);
+	initNewUIElement('div', new Map().set('id', 'helpMessage'), 'helpDiv', ['flex_container', 'invis']);
+	var stringActions = getHelpString();
+	var splitted = stringActions.split('\n');
+	for(var i = 0; i < splitted.length; i++){
+		var el = initNewUIElement('div', new Map().set('id', 'helpMessage_' + i), 'helpMessage', ['inline', 'bold', 'size2_text_medium', 'text_shadow']);
+		el.innerHTML = splitted[i];
+	}
 	changeText('turn', 'Player ' + (turn + 1) + ':s turn'); // TODO @nameCustom
 	document.getElementById('turn').style.backgroundColor = getPlayerColor(turn);
 	for(var i = 0; i < playingPlayers; i++){

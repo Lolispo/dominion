@@ -12,7 +12,7 @@ var cards_victory = new Map();
 var cards_action = new Map();
 */
 
-var card_capacity_action = 10; // Testing - Change to lower for end screen tests
+var card_capacity_action = 10; // 10 Testing - Change to lower for end screen tests
 var card_capacity_victory = 12;
 var card_capacity_infinite = 200; // Not more should be required
 
@@ -72,7 +72,6 @@ function updateCapacity(cardName, newValue){
 	}
 	return newValue;
 }
-
 
 function Card(name, cardType){
 	this.id = global_card_id++;
