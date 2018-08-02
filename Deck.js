@@ -36,10 +36,10 @@ function DeckOfCards(playerIndex){
 					el.style.left = '0px';
 					el.style.top = '0px';
 				}
-			} else if(this.money >= cardCost){
+			} else if(this.getCurrentMoney() >= cardCost){
 				shop.childNodes[i].style.order = 1; // Order set
 				modifyCSSID('remove', imgID, 'inactive');
-			} else if(this.money < cardCost){ // Can't afford card
+			} else if(this.getCurrentMoney() < cardCost){ // Can't afford card
 				shop.childNodes[i].style.order = 2; // Order set
 				modifyCSSID('add', imgID, 'inactive');
 			}
@@ -52,10 +52,18 @@ function DeckOfCards(playerIndex){
 			updateTextPrint(this.playerIndex, '+' + (value - this.money) +  ' Money!', false);
 		}
 		this.money = value;
-		document.getElementById(id_money + this.playerIndex).innerHTML = 'Money: ' + this.money;
+		var plusMoneyString = '';
+		if(this.plusMoney !== 0){
+			plusMoneyString = ' (+$' + this.plusMoney + ')';
+		}
+		document.getElementById(id_money + this.playerIndex).innerHTML = 'Money: ' + this.getCurrentMoney() + plusMoneyString;
 		if(printMe){
 			this.checkShopCostInactive();		
 		}
+	}
+
+	this.updatePlusMoney = function(value = this.plusMoney){
+		this.plusMoney = value;
 	}
 
 	this.updateActionsLeft = function(value = this.actionsLeft, printMe = false){
@@ -74,11 +82,16 @@ function DeckOfCards(playerIndex){
 		document.getElementById(id_buysLeft + this.playerIndex).innerHTML = 'Buys Left: ' + this.buysLeft;
 	}
 
+	this.getCurrentMoney = function(){
+		return this.money + this.plusMoney;
+	}
+
 	// Init variable values and set them in HTML
 	this.updateDeckLength();
 	this.updateDiscardLength();
 	this.updateActionsLeft(1);
 	this.updateBuysLeft(1);
+	this.updatePlusMoney(0);	
 	this.updateMoney(0);	
 
 	// Used on new hand or action used
@@ -172,16 +185,17 @@ function DeckOfCards(playerIndex){
 			if(nextStage || this.actionsLeft === 0 || !this.hand.containsAction()){
 				this.phase++;
 				this.updateHandCardOrder();
+				deleteButton('playActionID', id_interact + this.playerIndex);
 				modifyCSSID('add', id_actionsLeft + this.playerIndex, 'invis')
 				updateTextPrint(this.playerIndex, id_startBuyString);
 				changeText('skipButton', id_phase1);
 			}
 		} else if(this.phase === 1){
-			if(nextStage || this.buysLeft === 0 || this.money === 0){
+			if(nextStage || this.buysLeft === 0 || this.getCurrentMoney() === 0){ // TODO: Decide. Maybe remove if money = 0, since if buysLeft, should be allowed to buy Copper
 				this.phase++;
 				if(!gameEnded){
 					// TODO: @Ending Only show stats != 0
-					updateTextPrint(this.playerIndex, 'Ending Turn ' + getStringNotZero(this.money, this.buysLeft, this.actionsLeft));
+					updateTextPrint(this.playerIndex, 'Ending Turn ' + getStringNotZero(this.money, this.buysLeft, this.actionsLeft, this.plusMoney));
 					deleteButton('interactButton', id_interact + this.playerIndex);
 					this.discardHand();
 					getPlayer(this.playerIndex).drawHand();
@@ -225,7 +239,7 @@ function DeckOfCards(playerIndex){
 			if(isTurn(playerID) && getPlayer(playerID).cards.phase === 0) {
 				var currentPlayer = getPlayer(turn);
 				var card = currentPlayer.cards.hand.getCard(card_id);
-				if(card.cardType === CardType.ACTION_CARD && currentPlayer.cards.phase === 0){
+				if(card.cardType === CardType.ACTION_CARD && currentPlayer.cards.actionsLeft > 0){
 					// Add use card button
 					updateTextPrint(currentPlayer.index, 'Selected Action Card!', false);
 					deleteButton('playActionID', id_interact + currentPlayer.index);
@@ -273,6 +287,7 @@ function DeckOfCards(playerIndex){
 		this.updateMoney(0, false);	
 		this.updateActionsLeft(1, false);
 		this.updateBuysLeft(1, false);
+		this.updatePlusMoney(0);
 
 		removeChildren(id_board + this.playerIndex);
 		this.board = [];
@@ -321,7 +336,7 @@ function DeckOfCards(playerIndex){
 				this.updateBuysLeft(this.buysLeft + actions.moreBuys);
 			}
 			if(actions.moreGold !== 0){
-				this.updateMoney(this.money + actions.moreGold);
+				this.updatePlusMoney(this.plusMoney + actions.moreGold);
 			}
 
 			// Special card start
@@ -333,7 +348,7 @@ function DeckOfCards(playerIndex){
 						getPlayer(i).cards.addNewCard(tempCard);
 					}
 				}
-			} else if(card.name === 'CouncilRoom'){
+			} else if(card.name === 'Council Room'){
 				for(var i = 0; i < players.length; i++){
 					if(i != this.playerIndex){
 						getPlayer(i).cards.drawCard();
@@ -350,6 +365,11 @@ function DeckOfCards(playerIndex){
 					currentDeck.activeActionCard = '';
 					deleteButton('mineUpgradeID', id_interact + currentDeck.playerIndex);
 					deleteButton('mineUpgradeIDSkip', id_interact + currentDeck.playerIndex);
+					var cardDivs = document.getElementById(id_hand + currentDeck.playerIndex).childNodes;
+					for(var i = 0; i < cardDivs.length; i++){
+						var imgID = getIDImgFromDiv(cardDivs[i].id);
+						modifyCSSID('remove', imgID, 'selected');								
+					}
 					currentDeck.checkIfPhaseDone(false);
 				}).bind(this), 'interactButton');
 				addHandCardClick(this.playerIndex, [CardType.TREASURE_CARD], function(card_HTMLid, actionCardID){
@@ -371,10 +391,8 @@ function DeckOfCards(playerIndex){
 								// Upgrade the chosen treasure card
 								let newCard = '';
 								if(card.name === 'Copper'){
-									currentDeck.updateMoney(currentDeck.money - 1, true);
 									newCard = generateNewCard(cards_global.get('Silver'));
 								} else if(card.name === 'Silver'){
-									currentDeck.updateMoney(currentDeck.money - 2, true);
 									newCard = generateNewCard(cards_global.get('Gold'));
 								}
 								modifyCSSID('remove', id_card + card.id, 'selected');
@@ -389,7 +407,113 @@ function DeckOfCards(playerIndex){
 						}
 					}
 				});
-			} else{ // Check next phase, no more inputs required from user
+			} else if(card.name === 'Chapel'){
+				this.activeActionCard = card.id;
+				createButton('Chapel Action: <br> Press to Skip', id_interact + this.playerIndex, 'chapelIDSkip', (function(){
+					var currentDeck = getPlayer(turn).cards;
+					currentDeck.activeActionCard = '';
+					deleteButton('chapelID', id_interact + currentDeck.playerIndex);
+					deleteButton('chapelIDSkip', id_interact + currentDeck.playerIndex);
+					var cardDivs = document.getElementById(id_hand + currentDeck.playerIndex).childNodes;
+					for(var i = 0; i < cardDivs.length; i++){
+						var imgID = getIDImgFromDiv(cardDivs[i].id);
+						modifyCSSID('remove', imgID, 'selected');								
+					}
+					currentDeck.checkIfPhaseDone(false);
+				}).bind(this), 'interactButton');
+				addHandCardClick(this.playerIndex, [CardType.TREASURE_CARD, CardType.ACTION_CARD, CardType.VICTORY_CARD], function(card_HTMLid, actionCardID){
+					var tempEl = document.getElementById(card_HTMLid);
+					var playerID = getIDFromCard(tempEl.parentElement.id);
+					var card_id = getIDFromCard(card_HTMLid);
+					if(isTurn(playerID) && getPlayer(playerID).cards.phase === 0) {
+						var card = getPlayerCard(turn, card_id);
+						var currentDeck = getPlayer(turn).cards;
+						if(currentDeck.activeActionCard === actionCardID){ // card.id => mine.id
+							// Add use card button
+							modifyCSSID('toggle', id_card + card.id, 'selected');	
+							//updateTextPrint(currentDeck.playerIndex, 'Selected ' + card.name + '!', false);
+							deleteButton('chapelID', id_interact + currentDeck.playerIndex); // Check me
+							createButton('Trash the selected cards', id_interact + currentDeck.playerIndex, 'chapelID', (function(){
+								deleteButton('chapelID', id_interact + currentDeck.playerIndex);
+								deleteButton('chapelIDSkip', id_interact + currentDeck.playerIndex);
+								
+								var cardDivs = document.getElementById(id_hand + currentDeck.playerIndex).childNodes;
+								var counter = 0;
+								for(var i = cardDivs.length-1; i >= 0; i--){
+									var imgID = getIDImgFromDiv(cardDivs[i].id);
+									if(document.getElementById(imgID).classList.contains('selected')){
+										counter++;
+										modifyCSSID('remove', imgID, 'selected');
+										var tempCard = getPlayerCard(currentDeck.playerIndex, getIDFromCard(imgID));
+										currentDeck.hand.useCard(tempCard); // Trash this card										
+									}
+								}
+								currentDeck.activeActionCard = '';
+								updateTextPrint(currentDeck.playerIndex, 'Trashed ' + counter + ' cards!');
+								// Check next phase
+								currentDeck.updateHTMLElements();
+								currentDeck.checkIfPhaseDone(false);
+							}).bind(this), 'interactButton');
+						}
+					}
+				});
+			} else if(card.name === 'Cellar'){
+				this.activeActionCard = card.id;
+				createButton('Cellar Action: <br> Press to Skip', id_interact + this.playerIndex, 'cellarIDSkip', (function(){
+					var currentDeck = getPlayer(turn).cards;
+					currentDeck.activeActionCard = '';
+					deleteButton('cellarID', id_interact + currentDeck.playerIndex);
+					deleteButton('cellarIDSkip', id_interact + currentDeck.playerIndex);
+					var cardDivs = document.getElementById(id_hand + currentDeck.playerIndex).childNodes;
+					for(var i = 0; i < cardDivs.length; i++){
+						var imgID = getIDImgFromDiv(cardDivs[i].id);
+						modifyCSSID('remove', imgID, 'selected');								
+					}
+					currentDeck.checkIfPhaseDone(false);
+				}).bind(this), 'interactButton');
+				addHandCardClick(this.playerIndex, [CardType.TREASURE_CARD, CardType.ACTION_CARD, CardType.VICTORY_CARD], function(card_HTMLid, actionCardID){
+					var tempEl = document.getElementById(card_HTMLid);
+					var playerID = getIDFromCard(tempEl.parentElement.id);
+					var card_id = getIDFromCard(card_HTMLid);
+					if(isTurn(playerID) && getPlayer(playerID).cards.phase === 0) {
+						var card = getPlayerCard(turn, card_id);
+						var currentDeck = getPlayer(turn).cards;
+						if(currentDeck.activeActionCard === actionCardID){ // card.id => mine.id
+							// Add use card button
+							modifyCSSID('toggle', id_card + card.id, 'selected');	
+							//updateTextPrint(currentDeck.playerIndex, 'Selected ' + card.name + '!', false);
+							deleteButton('cellarID', id_interact + currentDeck.playerIndex); // Check me
+							createButton('Exchange Selected Cards', id_interact + currentDeck.playerIndex, 'cellarID', (function(){
+								deleteButton('cellarID', id_interact + currentDeck.playerIndex);
+								deleteButton('cellarIDSkip', id_interact + currentDeck.playerIndex);
+								
+								var cardDivs = document.getElementById(id_hand + currentDeck.playerIndex).childNodes;
+								var counter = 0;
+								for(var i = cardDivs.length-1; i >= 0; i--){
+									var imgID = getIDImgFromDiv(cardDivs[i].id);
+									if(document.getElementById(imgID).classList.contains('selected')){
+										counter++;
+										modifyCSSID('remove', imgID, 'selected');
+										var tempCard = getPlayerCard(currentDeck.playerIndex, getIDFromCard(imgID));
+										// Discard this card
+										var newTempCard = currentDeck.hand.useCard(tempCard); 
+										currentDeck.addNewCard(newTempCard); 
+										// Draw new Card
+										var cardHtml_id = currentDeck.drawCard(); 
+										currentDeck.displayCard(cardHtml_id);
+									}
+								}
+								currentDeck.activeActionCard = '';
+								updateTextPrint(currentDeck.playerIndex, 'Exchanged ' + counter + ' cards!');
+								// Check next phase
+								currentDeck.updateHTMLElements();
+								currentDeck.checkIfPhaseDone(false);
+							}).bind(this), 'interactButton');
+						}
+					}
+				});
+			}
+			else{ // Check next phase, no more inputs required from user
 				this.checkIfPhaseDone(false);
 			}
 
@@ -400,16 +524,14 @@ function DeckOfCards(playerIndex){
 			// (U) Unique
 			// (S) Choose a card in shop
 
-			// (2 TC) Chapel: Trash up to 4 cards from your hand
-			// (2 C) Cellar: Discard any number of cards, +1 Card per card discarded
-			// (2 U) Moat: If attack is used, you can show this card to prevent being affected
+			// (UC) Throne Room: Choose action card from hand, play twice.
+			// (S) Workshop: Gain a card costing up to 4
 			// (TS) Feast: Trash this card, Gain a card costing up to 5
+			// (2 U) Moat: If attack is used, you can show this card to prevent being affected
 			// (C) Militia: (Attack) Each other player discards down to 3 cards in their hand
 			// (TC) MoneyLender: Trash a Copper from your hand, +3 Gold
 			// (U) Spy: (Attack) Show top of deck, placer chooses if discard or put back on top of deck
 			// (U) Thief:
-			// (UC) Throne Room: Choose action card from hand, play twice.
-			// (S) Workshop: Gain a card costing up to 4
 			// (3 B) Chancellor: You may immediately put your entire deck into discard pile
 
 			this.updateHTMLElements();
@@ -476,6 +598,14 @@ function Hand(deckOfCards){
 
 	this.useCard = function(card){
 		var tempCard = this.getCard(card.id);
+		if(card.name === 'Copper'){
+			this.deckOfCards.updateMoney(this.deckOfCards.money - 1, true);
+		} else if(card.name === 'Silver'){
+			this.deckOfCards.updateMoney(this.deckOfCards.money - 2, true);
+		} else if(card.name === 'Gold'){
+			this.deckOfCards.updateMoney(this.deckOfCards.money - 3, true);
+		}
+		this.amount--;
 		this.removeCardList(tempCard);
 		this.allCards.delete(card.id); 
 		var handEl = document.getElementById(id_hand + this.deckOfCards.playerIndex);

@@ -12,7 +12,7 @@ var cards_victory = new Map();
 var cards_action = new Map();
 */
 
-var card_capacity_action = 10; //10; // Testing
+var card_capacity_action = 2; //10; // Testing
 var card_capacity_victory = 12;
 var card_capacity_infinite = 200; // Not more should be required
 
@@ -114,13 +114,25 @@ function Card(name, cardType){
 		} else if(cardType === CardType.ACTION_CARD){
 			var s = '';
 			if(this.drawCards != 0){
-				s += '+' + this.drawCards + ' Cards\n';
+				if(this.drawCards === 1){
+					s += '+' + this.drawCards + ' Card\n';
+				} else {
+					s += '+' + this.drawCards + ' Cards\n';
+				}
 			}
 			if(this.moreActions != 0){
-				s += '+' + this.moreActions + ' Actions\n';
+				if(this.moreActions === 1){
+					s += '+' + this.moreActions + ' Action\n';
+				} else {
+					s += '+' + this.moreActions + ' Actions\n';
+				}
 			}
 			if(this.moreBuys != 0){
-				s += '+' + this.moreBuys + ' Buys\n';
+				if(this.moreBuys === 1){
+					s += '+' + this.moreBuys + ' Buy\n';
+				} else {
+					s += '+' + this.moreBuys + ' Buys\n';
+				}
 			}
 			if(this.moreGold != 0){
 				s += '+$' + this.moreGold + '\n'; // Gold
@@ -200,18 +212,25 @@ function initCards(){
 	curse.setValue(-1);
 
 	// Action Cards
+	var cellar = new Card('Cellar', CardType.ACTION_CARD);
+	cellar.setCost(2);
+	cellar.addAction(1);
+	cellar.addAdditionalDesc('Discard any number of cards, then draw that many'); 
+	var chapel = new Card('Chapel', CardType.ACTION_CARD);
+	chapel.setCost(2);
+	chapel.addAdditionalDesc('Trash cards from your hand'); // Didn't add upper limit of 4 cards to trash
 	var village = new Card('Village', CardType.ACTION_CARD);
 	village.setCost(3);
 	village.addDrawCards(1);
 	village.addAction(2);
-	var woodCutter = new Card('WoodCutter', CardType.ACTION_CARD);
+	var woodCutter = new Card('Wood Cutter', CardType.ACTION_CARD); // Too big name
 	woodCutter.setCost(3);
 	woodCutter.addBuys(1);
 	woodCutter.addGold(2);
 	var smithy = new Card('Smithy', CardType.ACTION_CARD);
 	smithy.setCost(4);
 	smithy.addDrawCards(3);
-	var councilRoom = new Card('CouncilRoom', CardType.ACTION_CARD);
+	var councilRoom = new Card('Council Room', CardType.ACTION_CARD); // Too big name
 	councilRoom.setCost(5);
 	councilRoom.addDrawCards(4);
 	councilRoom.addBuys(1);
@@ -256,6 +275,8 @@ function initCards(){
 	storeCard(garden, card_capacity_victory);
 	storeCard(curse, card_capacity_infinite, false); // Don't show in shop
 
+	storeCard(cellar, card_capacity_action);
+	storeCard(chapel, card_capacity_action);
 	storeCard(village, card_capacity_action);
 	storeCard(woodCutter, card_capacity_action);
 	storeCard(smithy, card_capacity_action);

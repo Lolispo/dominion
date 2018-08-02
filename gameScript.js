@@ -15,15 +15,18 @@ var gameEnded = false;
 	Better background color to buttons so they are more easily spottable
 	Decks @Ending Only show stats != 0
 
+	Gray out action cards in hand when phase != 0
 	Estetic
 		Make Player own areas more clearer
 	Choose color and name
 	Some way of explaning what cost and cap numbers are
 	
+	End
+		Cards aren't generated in html for final score, not sure why
+
 	CSS
-		Add Select to hand cards as well
-			Currently exist for shop cards
 		Make it more obvious in UI when having to choose a card from your hand (currently the skip button appears only)
+		Mark card immediately as out of stock when card is bought
 		Scalable card sizes
 			Use 3 existing card sizes, when card amount in hand goes over a certain limit
 		Better name for text sizes
@@ -266,11 +269,18 @@ function getPlayerColor(index){
 	}
 }
 
-function getStringNotZero(money, buysLeft, actionsLeft){
+function getStringNotZero(money, buysLeft, actionsLeft, plusMoney){
 	var s = '(';
 	var added = false;
 	if(money != 0){
 		s += 'Money: ' + money;
+		added = true;
+	}
+	if(plusMoney != 0){
+		if(added){
+			s += ', ';
+		}
+		s += '+$: ' + plusMoney;
 		added = true;
 	}
 	if(buysLeft != 0){
@@ -365,7 +375,10 @@ function endGame(){
 			}
 		}
 		map.forEach(function(value, key){ // Unknown order of these cards
-			var tempEl = initNewUIElement('div', new Map(), id_info_stats + i, ['noclick', 'strokeme', 'bigger_text']);
+			var card = cards_global.get(key); 
+			var tempEl = initNewUIElement('div', new Map().set('id', id_scoreScreen + id_card + card.name + '_' + i), id_info_stats + i, ['noclick', 'strokeme', 'bigger_text', 'card-container']);
+			generateCardHTML(card, id_scoreScreen + id_card + card.id + i, id_scoreScreen + id_card + card.name + '_' + i, false, 'card_smaller', [getCssClassCard(card)]);
+			// This is not shown in game end screen TODO FIX
 			tempEl.innerHTML = value + ' ' + key;
 			console.log(value + ' ' + key);
 		});

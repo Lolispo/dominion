@@ -33,6 +33,7 @@ var id_bottomLeft = '_bottomLeft'
 var id_bottomRight = '_bottomRight'
 var id_shop = 'shop_';
 var id_card = 'card_';
+var id_scoreScreen = 'score_';
 var id_phase0 = '> Go To Buy Phase';
 var id_phase1 = '> End Turn';
 var id_startBuyString = 'Starting Buying Phase';
@@ -181,6 +182,7 @@ function getWidthCard(cardType){
 
 // Generate HTML for Card - More generic
 function generateCardHTML(tempCard, id, parentID, isShopCard, cardType, cssClass, callback = '', orderNum = '4'){
+	console.log('DEBUG @generateCardHTML' + parentID);
 	var div = initNewUIElement('div', new Map().set('id', id + id_div), parentID, ['container', 'margin_left_1', 'position_relative']);
 	div.style.order = orderNum;
 	var centerWidth = getWidthCard(cardType);

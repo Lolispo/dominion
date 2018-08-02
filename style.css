@@ -177,21 +177,21 @@
 /* Centered text top*/
 .size1_centered_top {
     position: absolute;
-    top: 8px;
+    top: 12px;
     left: 50%;
     transform: translate(-50%, -50%);
 }
 
 .size2_centered_top {
     position: absolute;
-    top: 12px;
+    top: 20px;
     left: 50%;
     transform: translate(-50%, -50%);
 }
 
 .size3_centered_top {
     position: absolute;
-    top: 16px;
+    top: 32px;
     left: 50%;
     transform: translate(-50%, -50%);
 }

@@ -37,15 +37,11 @@ function Player(index){
 	this.buyCard = function(card, cardId){
 		if(this.cards.getPhase() === 1){
 			// Check if you can afford card
-			if(this.cards.money >= card.cost){
+			if(this.cards.getCurrentMoney() >= card.cost){
 				// Confirm purchase
 				deleteButton('confirmPurchase', id_interact + this.index);
 				deleteButton('cancelPurchase', id_interact + this.index);
 				modifyCSSChildren('remove', 'shopCards', 'selected');
-				var el = document.getElementById('shopCards');
-				for(var i = 0; i < el.childNodes.length; i++){
-					modifyCSSID('remove', getIDImgFromDiv(el.childNodes[i].id), 'selected');				
-				}
 				var cap = getCapacity(card);
 				var capString = ')';
 				if(cap < card_capacity_show){
@@ -78,7 +74,7 @@ function Player(index){
 					deleteButton('cancelPurchase', id_interact + this.index);
 				}).bind(this), 'interactButton');
 			} else{
-				updateShopText('Not enough money! (' + this.cards.money + '/' + card.cost + ')');
+				updateShopText('Not enough money! (' + this.cards.getCurrentMoney() + '/' + card.cost + ')');
 			}
 		}
 	}
