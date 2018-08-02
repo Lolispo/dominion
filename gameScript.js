@@ -11,6 +11,10 @@ var gameEnded = false;
 /*
 	TODO
 	Make it more obvious that turn has switched
+		Add red text in div 'info' (After turn) that dissapears after 5 seconds
+		setTimeout
+		Fade away?
+		Align horizontally
 
 	Gameplay:
 		End
