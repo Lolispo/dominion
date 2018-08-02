@@ -10,10 +10,13 @@ var gameEnded = false;
 
 /*
 	TODO
+	Make it more obvious that turn has switched
 
 	Gameplay:
 		End
 			Cards should show before text 
+			Sort cards in more interesting order, victory cards first
+			Align text in vertical height
 		Some way of explaning what cost and cap numbers are
 	
 

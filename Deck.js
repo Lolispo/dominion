@@ -307,19 +307,20 @@ function DeckOfCards(playerIndex){
 	}
 
 	// New Card
-	this.addNewCard = function(card, inDiscard = true, string = 'Upgraded! '){
-		if(inDiscard){
+	this.addNewCard = function(card, inDiscard = true, updateCapacity = true, string = 'Upgraded! '){
+		if(inDiscard){	// Go to discard pile or hand directly
 			this.discard.push(card);
 			this.showTopOfDiscard(card);
 		} else {
-			this.addCardToHand(card, string);
+			this.addCardToHand(card, string); // String is what should be noted in the update string, 'Drew a Card', 'Upgraded! '
 			this.displayCard(id_card + card.id);
 		}
-
-		var cap = getCapacity(card);
-		var newCap = updateCapacity(card.name, cap - 1); // Reduce capacity of this card type
-		if(newCap === 0){
-			this.checkShopCostInactive();
+		if(updateCapacity){ // If a card is received from shop, updateCapacity. Otherwise if its from hand or something false
+			var cap = getCapacity(card);
+			var newCap = updateCapacity(card.name, cap - 1); // Reduce capacity of this card type
+			if(newCap === 0){
+				this.checkShopCostInactive();
+			}			
 		}
 	}
 
@@ -505,7 +506,7 @@ function DeckOfCards(playerIndex){
 										var tempCard = getPlayerCard(currentDeck.playerIndex, getIDFromCard(imgID));
 										// Discard this card
 										var newTempCard = currentDeck.hand.useCard(tempCard); 
-										currentDeck.addNewCard(newTempCard); 
+										currentDeck.addNewCard(newTempCard, true, false); 
 										// Draw new Card
 										var cardHtml_id = currentDeck.drawCard(); 
 										currentDeck.displayCard(cardHtml_id);
