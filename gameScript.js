@@ -22,7 +22,7 @@ var gameEnded = false;
 	Some way of explaning what cost and cap numbers are
 	
 	End
-		Cards aren't generated in html for final score, not sure why
+		Cards should show before text 
 
 	CSS
 		Make it more obvious in UI when having to choose a card from your hand (currently the skip button appears only)
@@ -316,7 +316,6 @@ function endGame(){
 		for(var j = 0; j < cards.length; j++){
 			if(cards[j].cardType === CardType.VICTORY_CARD){
 				if(cards[j].name === 'Garden'){
-					// TODO Add garden functionality here
 					var temp = cards.length;
 					temp -= (cards.length % 10);
 					pointsArray[i] += temp / 10;
@@ -376,10 +375,25 @@ function endGame(){
 		}
 		map.forEach(function(value, key){ // Unknown order of these cards
 			var card = cards_global.get(key); 
-			var tempEl = initNewUIElement('div', new Map().set('id', id_scoreScreen + id_card + card.name + '_' + i), id_info_stats + i, ['noclick', 'strokeme', 'bigger_text', 'card-container']);
-			generateCardHTML(card, id_scoreScreen + id_card + card.id + i, id_scoreScreen + id_card + card.name + '_' + i, false, 'card_smaller', [getCssClassCard(card)]);
-			// This is not shown in game end screen TODO FIX
-			tempEl.innerHTML = value + ' ' + key;
+			var victoryCardString = '';
+			if(card.cardType === CardType.VICTORY_CARD){
+				var points = 0;
+				if(card.name === 'Garden'){
+					// TODO Add garden functionality here
+					var temp = cards.length;
+					temp -= (cards.length % 10);
+					points = temp / 10;
+				} else{
+					points = card.getValue();	
+				}
+				var totalPoints = points * value;
+				victoryCardString = ', Victory Points Worth: ' + totalPoints;
+			}
+			initNewUIElement('div', new Map().set('id', id_scoreScreen + id_card + card.name + '_' + i), id_info_stats + i, ['card_container']);
+			generateCardHTML(card, id_scoreScreen + id_card + card.id + i, id_scoreScreen + id_card + card.name + '_' + i, false, 'card_discard', [getCssClassCard(card)]);
+			initNewUIElement('div', new Map().set('id', id_scoreScreen + id_text + '_' + i), id_scoreScreen + id_card + card.name + '_' + i, ['noclick', 'strokeme', 'bigger_text'])
+				.innerHTML = 'Amount: ' + value + victoryCardString;			
+			//tempEl.innerHTML = value + ' ' + key;
 			console.log(value + ' ' + key);
 		});
 		console.log('--------------------------');

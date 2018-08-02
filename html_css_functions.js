@@ -56,6 +56,7 @@ function initNewUIElement(typeEl, properties = new Map(), parentID, cssClass = '
 	});
 	modifyCSSEl('add', el, cssClass);
 	div.appendChild(el);
+	console.log('DEBUG @initNewUIElement', div.id, el.id)
 	return el;
 }
 
@@ -185,6 +186,10 @@ function generateCardHTML(tempCard, id, parentID, isShopCard, cardType, cssClass
 	console.log('DEBUG @generateCardHTML' + parentID);
 	var div = initNewUIElement('div', new Map().set('id', id + id_div), parentID, ['container', 'margin_left_1', 'position_relative']);
 	div.style.order = orderNum;
+	var xd = document.getElementById(id + id_div);
+	xd.parentElement.nodeName
+	console.log(xd);
+	console.log(xd.parentElement.id);
 	var centerWidth = getWidthCard(cardType);
 	var centeredTextCSSClass = getCssFontSize(tempCard, centerWidth, true); 
 	var normalTextCSSClass = getCssFontSize(tempCard, centerWidth, false);
