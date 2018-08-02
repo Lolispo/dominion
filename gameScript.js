@@ -10,28 +10,23 @@ var gameEnded = false;
 
 /*
 	TODO
-	Start to Center stuff in css
-	
-	Better background color to buttons so they are more easily spottable
-	Decks @Ending Only show stats != 0
 
-	Gray out action cards in hand when phase != 0
+	Gameplay:
+		End
+			Cards should show before text 
+		Some way of explaning what cost and cap numbers are
+	
+
 	Estetic
+		Start to Center stuff in css
+		Choose color and name
 		Make Player own areas more clearer
-	Choose color and name
-	Some way of explaning what cost and cap numbers are
-	
-	End
-		Cards should show before text 
-
-	CSS
+		Better background color to buttons so they are more easily spottable
+		
 		Make it more obvious in UI when having to choose a card from your hand (currently the skip button appears only)
-		Mark card immediately as out of stock when card is bought
+			Also should be availble for shop for Cards where you receive a free card
 		Scalable card sizes
 			Use 3 existing card sizes, when card amount in hand goes over a certain limit
-		Better name for text sizes
-			Remove bigger_text etc
-		More consistent names in general
 
 	Later:
 		New Cards:
@@ -72,7 +67,7 @@ function startGame(){
 
 	// Choosing turn and start
 	turn = Math.floor(Math.random() * playingPlayers);
-	initNewUIElement('div', new Map().set('id', 'turn'), 'info', ['inline', 'bold', 'big_text', 'strokeme']);
+	initNewUIElement('div', new Map().set('id', 'turn'), 'info', ['inline', 'bold', 'size3_text_medium', 'text_shadow']);
 	changeText('turn', 'Player ' + (turn + 1) + ':s turn'); // TODO @nameCustom
 	document.getElementById('turn').style.backgroundColor = getPlayerColor(turn);
 	for(var i = 0; i < playingPlayers; i++){
@@ -303,6 +298,8 @@ function getStringNotZero(money, buysLeft, actionsLeft, plusMoney){
 
 // Called when points should be calculated to see who won
 function endGame(){
+	console.log('Game ending!');
+	gameEnded = true;
 	modifyCSSID('add', 'shopCards', 'invis')
 	var pointsArray = [];
 	var highestPointPlayer = [];
@@ -357,11 +354,11 @@ function endGame(){
 	for(var i = 0; i < players.length; i++){
 		removeChildren(id_info_stats + i);
 		var el = document.getElementById(id_info_stats + i);
-		modifyCSSEl('add', el, 'flex-container')
+		modifyCSSEl('add', el, 'flex_container')
 		var cards = allPlayerCards[i];
-		var newEl = initNewUIElement('div', new Map(), id_info_stats + i, ['noclick', 'strokeme', 'big_text']);
+		var newEl = initNewUIElement('div', new Map(), id_info_stats + i, ['noclick', 'text_shadow', 'size3_text_medium']);
 		newEl.innerHTML = pointsArray[i] + ' points'; // players[i].name + ': ' + 
-		var newEl2 = initNewUIElement('div', new Map(), id_info_stats + i, ['noclick', 'strokeme', 'big_text']);
+		var newEl2 = initNewUIElement('div', new Map(), id_info_stats + i, ['noclick', 'text_shadow', 'size3_text_medium']);
 		newEl2.innerHTML = cards.length + ' cards total';
 		console.log(players[i].name + ': ' + pointsArray[i] + ' points');
 		console.log(cards.length + ' cards total');
@@ -391,7 +388,7 @@ function endGame(){
 			}
 			initNewUIElement('div', new Map().set('id', id_scoreScreen + id_card + card.name + '_' + i), id_info_stats + i, ['card_container']);
 			generateCardHTML(card, id_scoreScreen + id_card + card.id + i, id_scoreScreen + id_card + card.name + '_' + i, false, 'card_discard', [getCssClassCard(card)]);
-			initNewUIElement('div', new Map().set('id', id_scoreScreen + id_text + '_' + i), id_scoreScreen + id_card + card.name + '_' + i, ['noclick', 'strokeme', 'bigger_text'])
+			initNewUIElement('div', new Map().set('id', id_scoreScreen + id_text + '_' + i), id_scoreScreen + id_card + card.name + '_' + i, ['noclick', 'text_shadow', 'text16'])
 				.innerHTML = 'Amount: ' + value + victoryCardString;			
 			//tempEl.innerHTML = value + ' ' + key;
 			console.log(value + ' ' + key);

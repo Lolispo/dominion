@@ -38,16 +38,12 @@
 	font-size: 40pt;
 }
 
-.bigger_text {
-	font-size: large;
-}
-
-.big_text {
+.text16 {
 	font-size: 16pt;
 }
 
-.biggest_text {
-	font-size: 24pt;
+.text32 {
+	font-size: 32pt;
 }
 
 /* Text Change */
@@ -56,11 +52,11 @@
     font-weight: bold;
 }
 
-.third-message {
+.color_gray {
     color: grey;
 }
 
-.strokeme {
+.text_shadow {
     color: white;
     text-shadow:
     -1px -1px 0 #000,
@@ -116,7 +112,7 @@
 	flex-flow: row wrap;
 }
 
-.flex-container {
+.flex_container {
 	display: flex;
 	flex-flow: column wrap;
 	justify-content: flex-start; 

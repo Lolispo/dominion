@@ -12,7 +12,7 @@ var cards_victory = new Map();
 var cards_action = new Map();
 */
 
-var card_capacity_action = 2; //10; // Testing
+var card_capacity_action = 10; // Testing - Change to lower for end screen tests
 var card_capacity_victory = 12;
 var card_capacity_infinite = 200; // Not more should be required
 
@@ -62,18 +62,15 @@ function updateCapacity(cardName, newValue){
 	cards_capacity.set(cardName, newValue);
 	if(newValue === 0){
 		if(cardName === 'Province'){
-			console.log('Game ending!');
-			gameEnded = true;
 			endGame();
 		} else{
 			emptyPiles++;
 			if(emptyPiles === gameEndEmptyPiles){
-				console.log('Game ending!');
-				gameEnded = true;
 				endGame();
 			}			
 		}
 	}
+	return newValue;
 }
 
 

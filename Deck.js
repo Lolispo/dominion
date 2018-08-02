@@ -25,6 +25,7 @@ function DeckOfCards(playerIndex){
 			var card = cards_global_id.get(getIDFromCard(imgID));
 			var cardCost = card.cost;
 			if(getCapacity(card) === 0){
+				// TODO: Make me get checked everytime a card is bought
 				shop.childNodes[i].style.order = 3; // Order set
 				// Mark out of stock
 				if(document.getElementById(imgID + '_out') === null){
@@ -149,7 +150,11 @@ function DeckOfCards(playerIndex){
 		var handElement = document.getElementById('hand_' + this.playerIndex);
 		for(var i = 0; i < handElement.childNodes.length; i++){
 			var card = this.hand.getCard(getIDFromCard(handElement.childNodes[i].id));
-			handElement.childNodes[i].style.order = getCssOrderCard(card, this.phase);
+			var order = getCssOrderCard(card, this.phase);
+			handElement.childNodes[i].style.order = order;
+			if(order === 4){
+				modifyCSSEl('add', handElement.childNodes[i], 'inactive');
+			}
 		}
 	}
 
@@ -312,7 +317,10 @@ function DeckOfCards(playerIndex){
 		}
 
 		var cap = getCapacity(card);
-		updateCapacity(card.name, cap - 1); // Reduce capacity of this card type
+		var newCap = updateCapacity(card.name, cap - 1); // Reduce capacity of this card type
+		if(newCap === 0){
+			this.checkShopCostInactive();
+		}
 	}
 
 	// Use action card
