@@ -10,6 +10,8 @@ var gameEnded = false;
 
 /*
 	TODO
+	Top of Discard show 'Empty' image instead of not showing when discard empty
+		After this, move it before status messages
 	Make it more obvious that turn has switched
 		Add red text in div 'info' (After turn) that dissapears after 5 seconds
 		setTimeout

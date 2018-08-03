@@ -29,8 +29,10 @@ function Player(index){
 	}
 
 	this.playActionCard = function(card){
-		if(this.cards.getPhase() === 0 && isTurn(this.index)){
+		if(this.cards.getPhase() === 0 && isTurn(this.index)){ 
 			this.cards.useCard(card);
+		} else { // These checks shouldn't in theory be required
+			throw ('Check me: ' + (this.cards.getPhase() === 0) + (isTurn(this.index)) );
 		}
 	}
 
