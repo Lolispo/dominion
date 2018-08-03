@@ -65,7 +65,7 @@ function startGame(){
 	// Init players
 	playingPlayers = sessionStorage.getItem('playersPlaying');;
 	// Init Cards
-	if(!Number.isInteger(playingPlayers)){
+	if(!Number.isInteger(parseInt(playingPlayers))){
 		playingPlayers = 2;
 	}
 	/*
