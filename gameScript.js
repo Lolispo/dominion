@@ -17,6 +17,13 @@ var gameEnded = false;
 		setTimeout
 		Fade away?
 		Align horizontally
+	
+	Animations:
+		All UI updates
+			Discarding hand
+			New Card in Hand
+			Shop availability changes
+
 
 	Gameplay:
 		End
@@ -79,7 +86,8 @@ function startGame(){
 
 	// Choosing turn and start
 	turn = Math.floor(Math.random() * playingPlayers);
-	initNewUIElement('div', new Map().set('id', 'turn'), 'info', ['inline', 'bold', 'size3_text_medium', 'text_shadow']);
+	initNewUIElement('div', new Map().set('id', 'turn'), 'info', ['inline']);
+	initNewUIElement('div', new Map().set('id', 'turn_box'), 'turn', ['inline', 'bold', 'size3_text_medium', 'text_shadow']);
 	initNewUIElement('div', new Map().set('id', 'helpDiv'), 'info', ['inline']);
 	createButton(HELP_MESSAGE_OPEN, 'helpDiv', 'helpButton', (function(){
 		var currentName = document.getElementById('helpButton').innerHTML;
@@ -89,7 +97,7 @@ function startGame(){
 			changeText('helpButton', HELP_MESSAGE_OPEN)
 		}
 		modifyCSSID('toggle', 'helpMessage', 'invis');
-	}).bind(this), ['normalButton', 'margin_left_30']);
+	}).bind(this), ['normalButton', 'margin_left_30', 'margin_top_2']);
 	initNewUIElement('div', new Map().set('id', 'helpMessage'), 'helpDiv', ['flex_container', 'invis']);
 	var stringActions = getHelpString();
 	var splitted = stringActions.split('\n');
@@ -97,8 +105,8 @@ function startGame(){
 		var el = initNewUIElement('div', new Map().set('id', 'helpMessage_' + i), 'helpMessage', ['inline', 'bold', 'size2_text_medium', 'text_shadow']);
 		el.innerHTML = splitted[i];
 	}
-	changeText('turn', 'Player ' + (turn + 1) + ':s turn'); // TODO @nameCustom
-	document.getElementById('turn').style.backgroundColor = getPlayerColor(turn);
+	changeText('turn_box', 'Player ' + (turn + 1) + ':s turn'); // TODO @nameCustom
+	document.getElementById('turn_box').style.backgroundColor = getPlayerColor(turn);
 	for(var i = 0; i < playingPlayers; i++){
 		document.getElementById(id_player + i).style.order = 2;
 	}
@@ -119,13 +127,60 @@ function changeTurn(){
 	} else {
 		turn++;
 	}
-	changeText('turn', players[turn].name + ':s turn');
-	document.getElementById('turn').style.backgroundColor = getPlayerColor(turn);
-	for(var i = 0; i < players.length; i++){
-		document.getElementById(id_player + i).style.order = 2;
+
+	var element = document.getElementById('turn');
+	element.addEventListener('animationstart', listener, false);
+	element.addEventListener('animationend', listener, false);
+
+	modifyCSSEl('add', element, 'animation_slideOut');
+	function listener(event) {
+		switch(event.type) {
+			case 'animationstart':
+				console.log('animationstart: 1: ' + event.elapsedTime);
+				break;
+			case 'animationend':
+				console.log('animationend: 1: ' + event.elapsedTime);
+				modifyCSSEl('remove', element, 'animation_slideOut');
+				// Outside of screen
+				changeText('turn_box', players[turn].name + ':s turn');
+				document.getElementById('turn_box').style.backgroundColor = getPlayerColor(turn);
+				modifyCSSEl('add', element, 'invis_opacity');
+
+				element.removeEventListener('animationstart', listener);
+				element.removeEventListener('animationend', listener);
+				element.addEventListener('animationstart', listener2, false);
+				element.addEventListener('animationend', listener2, false);
+
+				modifyCSSEl('add', element, 'animation_slideIn');
+				function listener2(event) {
+					switch(event.type) {
+						case 'animationstart':
+							console.log('animationstart: 2: ' + event.elapsedTime);
+							break;
+						case 'animationend':
+							console.log('animationend: 2: ' + event.elapsedTime);
+							modifyCSSEl('remove', element, 'invis_opacity');
+							element.removeEventListener('animationstart', listener2);
+							element.removeEventListener('animationend', listener2);
+							modifyCSSEl('remove', element, 'animation_slideIn');
+							
+							for(var i = 0; i < players.length; i++){
+								document.getElementById(id_player + i).style.order = 2;
+							}
+							document.getElementById(id_player + turn).style.order = 1;
+							players[turn].startTurn();
+						
+							break;
+					}
+				}
+				break;
+			/*
+			case 'animationiteration':
+				console.log('animationiteration: ' + event.elapsedTime);
+				break;
+			}*/
+		}
 	}
-	document.getElementById(id_player + turn).style.order = 1;
-	players[turn].startTurn();
 }
 
 function backMainMenu(){

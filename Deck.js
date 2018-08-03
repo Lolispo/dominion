@@ -204,14 +204,13 @@ function DeckOfCards(playerIndex){
 				deleteButton('cellarID', id_interact + this.playerIndex);
 				deleteButton('cellarIDSkip', id_interact + this.playerIndex);
 				modifyCSSID('add', id_actionsLeft + this.playerIndex, 'invis')
-				updateTextPrint(this.playerIndex, id_startBuyString);
+				//updateTextPrint(this.playerIndex, id_startBuyString);
 				changeText('skipButton', id_phase1);
 			}
 		} else if(this.phase === 1){
 			if(nextStage || this.buysLeft === 0 || this.getCurrentMoney() === 0){ // TODO: Decide. Maybe remove if money = 0, since if buysLeft, should be allowed to buy Copper
 				this.phase++;
 				if(!gameEnded){
-					// TODO: @Ending Only show stats != 0
 					updateTextPrint(this.playerIndex, 'Ending Turn ' + getStringNotZero(this.money, this.buysLeft, this.actionsLeft, this.plusMoney));
 					deleteButton('interactButton', id_interact + this.playerIndex);
 					this.discardHand();

@@ -24,7 +24,7 @@ function Player(index){
 	}
 
 	this.displayHand = function(){
-		updateTextPrint(this.index, 'Your turn Player ' + (this.index + 1) + '!');
+		//updateTextPrint(this.index, 'Your turn Player ' + (this.index + 1) + '!');
 		this.cards.displayEntireHand();
 	}
 
@@ -113,11 +113,11 @@ function Player(index){
 		initNewUIElement('div', new Map().set('id', id_text + this.index + id_0), id_text + this.index, ['bold', 'text_shadow', 'margin_left', 'border_bottom'])
 			.innerHTML = id_statusMessageString;
 		initNewUIElement('div', new Map().set('id', id_text + this.index + id_1), id_text + this.index, ['bold', 'text_shadow', 'margin_left'])
-			.innerHTML = '> ' + this.name + ' fst text';
+			.innerHTML = '> ';
 		initNewUIElement('div', new Map().set('id', id_text + this.index + id_2), id_text + this.index, ['text_shadow', 'margin_left'])
-			.innerHTML = '> ' + this.name + ' snd text';
+			.innerHTML = '> ';
 		initNewUIElement('div', new Map().set('id', id_text + this.index + id_3), id_text + this.index, ['color_gray', 'text_shadow', 'margin_left'])
-			.innerHTML = '> ' + this.name + ' thr text';
+			.innerHTML = '> ';
 			
 		initNewUIElement('div', new Map().set('id', id_info_cards + this.index), id_info + this.index, 'margin_left_30');
 		initNewUIElement('div', new Map().set('id', id_discard_top + this.index), id_info_cards + this.index);

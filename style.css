@@ -340,6 +340,10 @@
 	display: none;
 }
 
+.invis_opacity {
+	opacity: 0;
+}
+
 .inactive {
 	filter: grayscale(100%);
 }
@@ -352,3 +356,59 @@
 	padding-left: 2px;
 }
 
+/* Animations */
+
+.animation_slideOut {
+	overflow:hidden;
+	/* @keyframes duration | timing-function | delay | 
+		iteration-count | direction | fill-mode | play-state | name */
+	animation: 1s ease-in-out 0s 1 normal both running slideout;
+	/*
+	animation-duration: 2s;
+	animation-name: slideout linear;
+	animation-iteration-count: 1;
+	*/
+	/*animation-direction: alternate;
+	*/
+}
+
+.animation_slideIn {
+	overflow:hidden;
+	animation: 1s ease-in-out 0s 1 alternate both running slidein;
+	/*
+	animation-duration: 2s;
+	animation-name: slidein linear;
+	animation-iteration-count: 1;
+	*/
+	/*animation-direction: alternate;
+	*/
+}
+
+
+@keyframes slideout {
+	from {
+		margin-left:0%;
+		height: 31px;
+		opacity: 1;
+	}
+  
+	to {
+		margin-left:100%;
+		height: 31px;
+		opacity: 0;
+	}
+}
+
+@keyframes slidein {
+	from {
+		margin-left:100%;
+		height: 31px;
+		opacity: 0;
+	}
+  
+	to {
+		margin-left:0%;
+		height: 31px;
+		opacity: 1;
+	}
+}
