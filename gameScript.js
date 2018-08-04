@@ -136,10 +136,10 @@ function changeTurn(){
 	function listener(event) {
 		switch(event.type) {
 			case 'animationstart':
-				console.log('animationstart: 1: ' + event.elapsedTime);
+				//console.log('animationstart: 1: ' + event.elapsedTime);
 				break;
 			case 'animationend':
-				console.log('animationend: 1: ' + event.elapsedTime);
+				//console.log('animationend: 1: ' + event.elapsedTime);
 				modifyCSSEl('remove', element, 'animation_slideOut');
 				// Outside of screen
 				changeText('turn_box', players[turn].name + ':s turn');
@@ -155,10 +155,10 @@ function changeTurn(){
 				function listener2(event) {
 					switch(event.type) {
 						case 'animationstart':
-							console.log('animationstart: 2: ' + event.elapsedTime);
+							//console.log('animationstart: 2: ' + event.elapsedTime);
 							break;
 						case 'animationend':
-							console.log('animationend: 2: ' + event.elapsedTime);
+							//console.log('animationend: 2: ' + event.elapsedTime);
 							modifyCSSEl('remove', element, 'invis_opacity');
 							element.removeEventListener('animationstart', listener2);
 							element.removeEventListener('animationend', listener2);

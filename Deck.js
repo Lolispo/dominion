@@ -146,14 +146,18 @@ function DeckOfCards(playerIndex){
 		return this.phase;
 	}
 
+	// Used between phases to update order of cards, action cards get lower priority in later phases
 	this.updateHandCardOrder = function(){
+		//console.log('@ updateHandCardOrder - Callback needs to be before this');
 		var handElement = document.getElementById('hand_' + this.playerIndex);
 		for(var i = 0; i < handElement.childNodes.length; i++){
 			var card = this.hand.getCard(getIDFromCard(handElement.childNodes[i].id));
-			var order = getCssOrderCard(card, this.phase);
-			handElement.childNodes[i].style.order = order;
-			if(order === 4){
-				modifyCSSEl('add', handElement.childNodes[i], 'inactive');
+			if(card !== undefined){
+				var order = getCssOrderCard(card, this.phase);
+				handElement.childNodes[i].style.order = order;
+				if(order === 4){
+					modifyCSSEl('add', handElement.childNodes[i], 'inactive');
+				}	
 			}
 		}
 	}
@@ -181,8 +185,9 @@ function DeckOfCards(playerIndex){
 		var centerTexts = document.getElementById(id + id_centeredText);
 		centerTexts.style.width = width_biggest;
 		for(var j = 0; j < centerTexts.childNodes.length; j++){
-			modifyCSSEl('add', centerTexts.childNodes[j], newSize);			
-		}		
+			modifyCSSEl('add', centerTexts.childNodes[j], newSize);
+		}
+		animateCard(id, 'animation_fadeIn', '', 'invis_opacity');
 	}
 
 	this.checkIfPhaseDone = function(nextStage){ // Boolean to see if next stage
@@ -194,7 +199,10 @@ function DeckOfCards(playerIndex){
 				var cardDivs = document.getElementById(id_hand + this.playerIndex).childNodes;
 				for(var i = 0; i < cardDivs.length; i++){
 					var imgID = getIDImgFromDiv(cardDivs[i].id);
-					modifyCSSID('remove', imgID, 'selected');
+					var el = document.getElementById(imgID);
+					if(el !== undefined){
+						modifyCSSEl('remove', el, 'selected');
+					}
 				}
 				deleteButton('playActionID', id_interact + this.playerIndex);
 				deleteButton('mineUpgradeID', id_interact + this.playerIndex);
@@ -242,7 +250,8 @@ function DeckOfCards(playerIndex){
 			this.addCardToHand(tempCard);
 			return id_card + tempCard.id;
 		} else { // If you have shuffled but there are still no cards
-			updateTextPrint(this.playerIndex, 'Out of cards!'); // TODO: Check game functionality here, assume just get no more card
+			updateTextPrint(this.playerIndex, 'Out of cards!');
+			return null;
 		}
 	}
 
@@ -257,8 +266,14 @@ function DeckOfCards(playerIndex){
 				var card = currentPlayer.cards.hand.getCard(card_id);
 				if(card.cardType === CardType.ACTION_CARD && currentPlayer.cards.actionsLeft > 0 && currentPlayer.cards.activeActionCard === ''){
 					// Add use card button
-					updateTextPrint(currentPlayer.index, 'Selected Action Card!', false);
+					//updateTextPrint(currentPlayer.index, 'Selected Action Card!', false);
 					deleteButton('playActionID', id_interact + currentPlayer.index);
+					var cardDivs = document.getElementById(id_hand + currentPlayer.index).childNodes;
+					for(var i = 0; i < cardDivs.length; i++){
+						var imgID = getIDImgFromDiv(cardDivs[i].id);
+						modifyCSSID('remove', imgID, 'selected');
+					}
+					modifyCSSID('add', id_card + card.id, 'selected');
 					createButton('Use <br>' + card.name + '?', id_interact + currentPlayer.index, 'playActionID', (function(){
 						updateTextPrint(currentPlayer.index, 'Played Action Card ' + card.name + '!');
 						currentPlayer.playActionCard(card);
@@ -335,17 +350,27 @@ function DeckOfCards(playerIndex){
 		}
 	}
 
+	const useCardAnimationTime = 500;	// Time to wait before going forward
 	// Use action card
 	this.useCard = function(cardParam){
 		this.actionsLeft--;
+		//console.log('DEBUG @useCard');
 		var card = this.hand.useCard(cardParam);
+		var currentDeck = getPlayer(turn).cards;
+		setTimeout(function(){
+			currentDeck.useCardAfterAnimation(card);
+		}, useCardAnimationTime); 
+	}
 
+	this.useCardAfterAnimation = function(card){
 		var actions = card.getActions();
-		updateTextPrint(this.playerIndex, 'Using Card ' + card.name + '!');
+		//updateTextPrint(this.playerIndex, 'Using Card ' + card.name + '!');
 		if(actions.drawCards !== 0){
 			for(var i = 0; i < actions.drawCards; i++){
 				var html_id = this.drawCard();
-				this.displayCard(html_id);
+				if(html_id !== null){
+					this.displayCard(html_id);				
+				}
 			}
 		}
 		if(actions.moreActions !== 0){
@@ -401,7 +426,7 @@ function DeckOfCards(playerIndex){
 					modifyCSSChildren('remove', id_hand + currentDeck.playerIndex, 'selected');
 					if(card.name != 'Gold' && currentDeck.activeActionCard === actionCardID){ // card.id => mine.id
 						// Add use card button
-						updateTextPrint(currentDeck.playerIndex, 'Selected Treasure Card!', false);
+						//updateTextPrint(currentDeck.playerIndex, 'Selected Treasure Card!', false);
 						modifyCSSID('add', id_card + card.id, 'selected');
 						deleteButton('mineUpgradeID', id_interact + currentDeck.playerIndex);
 						createButton('Upgrade ' + card.name + '?', id_interact + currentDeck.playerIndex, 'mineUpgradeID', (function(){
@@ -421,7 +446,9 @@ function DeckOfCards(playerIndex){
 							updateTextPrint(currentDeck.playerIndex, 'Upgraded ' + card.name + ' to ' + newCard.name + '!');
 							// Check next phase
 							currentDeck.updateHTMLElements();
-							currentDeck.checkIfPhaseDone(false);
+							setTimeout(function(){
+								currentDeck.checkIfPhaseDone(false); // Mine
+							}, useCardAnimationTime); 
 						}).bind(this), 'interactButton');
 					}
 				}
@@ -471,7 +498,9 @@ function DeckOfCards(playerIndex){
 							updateTextPrint(currentDeck.playerIndex, 'Trashed ' + counter + ' cards!');
 							// Check next phase
 							currentDeck.updateHTMLElements();
-							currentDeck.checkIfPhaseDone(false);
+							setTimeout(function(){
+								currentDeck.checkIfPhaseDone(false); // Chapel
+							}, useCardAnimationTime); 
 						}).bind(this), 'interactButton');
 					}
 				}
@@ -526,14 +555,17 @@ function DeckOfCards(playerIndex){
 							updateTextPrint(currentDeck.playerIndex, 'Exchanged ' + counter + ' cards!');
 							// Check next phase
 							currentDeck.updateHTMLElements();
-							currentDeck.checkIfPhaseDone(false);
+							setTimeout(function(){
+								currentDeck.checkIfPhaseDone(false); // Cellar
+							}, useCardAnimationTime); 
 						}).bind(this), 'interactButton');
 					}
 				}
 			});
 		}
 		else{ // Check next phase, no more inputs required from user
-			this.checkIfPhaseDone(false);
+			// Make sure it is after animation is finished
+			getPlayer(turn).cards.checkIfPhaseDone(false);
 		}
 
 		// Special Card handling
@@ -626,9 +658,12 @@ function Hand(deckOfCards){
 		this.amount--;
 		this.removeCardList(tempCard);
 		this.allCards.delete(card.id); 
-		var handEl = document.getElementById(id_hand + this.deckOfCards.playerIndex);
-		var el = document.getElementById(id_card + card.id + id_div);
-		handEl.removeChild(el);
+		animateCard(id_card + card.id, 'animation_fadeOut', function(pid, id){
+			//console.log('DEBUG @useCard - Callback - REMOVING CARD ' + id);
+			var handEl = document.getElementById(id_hand + pid);
+			var el = document.getElementById(id + id_div);
+			handEl.removeChild(el);
+		});
 		return tempCard;
 	}
 

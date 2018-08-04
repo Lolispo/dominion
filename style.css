@@ -362,7 +362,7 @@
 	overflow:hidden;
 	/* @keyframes duration | timing-function | delay | 
 		iteration-count | direction | fill-mode | play-state | name */
-	animation: 1s ease-in-out 0s 1 normal both running slideout;
+	animation: 0.5s ease-in-out 0s 1 normal both running slideout;
 	/*
 	animation-duration: 2s;
 	animation-name: slideout linear;
@@ -374,7 +374,7 @@
 
 .animation_slideIn {
 	overflow:hidden;
-	animation: 1s ease-in-out 0s 1 alternate both running slidein;
+	animation: 0.5s ease-in-out 0s 1 normal both running slidein;
 	/*
 	animation-duration: 2s;
 	animation-name: slidein linear;
@@ -382,6 +382,34 @@
 	*/
 	/*animation-direction: alternate;
 	*/
+}
+
+.animation_fadeIn {
+	animation: 0.8s ease-in-out 0s 1 normal both running fadein;
+}
+
+.animation_fadeOut {
+	animation: 0.4s ease-in-out 0s 1 normal both running fadeout;
+}
+
+@keyframes fadein {
+	from {
+		opacity: 0;
+	}
+  
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes fadeout {
+	from {
+		opacity: 1;
+	}
+  
+	to {
+		opacity: 0;
+	}
 }
 
 

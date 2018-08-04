@@ -252,6 +252,7 @@ function addHandCardClick(pid, allowedCardTypes, callback){
 		return cid;
 	}
 	for(var i = 0; i < hand.childNodes.length; i++){
+		//console.log('DEBUG @addHandCardClick', pid, hand.childNodes[i].id);
 		var card = getPlayerCard(pid, getIDFromCard(hand.childNodes[i].id));
 		if(allowedCardTypes.includes(card.cardType)){
 			hand.childNodes[i].addEventListener('click', function(res){
@@ -261,4 +262,37 @@ function addHandCardClick(pid, allowedCardTypes, callback){
 			});
 		}
 	}
+}
+
+function animateCard(id, animationCSS = '', callbackEnd = '', requiredCSS = ''){
+	// Animate display card
+	//console.log('DEBUG @animateCard ' + id + ', ' + animationCSS);
+	var element = document.getElementById(id + id_div);
+	modifyCSSEl('add', element, requiredCSS);
+	element.addEventListener('animationstart', listener, false);
+	element.addEventListener('animationend', listener, false);
+
+	if(animationCSS != ''){
+		modifyCSSEl('add', element, animationCSS);
+	}
+	function listener(event) {
+		switch(event.type) {
+			case 'animationstart':
+				//console.log('animationstart: ' + animationCSS + ', ' + event.elapsedTime + 's');
+				break;
+			case 'animationend':
+				//console.log('animationend: ' + animationCSS + ', ' + event.elapsedTime + 's');
+				if(animationCSS != ''){
+					modifyCSSEl('remove', element, animationCSS);
+				}
+				modifyCSSEl('remove', element, requiredCSS);
+				if(callbackEnd != ''){
+					callbackEnd(turn, id);
+				}
+				element.removeEventListener('animationstart', listener);
+				element.removeEventListener('animationend', listener);
+				break;
+		}
+	}
+	return true;
 }
