@@ -12,17 +12,20 @@ var gameEnded = false;
 	TODO
 	Top of Discard show 'Empty' image instead of not showing when discard empty
 		After this, move it before status messages
-	Make it more obvious that turn has switched
-		Add red text in div 'info' (After turn) that dissapears after 5 seconds
-		setTimeout
-		Fade away?
-		Align horizontally
-	
+	Make cards for other players show backside by default
+		Make the backside of the cards
+			When backside is added, add a Deck element, same as discard
+
+	Sound
+		New Turn
+		Selects
+
 	Animations:
 		All UI updates
 			Discarding hand
-			New Card in Hand
+				Apply useCard logic here
 			Shop availability changes
+			Buying a card
 
 
 	Gameplay:
@@ -43,9 +46,12 @@ var gameEnded = false;
 		Better background color to buttons so they are more easily spottable
 		
 		Make it more obvious in UI when having to choose a card from your hand (currently the skip button appears only)
-			Also should be availble for shop for Cards where you receive a free card
+			Also should be available for shop for Cards where you receive a free card
 		Scalable card sizes
 			Use 3 existing card sizes, when card amount in hand goes over a certain limit
+
+	Restructure: 
+		Board in middle 
 
 	Later:
 		New Cards:
