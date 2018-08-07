@@ -37,7 +37,7 @@ var gameEnded = false;
 	
 	Code
 		Change global vars to Caps / Const
-		Currently animation for both draw and dispaly card - Problem? Seems fine animation wise
+		Currently animation for both draw and dispaly card - Problem? Seems fine animation wise Check me.
 
 	Estetic
 		Start to Center stuff in css
@@ -95,8 +95,8 @@ function startGame(){
 	initNewUIElement('div', new Map().set('id', 'turn'), 'info', ['inline']);
 	initNewUIElement('div', new Map().set('id', 'turn_box'), 'turn', ['inline', 'bold', 'size3_text_medium', 'text_shadow']);
 	initNewUIElement('div', new Map().set('id', 'helpDiv'), 'info', ['inline']);
-	initNewUIElement('audio', new Map().set('id', 'audioMain').set('src', 'res/villageMusic.mp3').set('controls', '').set('autoplay', ''), 'helpDiv', ['inline', 'margin_top_10'])
-		.innerHTML = 'Your browser does not support the audio element';
+	initNewUIElement('audio', new Map().set('id', 'audioMain').set('src', 'res/villageMusicShort.mp3').set('controls', '').set('autoplay', '').set('loop', ''), 
+		'helpDiv', ['inline', 'margin_top_10']).innerHTML = 'Your browser does not support the audio element';
 	createButton(HELP_MESSAGE_OPEN, 'helpButton', 'helpDiv', (function(){
 		var currentName = document.getElementById('helpButton').innerHTML;
 		if(currentName === HELP_MESSAGE_OPEN){
