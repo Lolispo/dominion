@@ -15,6 +15,8 @@ var gameEnded = false;
 	Make cards for other players show backside by default
 		Make the backside of the cards
 			When backside is added, add a Deck element, same as discard
+	Deck and Discard visual cards can have their amount of cards on their back (atleast deck)
+		If a nicer way of showing what is bought than discard pile is found, discard pile could be backside up aswell
 
 	Sound
 		Music on/off button
@@ -34,7 +36,7 @@ var gameEnded = false;
 		Council Room Firefox, sizes differ, text overlap	
 
 	Gameplay:
-	
+
 	Code
 		Change global vars to Caps / Const
 		Currently animation for both draw and dispaly card - Problem? Seems fine animation wise Check me.
@@ -49,6 +51,10 @@ var gameEnded = false;
 			Also should be available for shop for Cards where you receive a free card
 		Scalable card sizes
 			Use 3 existing card sizes, when card amount in hand goes over a certain limit
+		Is it required to remove money cards that are used? In buy phase, they are hardly used so its visual only
+			Could be good in netplay
+		More visual on what was bought
+			netplay
 
 	Restructure: 
 		Board in middle 
@@ -58,10 +64,14 @@ var gameEnded = false;
 			Listed in Deck.js
 
 		netplay - nodejs
+			Remove code about order of players divs
+				On restructure, this should be set to each user anyway
 			board cards sent
 			amount of cards sent to all, which cards only to the player
 			Deck updates (buys) are sent
 			Move Player and Deck to server side instead of client side
+	
+
 
 		Private variables / exchange var to let / const
 			Gather variables in one place
@@ -95,7 +105,7 @@ function startGame(){
 	initNewUIElement('div', new Map().set('id', 'turn'), 'info', ['inline']);
 	initNewUIElement('div', new Map().set('id', 'turn_box'), 'turn', ['inline', 'bold', 'size3_text_medium', 'text_shadow']);
 	initNewUIElement('div', new Map().set('id', 'helpDiv'), 'info', ['inline']);
-	initNewUIElement('audio', new Map().set('id', 'audioMain').set('src', 'res/villageMusicShort.mp3').set('controls', '').set('autoplay', '').set('loop', ''), 
+	initNewUIElement('audio', new Map().set('id', 'audioMain').set('src', 'res/villageMusicShort.mp3').set('controls', '').set('loop', ''), 
 		'helpDiv', ['inline', 'margin_top_10']).innerHTML = 'Your browser does not support the audio element';
 	createButton(HELP_MESSAGE_OPEN, 'helpButton', 'helpDiv', (function(){
 		var currentName = document.getElementById('helpButton').innerHTML;
