@@ -69,14 +69,14 @@ function initNewUIElement(typeEl, properties = new Map(), parentID, cssClass = '
 	var div = document.getElementById(parentID);
 	var el = document.createElement(typeEl);
 	properties.forEach(function(value, key) {
-		el.setAttribute(key, value);
+		el.setAttribute(key, value);	
 	});
 	modifyCSSEl('add', el, cssClass);
 	div.appendChild(el);
 	return el;
 }
 
-function createButton(text, parentID, id, callback, cssClass){
+function createButton(text, id, parentID, callback, cssClass){
 	var el = document.getElementById(parentID);
 	var button = document.createElement('button');
 	button.type = 'button';
@@ -169,7 +169,7 @@ function initShopHTML(){
 
 	initNewUIElement('div', new Map().set('id', 'shopPanel'), 'mainShop', 'shopPanel');
 	// Show / dont show shop
-	createButton(closeShop, 'shopPanel', 'showShop', (function(){
+	createButton(closeShop, 'showShop', 'shopPanel', (function(){
 		var currentName = document.getElementById('showShop').innerHTML;
 		if(currentName === openShop){
 			changeText('showShop', closeShop);

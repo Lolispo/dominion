@@ -52,7 +52,7 @@ function Player(index){
 				updateShopText(card.name + ': (cost: ' + card.cost + capString);
 				// Add selected
 				modifyCSSID('add', id_card + cardId, 'selected');
-				createButton('Confirm Purchase:\n' + card.name, id_interact + this.index, 'confirmPurchase', (function(){
+				createButton('Confirm Purchase:\n' + card.name, 'confirmPurchase', id_interact + this.index, (function(){
 					// Update money
 					this.cards.updateMoney(this.cards.money - card.cost, true);
 					this.cards.updateBuysLeft(this.cards.buysLeft - 1);
@@ -70,7 +70,7 @@ function Player(index){
 					deleteButton('confirmPurchase', id_interact + this.index);
 					deleteButton('cancelPurchase', id_interact + this.index);
 				}).bind(this), 'interactButton');
-				createButton('Cancel Purchase', id_interact + this.index, 'cancelPurchase', (function(){
+				createButton('Cancel Purchase', 'cancelPurchase', id_interact + this.index, (function(){
 					modifyCSSID('remove', id_card + cardId, 'selected');
 					deleteButton('confirmPurchase', id_interact + this.index);
 					deleteButton('cancelPurchase', id_interact + this.index);

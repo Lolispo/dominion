@@ -17,27 +17,27 @@ var gameEnded = false;
 			When backside is added, add a Deck element, same as discard
 
 	Sound
-		New Turn
-		Selects
+		Music on/off button
+		Sound on/off button
+
+		Sound
+			New Turn
+			Selects
+
 
 	Animations:
 		All UI updates
-			Discarding hand
-				Apply useCard logic here
 			Shop availability changes
 			Buying a card
 
+	Firefox:
+		Council Room Firefox, sizes differ, text overlap	
 
 	Gameplay:
-		End
-			Cards should show before text 
-			Sort cards in more interesting order, victory cards first
-			Align text in vertical height
-				Card align to text?
-		Some way of explaning what cost and cap numbers are
 	
-	CreateButton : Change PID and ID Position to be consistent
-	Change global vars to Caps / Const
+	Code
+		Change global vars to Caps / Const
+		Currently animation for both draw and dispaly card - Problem? Seems fine animation wise
 
 	Estetic
 		Start to Center stuff in css
@@ -95,7 +95,9 @@ function startGame(){
 	initNewUIElement('div', new Map().set('id', 'turn'), 'info', ['inline']);
 	initNewUIElement('div', new Map().set('id', 'turn_box'), 'turn', ['inline', 'bold', 'size3_text_medium', 'text_shadow']);
 	initNewUIElement('div', new Map().set('id', 'helpDiv'), 'info', ['inline']);
-	createButton(HELP_MESSAGE_OPEN, 'helpDiv', 'helpButton', (function(){
+	initNewUIElement('audio', new Map().set('id', 'audioMain').set('src', 'res/villageMusic.mp3').set('controls', '').set('autoplay', ''), 'helpDiv', ['inline', 'margin_top_10'])
+		.innerHTML = 'Your browser does not support the audio element';
+	createButton(HELP_MESSAGE_OPEN, 'helpButton', 'helpDiv', (function(){
 		var currentName = document.getElementById('helpButton').innerHTML;
 		if(currentName === HELP_MESSAGE_OPEN){
 			changeText('helpButton', HELP_MESSAGE_CLOSE);
@@ -321,20 +323,34 @@ function getCssFontSize(card, width, isCenter){
 }
 
 // Returns orderNum for card, style.order
+// phase = 3 : => score screen
 function getCssOrderCard(card, phase){
-	switch(card.cardType){
-		case CardType.ACTION_CARD:
-			if(phase === 0 || phase === 2){
-				return 1;				
-			} else {
+	if(phase === 3){ // Score screen sorting
+		switch(card.cardType){
+			case CardType.ACTION_CARD:
+				return 2;
+			case CardType.TREASURE_CARD:
+				return 3;
+			case CardType.VICTORY_CARD:
+				return 1;
+			default:
 				return 4;
-			}
-		case CardType.TREASURE_CARD:
-			return 2;
-		case CardType.VICTORY_CARD:
-			return 3;
-		default:
-			return 4;
+		}
+	} else {
+		switch(card.cardType){
+			case CardType.ACTION_CARD:
+				if(phase === 0 || phase === 2){
+					return 1;				
+				} else {
+					return 4;
+				}
+			case CardType.TREASURE_CARD:
+				return 2;
+			case CardType.VICTORY_CARD:
+				return 3;
+			default:
+				return 4;
+		}
 	}
 }
 
@@ -439,7 +455,6 @@ function endGame(){
 	console.log(s);
 	updateShopText(String(s));
 	console.log('All Results:');
-	// TODO Add data to player areas
 	// Current Data: info_cards, info_discard
 	for(var i = 0; i < players.length; i++){
 		removeChildren(id_info_stats + i);
@@ -476,9 +491,11 @@ function endGame(){
 				var totalPoints = points * value;
 				victoryCardString = ', Victory Points Worth: ' + totalPoints;
 			}
-			initNewUIElement('div', new Map().set('id', id_scoreScreen + id_card + card.name + '_' + i), id_info_stats + i, ['card_container']);
+			var div = initNewUIElement('div', new Map().set('id', id_scoreScreen + id_card + card.name + '_' + i), id_info_stats + i, ['card_container']);
+			div.style.order = getCssOrderCard(card, 3);
 			generateCardHTML(card, id_scoreScreen + id_card + card.id + i, id_scoreScreen + id_card + card.name + '_' + i, false, 'card_discard', [getCssClassCard(card)]);
-			initNewUIElement('div', new Map().set('id', id_scoreScreen + id_text + '_' + i), id_scoreScreen + id_card + card.name + '_' + i, ['noclick', 'text_shadow', 'text16'])
+			initNewUIElement('div', new Map().set('id', id_scoreScreen + id_text + card.name + '_' + i + id_div), id_scoreScreen + id_card + card.name + '_' + i, 'endScreen_texts').style.order = 1;
+			initNewUIElement('div', new Map().set('id', id_scoreScreen + id_text + i), id_scoreScreen + id_text + card.name + '_' + i + id_div, ['noclick', 'text_shadow', 'text16'])
 				.innerHTML = 'Amount: ' + value + victoryCardString;			
 			//tempEl.innerHTML = value + ' ' + key;
 			console.log(value + ' ' + key);

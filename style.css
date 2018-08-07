@@ -260,6 +260,11 @@
 	margin-top: 2px;
 }
 
+.margin_top_10 {
+	margin-top: 10px;
+}
+
+
 /* Buttons */
 
 .normalButton {
@@ -329,6 +334,12 @@
 
 .shopText { /* Make it better aligned to button*/
 	height: 25px;
+}
+
+.endScreen_texts {
+	position: absolute;
+    left: 60px;
+    padding-top: 16px;
 }
 
 .selected {

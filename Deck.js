@@ -118,7 +118,7 @@ function DeckOfCards(playerIndex){
 			modifyCSSEl('remove', el, 'inactive')		
 		}
 
-		createButton(id_phase0, id_interact + this.playerIndex, 'skipButton', (function(){
+		createButton(id_phase0, 'skipButton', id_interact + this.playerIndex, (function(){
 			this.checkIfPhaseDone(true); // Go to next stage
 		}).bind(this), ['interactButton', 'margin_left', 'margin_bottom_5']);
 	}
@@ -221,9 +221,13 @@ function DeckOfCards(playerIndex){
 				if(!gameEnded){
 					updateTextPrint(this.playerIndex, 'Ending Turn ' + getStringNotZero(this.money, this.buysLeft, this.actionsLeft, this.plusMoney));
 					deleteButton('interactButton', id_interact + this.playerIndex);
-					this.discardHand();
-					getPlayer(this.playerIndex).drawHand();
-					changeTurn();
+					this.hand.discardHandAnimation();
+					setTimeout(function(){
+						var currentPlayer = getPlayer(turn);
+						currentPlayer.cards.discardHand();
+						currentPlayer.drawHand();
+						changeTurn();
+					}, useCardAnimationTime);
 				}
 			}			
 		}
@@ -248,6 +252,7 @@ function DeckOfCards(playerIndex){
 		if(this.deckStack.length > 0){ // Draw a card
 			var tempCard = this.deckStack.pop(); // Read pop
 			this.addCardToHand(tempCard);
+			animateCard(id_card + tempCard.id, 'animation_fadeIn', '', 'invis_opacity');
 			return id_card + tempCard.id;
 		} else { // If you have shuffled but there are still no cards
 			updateTextPrint(this.playerIndex, 'Out of cards!');
@@ -274,7 +279,7 @@ function DeckOfCards(playerIndex){
 						modifyCSSID('remove', imgID, 'selected');
 					}
 					modifyCSSID('add', id_card + card.id, 'selected');
-					createButton('Use <br>' + card.name + '?', id_interact + currentPlayer.index, 'playActionID', (function(){
+					createButton('Use <br>' + card.name + '?', 'playActionID', id_interact + currentPlayer.index, (function(){
 						updateTextPrint(currentPlayer.index, 'Played Action Card ' + card.name + '!');
 						currentPlayer.playActionCard(card);
 					}).bind(this), 'interactButton');					
@@ -283,7 +288,7 @@ function DeckOfCards(playerIndex){
 		}, getCssOrderCard(tempCard, this.phase));
 	}
 
-	this.discardHand = function(){
+	this.discardHand = function(){ 
 		var discardedCards = this.hand.discardedHand();
 		updateTextPrint(this.playerIndex, 'Discarding hand!');
 		var currentTop = '';
@@ -404,7 +409,7 @@ function DeckOfCards(playerIndex){
 
 		if(card.name === 'Mine'){
 			this.activeActionCard = card.id;
-			createButton('Mine Action: <br> Press to Skip', id_interact + this.playerIndex, 'mineUpgradeIDSkip', (function(){
+			createButton('Mine Action: <br> Press to Skip', 'mineUpgradeIDSkip', id_interact + this.playerIndex, (function(){
 				var currentDeck = getPlayer(turn).cards;
 				currentDeck.activeActionCard = '';
 				deleteButton('mineUpgradeID', id_interact + currentDeck.playerIndex);
@@ -429,7 +434,7 @@ function DeckOfCards(playerIndex){
 						//updateTextPrint(currentDeck.playerIndex, 'Selected Treasure Card!', false);
 						modifyCSSID('add', id_card + card.id, 'selected');
 						deleteButton('mineUpgradeID', id_interact + currentDeck.playerIndex);
-						createButton('Upgrade ' + card.name + '?', id_interact + currentDeck.playerIndex, 'mineUpgradeID', (function(){
+						createButton('Upgrade ' + card.name + '?', 'mineUpgradeID', id_interact + currentDeck.playerIndex, (function(){
 							deleteButton('mineUpgradeID', id_interact + currentDeck.playerIndex);
 							deleteButton('mineUpgradeIDSkip', id_interact + currentDeck.playerIndex);
 							// Upgrade the chosen treasure card
@@ -455,7 +460,7 @@ function DeckOfCards(playerIndex){
 			});
 		} else if(card.name === 'Chapel'){
 			this.activeActionCard = card.id;
-			createButton('Chapel Action: <br> Press to Skip', id_interact + this.playerIndex, 'chapelIDSkip', (function(){
+			createButton('Chapel Action: <br> Press to Skip', 'chapelIDSkip', id_interact + this.playerIndex, (function(){
 				var currentDeck = getPlayer(turn).cards;
 				currentDeck.activeActionCard = '';
 				deleteButton('chapelID', id_interact + currentDeck.playerIndex);
@@ -479,7 +484,7 @@ function DeckOfCards(playerIndex){
 						modifyCSSID('toggle', id_card + card.id, 'selected');	
 						//updateTextPrint(currentDeck.playerIndex, 'Selected ' + card.name + '!', false);
 						deleteButton('chapelID', id_interact + currentDeck.playerIndex); // Check me
-						createButton('Trash the selected cards', id_interact + currentDeck.playerIndex, 'chapelID', (function(){
+						createButton('Trash the selected cards', 'chapelID', id_interact + currentDeck.playerIndex, (function(){
 							deleteButton('chapelID', id_interact + currentDeck.playerIndex);
 							deleteButton('chapelIDSkip', id_interact + currentDeck.playerIndex);
 
@@ -507,7 +512,7 @@ function DeckOfCards(playerIndex){
 			});
 		} else if(card.name === 'Cellar'){
 			this.activeActionCard = card.id;
-			createButton('Cellar Action: <br> Press to Skip', id_interact + this.playerIndex, 'cellarIDSkip', (function(){
+			createButton('Cellar Action: <br> Press to Skip', 'cellarIDSkip', id_interact + this.playerIndex, (function(){
 				var currentDeck = getPlayer(turn).cards;
 				currentDeck.activeActionCard = '';
 				deleteButton('cellarID', id_interact + currentDeck.playerIndex);
@@ -531,7 +536,7 @@ function DeckOfCards(playerIndex){
 						modifyCSSID('toggle', id_card + card.id, 'selected');	
 						//updateTextPrint(currentDeck.playerIndex, 'Selected ' + card.name + '!', false);
 						deleteButton('cellarID', id_interact + currentDeck.playerIndex); // Check me
-						createButton('Exchange Selected Cards', id_interact + currentDeck.playerIndex, 'cellarID', (function(){
+						createButton('Exchange Selected Cards', 'cellarID', id_interact + currentDeck.playerIndex, (function(){
 							deleteButton('cellarID', id_interact + currentDeck.playerIndex);
 							deleteButton('cellarIDSkip', id_interact + currentDeck.playerIndex);
 							
@@ -598,7 +603,7 @@ function DeckOfCards(playerIndex){
 
 function Hand(deckOfCards){
 	this.amount = 0;
-	this.allCards = new Map(); // Change me into a map
+	this.allCards = new Map(); // Map over cards from id:s
 	this.treasureCards = [];
 	this.victoryCards = [];
 	this.actionCards = [];
@@ -707,5 +712,18 @@ function Hand(deckOfCards){
 		this.amount = 0;
 		this.allCards = new Map();
 		return listOfCards;
+	}
+
+	this.discardHandAnimation = function(){
+		var listOfCards = this.getHand();
+		for(var i = 0; i < listOfCards.length; i++){
+			var card = listOfCards[i];
+			animateCard(id_card + card.id, 'animation_fadeOut', function(pid, id){
+				//console.log('DEBUG @useCard - Callback - REMOVING CARD ' + id);
+				var handEl = document.getElementById(id_hand + pid);
+				var el = document.getElementById(id + id_div);
+				handEl.removeChild(el);
+			});
+		}
 	}
 }
