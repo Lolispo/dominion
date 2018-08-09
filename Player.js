@@ -123,7 +123,7 @@ function Player(index){
 				outer.removeChild(el);
 			}
 			initNewUIElement('div', new Map().set('id', id_name_pre + 'change_' + pid), id_name_pre + pid + id_div, ['inline', 'margin_left']);
-			initNewUIElement('input', new Map().set('id', id_name_pre + 'input_' + pid), id_name_pre + 'change_' + pid, ['inline', 'margin_left_10']); // TODO: Make better looking
+			initNewUIElement('input', new Map().set('id', id_name_pre + 'input_' + pid).set('placeholder', 'New name'), id_name_pre + 'change_' + pid, ['inline', 'margin_left_10']); // TODO: Make better looking
 			initNewUIElement('div', new Map().set('id', id_name_pre + 'change_button_' + pid), id_name_pre + 'change_' + pid, ['margin_left', 'card_container', 'margin_left_10']);
 			createButton('Submit new name', 'submitName', id_name_pre + 'change_button_' + pid, callbackFunc, ['interactButton', 'margin_left_10', 'margin_top_2']);
 			createButton('Cancel change', 'cancelName', id_name_pre + 'change_button_' + pid, function(){
