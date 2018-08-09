@@ -103,12 +103,6 @@ function changeText(id, text){
 	}
 }
 
-function changeTextEl(el, text){
-	if(el != null){
-		el.innerHTML = text;
-	}
-}
-
 function removeChildren(id){
 	var el = document.getElementById(id);
 	for(var i = el.childNodes.length-1; i >= 0; i--){

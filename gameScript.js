@@ -26,7 +26,6 @@ var gameEnded = false;
 			New Turn
 			Selects
 
-
 	Animations:
 		All UI updates
 			Shop availability changes
@@ -127,7 +126,7 @@ function startGame(){
 		var el = initNewUIElement('div', new Map().set('id', 'helpMessage_' + i), 'helpMessage', ['inline', 'bold', 'size2_text_medium', 'text_shadow']);
 		el.innerHTML = splitted[i];
 	}
-	changeText('turn_box', getPlayer(turn).name + ':s turn'); // TODO @nameCustom
+	changeText('turn_box', getPlayer(turn).name + ":s turn");
 	document.getElementById('turn_box').style.backgroundColor = getPlayerColor(turn);
 	for(var i = 0; i < playingPlayers; i++){
 		document.getElementById(id_player + i).style.order = 2;
@@ -146,7 +145,7 @@ async function initCardsGlobal(){
 function togglePlay(){
 	var myAudio = document.getElementById('audioMain');
 	if(myAudio.paused){
-		changeText('audioButton', 'Music: &#9616;&#9616;'); // ⏸. Use element for more efficient
+		changeText('audioButton', 'Music: &#9616;&#9616;'); // ⏸. Move to vars
 		modifyCSSID('add', 'helpDiv', 'margin_top_05');
 		return myAudio.play();
 	} else {
@@ -177,7 +176,7 @@ function changeTurn(){
 				//console.log('animationend: 1: ' + event.elapsedTime);
 				modifyCSSEl('remove', element, 'animation_slideOut');
 				// Outside of screen
-				changeText('turn_box', players[turn].name + ':s turn');
+				changeText('turn_box', players[turn].name + ":s turn"); // Decide ' or :
 				document.getElementById('turn_box').style.backgroundColor = getPlayerColor(turn);
 				modifyCSSEl('add', element, 'invis_opacity');
 

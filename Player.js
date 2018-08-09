@@ -99,8 +99,8 @@ function Player(index){
 		//player.style.borderStyle = 'solid';
 		//player.style.borderColor = color;
 		//player.style.backgroundColor = color;
-		initNewUIElement('div', new Map().set('id', id_name_pre + this.index + id_div), id_player + this.index, ['inline', 'margin_left']);
-		var name = initNewUIElement('div', new Map().set('id', id_name_pre + this.index), id_name_pre + this.index + id_div, ['inline', 'bold', 'text32', 'text_shadow']);
+		initNewUIElement('div', new Map().set('id', id_name_pre + this.index + id_div), id_player + this.index, ['card_container', 'margin_left']);
+		var name = initNewUIElement('div', new Map().set('id', id_name_pre + this.index), id_name_pre + this.index + id_div, ['inline', 'bold', 'text34', 'text_shadow']);
 		name.innerHTML = this.name;
 		name.style.backgroundColor = color;
 		name.addEventListener('click', function(event){
@@ -126,7 +126,7 @@ function Player(index){
 			initNewUIElement('input', new Map().set('id', id_name_pre + 'input_' + pid), id_name_pre + 'change_' + pid, ['inline', 'margin_left_10']); // TODO: Make better looking
 			initNewUIElement('div', new Map().set('id', id_name_pre + 'change_button_' + pid), id_name_pre + 'change_' + pid, ['margin_left', 'card_container', 'margin_left_10']);
 			createButton('Submit new name', 'submitName', id_name_pre + 'change_button_' + pid, callbackFunc, ['interactButton', 'margin_left_10', 'margin_top_2']);
-			createButton('Cancel name change', 'cancelName', id_name_pre + 'change_button_' + pid, function(){
+			createButton('Cancel change', 'cancelName', id_name_pre + 'change_button_' + pid, function(){
 				removeChildren(id_name_pre + 'change_' + pid);
 				var outer = document.getElementById(id_name_pre + pid + id_div);
 				var el = document.getElementById(id_name_pre + 'change_' + pid);
