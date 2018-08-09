@@ -13,6 +13,17 @@ function Player(index){
 		this.cards.checkIfPhaseDone(false);
 	}
 
+	this.getName = function(){
+		return this.name;
+	}
+
+	this.setName = function(newName){
+		if(newName !== ''){ // TODO: Make sure the name could not be a problem
+			this.name = newName;
+			changeText(id_name_pre + this.index, this.name);
+		}
+	}
+
 	this.drawHand = function(){
 		if(this.cards.getPhase() === 2){
 			for(var i = 0; i < cardHandAmount; i++){
@@ -88,10 +99,40 @@ function Player(index){
 		//player.style.borderStyle = 'solid';
 		//player.style.borderColor = color;
 		//player.style.backgroundColor = color;
-		var name = initNewUIElement('div', new Map().set('id', id_name_pre + this.index), id_player + this.index, ['inline', 'bold', 'text32', 'text_shadow', 'margin_left']);
+		initNewUIElement('div', new Map().set('id', id_name_pre + this.index + id_div), id_player + this.index, ['inline', 'margin_left']);
+		var name = initNewUIElement('div', new Map().set('id', id_name_pre + this.index), id_name_pre + this.index + id_div, ['inline', 'bold', 'text32', 'text_shadow']);
 		name.innerHTML = this.name;
 		name.style.backgroundColor = color;
-
+		name.addEventListener('click', function(event){
+			// Option to changeName
+			var pid = getIDFromCard(event.target.id);
+			if(document.getElementById(id_name_pre + 'change_' + pid) !== null){
+				removeChildren(id_name_pre + 'change_' + pid);
+				var outer = document.getElementById(id_name_pre + pid + id_div);
+				var el = document.getElementById(id_name_pre + 'change_' + pid);
+				outer.removeChild(el);
+			}
+			var callbackFunc = function(){
+				var inputString = document.getElementById(id_name_pre + 'input_' + pid).value;
+				updateTextPrint(pid, 'Set new name for Player ' + pid + ': ' + inputString, false);
+				// Sanitize
+				getPlayer(pid).setName(inputString);
+				removeChildren(id_name_pre + 'change_' + pid);
+				var outer = document.getElementById(id_name_pre + pid + id_div);
+				var el = document.getElementById(id_name_pre + 'change_' + pid);
+				outer.removeChild(el);
+			}
+			initNewUIElement('div', new Map().set('id', id_name_pre + 'change_' + pid), id_name_pre + pid + id_div, ['inline', 'margin_left']);
+			initNewUIElement('input', new Map().set('id', id_name_pre + 'input_' + pid), id_name_pre + 'change_' + pid, ['inline', 'margin_left_10']); // TODO: Make better looking
+			initNewUIElement('div', new Map().set('id', id_name_pre + 'change_button_' + pid), id_name_pre + 'change_' + pid, ['margin_left', 'card_container', 'margin_left_10']);
+			createButton('Submit new name', 'submitName', id_name_pre + 'change_button_' + pid, callbackFunc, ['interactButton', 'margin_left_10', 'margin_top_2']);
+			createButton('Cancel name change', 'cancelName', id_name_pre + 'change_button_' + pid, function(){
+				removeChildren(id_name_pre + 'change_' + pid);
+				var outer = document.getElementById(id_name_pre + pid + id_div);
+				var el = document.getElementById(id_name_pre + 'change_' + pid);
+				outer.removeChild(el);
+			}, ['interactButton', 'margin_top_2']);
+		});
 
 		initNewUIElement('div', new Map().set('id', id_infoBoard + this.index), id_player + this.index, ['flex_container', 'margin_top_2']);
 		initNewUIElement('div', new Map().set('id', id_info + this.index), id_infoBoard + this.index, 'card_container');

@@ -36,12 +36,14 @@ var gameEnded = false;
 		Council Room Firefox, sizes differ, text overlap	
 
 	Gameplay:
+		Make it more obvious whne you have more buys (1 moire buy with 1 gold maybe)
 
 	Code
 		Change global vars to Caps / Const
 		Currently animation for both draw and dispaly card - Problem? Seems fine animation wise Check me.
 
 	Estetic
+		Better looking new name CSS input field
 		Start to Center stuff in css
 		Choose color and name
 		Make Player own areas more clearer
@@ -107,8 +109,8 @@ function startGame(){
 	initNewUIElement('div', new Map().set('id', 'helpDiv'), 'info', ['inline']);
 	initNewUIElement('audio', new Map().set('id', 'audioMain').set('src', 'res/villageMusicShort.mp3').set('loop', ''), //.set('controls', '')
 		'helpDiv', ['inline', 'margin_top_10']).innerHTML = 'Your browser does not support the audio element';
-	createButton(HELP_MESSAGE_OPEN, 'audioButton', 'helpDiv', togglePlay, ['normalButton', 'margin_left_30', 'margin_top_2']);
-	changeText('audioButton', 'Music: &nbsp&nbsp▶');
+	// TODO: Move the strings to vars
+	createButton('Music: &nbsp&nbsp▶', 'audioButton', 'helpDiv', togglePlay, ['normalButton', 'margin_left_30', 'margin_top_2']);
 	createButton(HELP_MESSAGE_OPEN, 'helpButton', 'helpDiv', (function(){
 		var currentName = document.getElementById('helpButton').innerHTML;
 		if(currentName === HELP_MESSAGE_OPEN){
@@ -125,7 +127,7 @@ function startGame(){
 		var el = initNewUIElement('div', new Map().set('id', 'helpMessage_' + i), 'helpMessage', ['inline', 'bold', 'size2_text_medium', 'text_shadow']);
 		el.innerHTML = splitted[i];
 	}
-	changeText('turn_box', 'Player ' + (turn + 1) + ':s turn'); // TODO @nameCustom
+	changeText('turn_box', getPlayer(turn).name + ':s turn'); // TODO @nameCustom
 	document.getElementById('turn_box').style.backgroundColor = getPlayerColor(turn);
 	for(var i = 0; i < playingPlayers; i++){
 		document.getElementById(id_player + i).style.order = 2;
