@@ -109,7 +109,7 @@ function startGame(){
 	initNewUIElement('audio', new Map().set('id', 'audioMain').set('src', 'res/villageMusicShort.mp3').set('loop', ''), //.set('controls', '')
 		'helpDiv', ['inline', 'margin_top_10']).innerHTML = 'Your browser does not support the audio element';
 	// TODO: Move the strings to vars
-	createButton('Music: &nbsp&nbsp▶', 'audioButton', 'helpDiv', togglePlay, ['normalButton', 'margin_left_30', 'margin_top_2']);
+	createButton('Music: &nbsp&nbsp▶', 'audioButton', 'helpDiv', togglePlay, ['normalButton', 'margin_left_10', 'margin_top_2']);
 	createButton(HELP_MESSAGE_OPEN, 'helpButton', 'helpDiv', (function(){
 		var currentName = document.getElementById('helpButton').innerHTML;
 		if(currentName === HELP_MESSAGE_OPEN){
@@ -118,7 +118,7 @@ function startGame(){
 			changeText('helpButton', HELP_MESSAGE_OPEN)
 		}
 		modifyCSSID('toggle', 'helpMessage', 'invis');
-	}).bind(this), ['normalButton', 'margin_left_30', 'margin_top_2']);
+	}).bind(this), ['normalButton', 'margin_left_10', 'margin_top_2']);
 	initNewUIElement('div', new Map().set('id', 'helpMessage'), 'helpDiv', ['flex_container', 'invis']);
 	var stringActions = getHelpString();
 	var splitted = stringActions.split('\n');
@@ -425,7 +425,11 @@ function getStringNotZero(money, buysLeft, actionsLeft, plusMoney){
 		added = true;		
 	}
 	s += ')';
-	return s;
+	if(s !== '()'){
+		return s;
+	} else {
+		return '';
+	}
 }
 
 // Called when points should be calculated to see who won

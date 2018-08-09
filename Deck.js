@@ -126,7 +126,7 @@ function DeckOfCards(playerIndex){
 	// Start Deck
 	this.initDeck = function(){
 		modifyCSSID('add', id_board + this.playerIndex, 'invis');
-		modifyCSSID('add', id_info_stats + this.playerIndex, 'invis');
+		modifyCSSID('add', id_info_stats_main + this.playerIndex, 'invis');
 		modifyCSSID('add', id_text + this.playerIndex, 'invis');
 
 		for(var i = 0; i < 7; i++){
@@ -219,7 +219,7 @@ function DeckOfCards(playerIndex){
 			if(nextStage || this.buysLeft === 0 || this.getCurrentMoney() === 0){ // TODO: Decide. Maybe remove if money = 0, since if buysLeft, should be allowed to buy Copper
 				this.phase++;
 				if(!gameEnded){
-					updateTextPrint(this.playerIndex, 'Ending Turn ' + getStringNotZero(this.money, this.buysLeft, this.actionsLeft, this.plusMoney));
+					updateTextPrint(this.playerIndex, 'Ending Turn ' + getStringNotZero((this.money + this.plusMoney), this.buysLeft, this.actionsLeft, 0));
 					deleteButton('interactButton', id_interact + this.playerIndex);
 					this.hand.discardHandAnimation();
 					setTimeout(function(){
