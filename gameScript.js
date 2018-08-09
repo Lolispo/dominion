@@ -105,8 +105,10 @@ function startGame(){
 	initNewUIElement('div', new Map().set('id', 'turn'), 'info', ['inline']);
 	initNewUIElement('div', new Map().set('id', 'turn_box'), 'turn', ['inline', 'bold', 'size3_text_medium', 'text_shadow']);
 	initNewUIElement('div', new Map().set('id', 'helpDiv'), 'info', ['inline']);
-	initNewUIElement('audio', new Map().set('id', 'audioMain').set('src', 'res/villageMusicShort.mp3').set('controls', '').set('loop', ''), 
+	initNewUIElement('audio', new Map().set('id', 'audioMain').set('src', 'res/villageMusicShort.mp3').set('loop', ''), //.set('controls', '')
 		'helpDiv', ['inline', 'margin_top_10']).innerHTML = 'Your browser does not support the audio element';
+	createButton(HELP_MESSAGE_OPEN, 'audioButton', 'helpDiv', togglePlay, ['normalButton', 'margin_left_30', 'margin_top_2']);
+	changeText('audioButton', 'Music: &nbsp&nbsp▶');
 	createButton(HELP_MESSAGE_OPEN, 'helpButton', 'helpDiv', (function(){
 		var currentName = document.getElementById('helpButton').innerHTML;
 		if(currentName === HELP_MESSAGE_OPEN){
@@ -137,6 +139,19 @@ async function initCardsGlobal(){
 	initCards();
 	console.log('Cards should be done - Shop Init');
 	initShopHTML();
+}
+
+function togglePlay(){
+	var myAudio = document.getElementById('audioMain');
+	if(myAudio.paused){
+		changeText('audioButton', 'Music: &#9616;&#9616;'); // ⏸. Use element for more efficient
+		modifyCSSID('add', 'helpDiv', 'margin_top_05');
+		return myAudio.play();
+	} else {
+		changeText('audioButton', 'Music: &nbsp&nbsp▶');
+		modifyCSSID('remove', 'helpDiv', 'margin_top_05');
+		return myAudio.pause();
+	}
 }
 
 function changeTurn(){
