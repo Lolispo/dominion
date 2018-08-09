@@ -10,7 +10,7 @@ function Player(index){
 	this.startTurn = function(){
 		this.cards.startTurn();
 		this.displayHand();
-		this.cards.checkIfPhaseDone(false);
+		this.cards.checkIfPhaseDone();
 	}
 
 	this.getName = function(){
@@ -73,7 +73,7 @@ function Player(index){
 					changeText(id_card + cardId + id_bottomRight, getCapacityString(card));
 
 					// Check if done with buy phase
-					this.cards.checkIfPhaseDone(false);
+					this.cards.checkIfPhaseDone();
 					updateTextPrint(this.index, 'Added card to deck: ' + card.name + '! (Cap: ' + cap + ')'); 
 					updateShopText(this.name + ' bought a ' + card.name + ' card! (Cap: ' + cap + ')');
 					

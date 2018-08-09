@@ -190,7 +190,7 @@ function DeckOfCards(playerIndex){
 		animateCard(id, 'animation_fadeIn', '', 'invis_opacity');
 	}
 
-	this.checkIfPhaseDone = function(nextStage){ // Boolean to see if next stage
+	this.checkIfPhaseDone = function(nextStage = false){ // Boolean to see if next stage
 		if(this.phase === 0){
 			if(nextStage || this.actionsLeft === 0 || !this.hand.containsAction()){
 				this.phase++;
@@ -216,7 +216,7 @@ function DeckOfCards(playerIndex){
 				changeText('skipButton', id_phase1);
 			}
 		} else if(this.phase === 1){
-			if(nextStage || this.buysLeft === 0 || this.getCurrentMoney() === 0){ // TODO: Decide. Maybe remove if money = 0, since if buysLeft, should be allowed to buy Copper
+			if(nextStage || this.buysLeft === 0 || this.getCurrentMoney() < 2){ // TODO: Decide. Maybe remove if money = 0, since if buysLeft, should be allowed to buy Copper
 				this.phase++;
 				if(!gameEnded){
 					updateTextPrint(this.playerIndex, 'Ending Turn ' + getStringNotZero((this.money + this.plusMoney), this.buysLeft, this.actionsLeft, 0));
@@ -419,7 +419,7 @@ function DeckOfCards(playerIndex){
 					var imgID = getIDImgFromDiv(cardDivs[i].id);
 					modifyCSSID('remove', imgID, 'selected');
 				}
-				currentDeck.checkIfPhaseDone(false);
+				currentDeck.checkIfPhaseDone();
 			}).bind(this), 'interactButton');
 			addHandCardClick(this.playerIndex, [CardType.TREASURE_CARD], function(card_HTMLid, actionCardID){
 				var tempEl = document.getElementById(card_HTMLid);
@@ -452,7 +452,7 @@ function DeckOfCards(playerIndex){
 							// Check next phase
 							currentDeck.updateHTMLElements();
 							setTimeout(function(){
-								currentDeck.checkIfPhaseDone(false); // Mine
+								currentDeck.checkIfPhaseDone(); // Mine
 							}, useCardAnimationTime); 
 						}).bind(this), 'interactButton');
 					}
@@ -470,7 +470,7 @@ function DeckOfCards(playerIndex){
 					var imgID = getIDImgFromDiv(cardDivs[i].id);
 					modifyCSSID('remove', imgID, 'selected');
 				}
-				currentDeck.checkIfPhaseDone(false);
+				currentDeck.checkIfPhaseDone();
 			}).bind(this), 'interactButton');
 			addHandCardClick(this.playerIndex, [CardType.TREASURE_CARD, CardType.ACTION_CARD, CardType.VICTORY_CARD], function(card_HTMLid, actionCardID){
 				var tempEl = document.getElementById(card_HTMLid);
@@ -504,7 +504,7 @@ function DeckOfCards(playerIndex){
 							// Check next phase
 							currentDeck.updateHTMLElements();
 							setTimeout(function(){
-								currentDeck.checkIfPhaseDone(false); // Chapel
+								currentDeck.checkIfPhaseDone(); // Chapel
 							}, useCardAnimationTime); 
 						}).bind(this), 'interactButton');
 					}
@@ -522,7 +522,7 @@ function DeckOfCards(playerIndex){
 					var imgID = getIDImgFromDiv(cardDivs[i].id);
 					modifyCSSID('remove', imgID, 'selected');
 				}
-				currentDeck.checkIfPhaseDone(false);
+				currentDeck.checkIfPhaseDone();
 			}).bind(this), 'interactButton');
 			addHandCardClick(this.playerIndex, [CardType.TREASURE_CARD, CardType.ACTION_CARD, CardType.VICTORY_CARD], function(card_HTMLid, actionCardID){
 				var tempEl = document.getElementById(card_HTMLid);
@@ -561,7 +561,7 @@ function DeckOfCards(playerIndex){
 							// Check next phase
 							currentDeck.updateHTMLElements();
 							setTimeout(function(){
-								currentDeck.checkIfPhaseDone(false); // Cellar
+								currentDeck.checkIfPhaseDone(); // Cellar
 							}, useCardAnimationTime); 
 						}).bind(this), 'interactButton');
 					}
@@ -570,7 +570,7 @@ function DeckOfCards(playerIndex){
 		}
 		else{ // Check next phase, no more inputs required from user
 			// Make sure it is after animation is finished
-			getPlayer(turn).cards.checkIfPhaseDone(false);
+			getPlayer(turn).cards.checkIfPhaseDone();
 		}
 
 		// Special Card handling
