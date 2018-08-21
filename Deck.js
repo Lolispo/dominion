@@ -25,7 +25,6 @@ function DeckOfCards(playerIndex){
 			var card = cards_global_id.get(getIDFromCard(imgID));
 			var cardCost = card.cost;
 			if(getCapacity(card) === 0){
-				// TODO: Make me get checked everytime a card is bought
 				shop.childNodes[i].style.order = 3; // Order set
 				// Mark out of stock
 				if(document.getElementById(imgID + '_out') === null){
@@ -216,10 +215,10 @@ function DeckOfCards(playerIndex){
 				changeText('skipButton', id_phase1);
 			}
 		} else if(this.phase === 1){
-			if(nextStage || this.buysLeft === 0 || this.getCurrentMoney() < 2){ // TODO: Decide. Maybe remove if money = 0, since if buysLeft, should be allowed to buy Copper
+			if(nextStage || this.buysLeft === 0 || this.getCurrentMoney() < 2){ // Decided. Currently: Not allowed copper buys, as last buy
 				this.phase++;
 				if(!gameEnded){
-					updateTextPrint(this.playerIndex, 'Ending Turn ' + getStringNotZero((this.money + this.plusMoney), this.buysLeft, this.actionsLeft, 0));
+					updateTextPrint(this.playerIndex, 'Ending Turn ' + getStringNotZero((this.money + this.plusMoney), this.buysLeft, this.actionsLeft));
 					deleteButton('interactButton', id_interact + this.playerIndex);
 					this.hand.discardHandAnimation();
 					setTimeout(function(){

@@ -109,7 +109,7 @@ function startGame(){
 	initNewUIElement('audio', new Map().set('id', 'audioMain').set('src', 'res/villageMusicShort.mp3').set('loop', ''), //.set('controls', '')
 		'helpDiv', ['inline', 'margin_top_10']).innerHTML = 'Your browser does not support the audio element';
 	// TODO: Move the strings to vars
-	createButton('Music: &nbsp&nbsp▶', 'audioButton', 'helpDiv', togglePlay, ['normalButton', 'margin_left_10', 'margin_top_2']);
+	createButton(MUSIC_STRING_PLAY, 'audioButton', 'helpDiv', togglePlay, ['normalButton', 'margin_left_10', 'margin_top_2']);
 	createButton(HELP_MESSAGE_OPEN, 'helpButton', 'helpDiv', (function(){
 		var currentName = document.getElementById('helpButton').innerHTML;
 		if(currentName === HELP_MESSAGE_OPEN){
@@ -145,11 +145,11 @@ async function initCardsGlobal(){
 function togglePlay(){
 	var myAudio = document.getElementById('audioMain');
 	if(myAudio.paused){
-		changeText('audioButton', 'Music: &#9616;&#9616;'); // ⏸. Move to vars
+		changeText('audioButton', MUSIC_STRING_PAUSE); // ⏸
 		modifyCSSID('add', 'helpDiv', 'margin_top_05');
 		return myAudio.play();
 	} else {
-		changeText('audioButton', 'Music: &nbsp&nbsp▶');
+		changeText('audioButton', MUSIC_STRING_PLAY);
 		modifyCSSID('remove', 'helpDiv', 'margin_top_05');
 		return myAudio.pause();
 	}
@@ -396,18 +396,11 @@ function getPlayerColor(index){
 	}
 }
 
-function getStringNotZero(money, buysLeft, actionsLeft, plusMoney){
+function getStringNotZero(money, buysLeft, actionsLeft){
 	var s = '(';
 	var added = false;
 	if(money != 0){
 		s += 'Money: ' + money;
-		added = true;
-	}
-	if(plusMoney != 0){
-		if(added){
-			s += ', ';
-		}
-		s += '+$: ' + plusMoney;
 		added = true;
 	}
 	if(buysLeft != 0){
@@ -466,9 +459,7 @@ function endGame(){
 		}
 	}
 
-	// TODO Update correct field with victory text, in html
-	// Can add functionality to check for total cost of hand, in treasure, victory & actions cards etc
-	// TODO Loop over highestPointPlayer names
+	// TODO: Can add functionality to check for total cost of hand, in treasure, victory & actions cards etc
 	var s = '';
 	if(highestPointPlayer.length > 1){
 		s += 'The winners are ';
@@ -511,7 +502,6 @@ function endGame(){
 			if(card.cardType === CardType.VICTORY_CARD){
 				var points = 0;
 				if(card.name === 'Garden'){
-					// TODO Add garden functionality here
 					var temp = cards.length;
 					temp -= (cards.length % 10);
 					points = temp / 10;

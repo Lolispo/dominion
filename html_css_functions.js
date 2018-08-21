@@ -47,7 +47,8 @@ var openShop = 'Open Shop';
 var closeShop = 'Close Shop';
 const HELP_MESSAGE_OPEN = 'Help';
 const HELP_MESSAGE_CLOSE = 'Close Help';
-
+const MUSIC_STRING_PLAY = 'Music: &nbsp&nbsp▶';
+const MUSIC_STRING_PAUSE = 'Music: &#9616;&#9616;';
 
 function getHelpString(){
 	var s = '';
@@ -160,7 +161,7 @@ function initShopHTML(){
 			var card_id = getIDFromCard(card_HTMLid);
 			var newCard = generateNewCard(cards_global_id.get(card_id));
 			if(newCard === null){ // Out of this card, capacity reached
-				updateShopText('Out of this cardtype!'); // TODO: Move this to shop messages instead
+				updateShopText('Out of this cardtype!');
 			} else { 
 				getPlayer(turn).buyCard(newCard, card_id);			
 			}
