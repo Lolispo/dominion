@@ -10,6 +10,10 @@ var gameEnded = false;
 
 /*
 	TODO
+	Move Deck card logic to Card.js
+		Pass functions for cards as a card field instead of having logic in deck.js looking at which card it is
+		So in deck: if function != null, run function
+	
 	Top of Discard show 'Empty' image instead of not showing when discard empty
 		After this, move it before status messages
 	Make cards for other players show backside by default
