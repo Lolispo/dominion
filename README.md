@@ -16,4 +16,4 @@ Every card in the store has cost in the bottom left corner, which is required am
 They also show capacity left in the store in the bottom right corner, as long as the capacity isn't too large (Some cards won't run out).
 
 ### How to play
-Since the site is currently not hosted anywhere, one can simply download the repository and open the index.html file to try out the functionality.
+A static version of the game is up and running in the description above. Also, one can simply download the repository and open the index.html file to try out the functionality.
