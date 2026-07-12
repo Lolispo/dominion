@@ -1,0 +1,25 @@
+style.css
+  s_56f174e3e000dc::t_ecb7e2ee30ab9d 103-119
+  s_56f174e3e000dc::t_d54e98c763fd10 179-181
+  s_56f174e3e000dc::t_082e8644698a5a 191-192,197,199-206
+  s_56f174e3e000dc::t_6a18ee33b4fb23 421-424
+  s_56f174e3e000dc::t_f9df071e1ada97 325-326,329-337,341-342,345-349,352-355,359-360,363-364,366-371,376-379,383-386,390-393
+game.html
+  s_56f174e3e000dc::t_3e3a659b243a8d 11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "69053fa94462083c2e12c0d2938a76188cd176a6",
+  "prompts": {},
+  "sessions": {
+    "s_56f174e3e000dc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6f51bbf0-ae7e-4b3e-bdef-4333e0c5da90",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Petter Andersson <12279747+Lolispo@users.noreply.github.com>"
+    }
+  }
+}
