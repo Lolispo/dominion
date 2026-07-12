@@ -1,0 +1,19 @@
+Player.js
+  s_56f174e3e000dc::t_bbdf238cec4dbb 73-74
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "3edfd4eafd0c3b810a0ff70a2f10512d4fedd3ff",
+  "prompts": {},
+  "sessions": {
+    "s_56f174e3e000dc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6f51bbf0-ae7e-4b3e-bdef-4333e0c5da90",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Petter Andersson <12279747+Lolispo@users.noreply.github.com>"
+    }
+  }
+}
