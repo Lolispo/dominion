@@ -1,0 +1,22 @@
+icons.js
+  s_56f174e3e000dc::t_3a9efa5b3dec1f 24-25
+cardRenderer.js
+  s_56f174e3e000dc::t_593a69870c9569 25,29-31
+  s_56f174e3e000dc::t_67a220051e0085 32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "411a11e4557496943fb96fbd9fdf1e0319bdbbc4",
+  "prompts": {},
+  "sessions": {
+    "s_56f174e3e000dc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6f51bbf0-ae7e-4b3e-bdef-4333e0c5da90",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Petter Andersson <12279747+Lolispo@users.noreply.github.com>"
+    }
+  }
+}
