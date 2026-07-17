@@ -1,0 +1,20 @@
+sfx.js
+  s_56f174e3e000dc::t_1fc0b4442746e6 7
+  s_56f174e3e000dc::t_6912c29ac34aa8 56-57,59,62,67-73,76,81-87,90,95,99-102,104,106
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "11e2824794693fee2e11dcc09b34fe2f917272b1",
+  "prompts": {},
+  "sessions": {
+    "s_56f174e3e000dc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6f51bbf0-ae7e-4b3e-bdef-4333e0c5da90",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Petter Andersson <12279747+Lolispo@users.noreply.github.com>"
+    }
+  }
+}
