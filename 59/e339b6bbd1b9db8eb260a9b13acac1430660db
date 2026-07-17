@@ -1,0 +1,32 @@
+Deck.js
+  s_56f174e3e000dc::t_d2ea15bb22b6b6 248
+  s_56f174e3e000dc::t_108d43aa3837e8 233
+  s_56f174e3e000dc::t_3fca7dbc65c566 262-268
+style.css
+  s_56f174e3e000dc::t_0ed5f96ce04d4a 723-732
+gameScript.js
+  s_56f174e3e000dc::t_a7ca3916e81163 105
+animator.js
+  s_56f174e3e000dc::t_67cd8884eb30e3 146-158
+  s_56f174e3e000dc::t_dc3ecab60ceb60 127-145
+Player.js
+  s_56f174e3e000dc::t_aa8ae7951ddad4 14
+  s_56f174e3e000dc::t_3aa670ec8a1ed4 13
+  s_56f174e3e000dc::t_f79b7a47bd926a 29,32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "59e339b6bbd1b9db8eb260a9b13acac1430660db",
+  "prompts": {},
+  "sessions": {
+    "s_56f174e3e000dc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6f51bbf0-ae7e-4b3e-bdef-4333e0c5da90",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Petter Andersson <12279747+Lolispo@users.noreply.github.com>"
+    }
+  }
+}
