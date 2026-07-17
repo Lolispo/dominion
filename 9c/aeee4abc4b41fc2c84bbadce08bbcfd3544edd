@@ -1,0 +1,22 @@
+style.css
+  s_56f174e3e000dc::t_ec2885f313e7f9 669-681
+  s_56f174e3e000dc::t_cf338eb4fd03f7 682-686
+gameScript.js
+  s_56f174e3e000dc::t_9b23952c35614b 405-408
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "9caeee4abc4b41fc2c84bbadce08bbcfd3544edd",
+  "prompts": {},
+  "sessions": {
+    "s_56f174e3e000dc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6f51bbf0-ae7e-4b3e-bdef-4333e0c5da90",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Petter Andersson <12279747+Lolispo@users.noreply.github.com>"
+    }
+  }
+}
