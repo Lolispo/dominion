@@ -1,0 +1,23 @@
+Deck.js
+  s_56f174e3e000dc::t_f42a30574fe337 408-425
+style.css
+  s_56f174e3e000dc::t_85e0ba81fda384 781-787
+animator.js
+  s_56f174e3e000dc::t_35a0f8cd872679 126-147
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "f5aa1a9c9bc022dfdb7579c9b63bfd18d1d32fbd",
+  "prompts": {},
+  "sessions": {
+    "s_56f174e3e000dc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6f51bbf0-ae7e-4b3e-bdef-4333e0c5da90",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Petter Andersson <12279747+Lolispo@users.noreply.github.com>"
+    }
+  }
+}
