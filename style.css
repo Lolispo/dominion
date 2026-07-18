@@ -351,6 +351,9 @@ body.theme-forest {
                 background var(--anim-fast) var(--ease-card);
 }
 
+/* Longer label than the fixed 100px normalButton width — let it size to content */
+#oppFaceButton { width: auto; padding: 0 12px; white-space: nowrap; }
+
 .bigButton {
 	border: 2px solid var(--table-edge);
     border-radius: 6px;
