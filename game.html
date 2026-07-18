@@ -6,18 +6,23 @@
     <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
     <link rel='stylesheet' type='text/css' href='style.css'>
     </head>
-<body onLoad='startGame();' class='flex_container' background='res/forest.jpg'>
-<div class='text_shadow size3_text_big'>Dominion</div>
-<div class='flex_container' id='info'></div>
-<div class='margin_bottom' id='shop'>
+<body onLoad='startGame();' class='theme-forest'>
+<div id='flight-layer'></div>
+<div id='topbar'>
+	<div class='text_shadow size3_text_big game-title'>Dominion</div>
+	<div id='info'></div>
+	<button type='button' class='normalButton' onClick='backMainMenu();'>Main Menu</button>
 </div>
-<div id='playArea' class='flex_container'>
-	
+<div id='table'>
+	<div id='shop'></div>
+	<div id='playArea' class='flex_container'></div>
 </div>
-
-<button type='button' class='normalButton' onClick='backMainMenu();'>Main Menu</button>
 
 <div>
+	<script src='icons.js'></script>
+	<script src='cardRenderer.js'></script>
+	<script src='animator.js'></script>
+	<script src='sfx.js'></script>
 	<script src='gameScript.js'></script>
 	<script src='Player.js'></script>
 	<script src='Card.js'></script>

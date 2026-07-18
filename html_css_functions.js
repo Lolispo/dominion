@@ -1,6 +1,12 @@
 // Author Petter Andersson
 'use strict'
 
+// Small gold-coin icon used in the money readout (instead of the word "Money").
+var COIN_ICON = "<svg viewBox='0 0 24 24' width='22' height='22' style='vertical-align:-4px' aria-hidden='true'>"
+	+ "<circle cx='12' cy='12' r='9.5' fill='#e2b13c' stroke='#8a6d0f' stroke-width='2'/>"
+	+ "<circle cx='12' cy='12' r='6' fill='none' stroke='#8a6d0f' stroke-width='1'/>"
+	+ "<text x='12' y='16.5' text-anchor='middle' font-size='12' font-weight='bold' fill='#6b520c'>$</text></svg>";
+
 // Declare variables like 'hand_' etc here to be used everywhere
 var id_player = 'player_';
 var id_name_pre = 'name_';
@@ -39,10 +45,6 @@ var id_phase1 = '> End Turn';
 var id_startBuyString = 'Starting Buying Phase';
 var id_statusMessageString = 'Status Messages'
 
-var width_smallest = '32px';
-var width_middle = '64px';
-var width_biggest = '128px';
-
 var openShop = 'Open Shop';
 var closeShop = 'Close Shop';
 const HELP_MESSAGE_OPEN = 'Help';
@@ -64,6 +66,78 @@ function getHelpString(){
 }
 
 
+// Card hover tooltip — shows a card's full details (name, type, cost, rules) on hover.
+// Uses event delegation so it covers dynamically-created cards (hand, shop, board).
+function initCardTooltip(){
+	if(document.getElementById('cardTip')){ return; }
+	var tip = document.createElement('div');
+	tip.id = 'cardTip';
+	tip.className = 'card-tip invis';
+	document.body.appendChild(tip);
+
+	document.addEventListener('mouseover', function(e){
+		var card = e.target.closest ? e.target.closest('.dcard') : null;
+		if(!card){ return; }
+		// Rivals' minis show only an icon — let the tooltip name them, but never
+		// while they're hidden (face-down mode), which would reveal a hidden hand.
+		if(card.closest && card.closest('.opponent') && document.body.classList.contains('opp-facedown')){ return; }
+		var name = card.querySelector('.dcard-banner');
+		var type = card.querySelector('.dcard-typeline');
+		var text = card.querySelector('.dcard-text');
+		var cost = card.querySelector('.dcard-cost');
+		var supply = card.querySelector('.dcard-supply');
+		if(!name){ return; }
+		var meta = (type ? type.innerHTML : '');
+		if(cost){ meta += ' &middot; cost ' + cost.innerHTML; }
+		if(supply && supply.innerHTML !== ''){ meta += ' &middot; ' + supply.innerHTML + ' left'; }
+		tip.innerHTML = '<div class="tip-name">' + name.innerHTML + '</div>'
+			+ '<div class="tip-type">' + meta + '</div>'
+			+ '<div class="tip-text">' + (text ? text.innerHTML : '') + '</div>';
+		modifyCSSEl('remove', tip, 'invis');
+		var r = card.getBoundingClientRect();
+		var left = Math.max(8, Math.min(window.innerWidth - tip.offsetWidth - 8, r.left + r.width / 2 - tip.offsetWidth / 2));
+		var top = r.top - tip.offsetHeight - 12;
+		if(top < 8){ top = r.bottom + 12; } // flip below if no room above
+		tip.style.left = left + 'px';
+		tip.style.top = top + 'px';
+	});
+	document.addEventListener('mouseout', function(e){
+		var card = e.target.closest ? e.target.closest('.dcard') : null;
+		if(card){ modifyCSSEl('add', document.getElementById('cardTip'), 'invis'); }
+	});
+}
+
+// Tighten the active player's hand fan when it grows large (e.g. Smithy chains)
+// so cards keep fitting on one row instead of scrolling off-screen.
+function fitHandFan(handEl){
+	if(!handEl){ return; }
+	// Only the active player's fan reads --hand-overlap; skip collapsed opponent strips
+	// so a hand flipping between active/opponent across turns never keeps a stale value.
+	if(handEl.closest && handEl.closest('.opponent')){ handEl.style.removeProperty('--hand-overlap'); return; }
+	var cards = handEl.children;
+	var n = cards.length;
+	if(n <= 1){ handEl.style.removeProperty('--hand-overlap'); return; }
+	var w = cards[0].offsetWidth;
+	var avail = handEl.clientWidth;
+	if(!w || avail <= 0){ return; } // not laid out yet — leave the CSS default
+	var DEFAULT = -26;                 // comfortable fan overlap
+	var MIN = -Math.round(w * 0.8);    // tightest allowed: keep a ~20% sliver of each card
+	// total width = w + (n-1)*(w + overlap); solve overlap so it fits `avail`
+	var needed = (avail - w) / (n - 1) - w;
+	var overlap = Math.max(Math.min(DEFAULT, needed), MIN);
+	handEl.style.setProperty('--hand-overlap', overlap + 'px');
+}
+
+// Attach once per hand container: refit on any card add/remove and on resize.
+function observeHandFan(handEl){
+	if(!handEl || handEl._fanObserved){ return; }
+	handEl._fanObserved = true;
+	var refit = function(){ fitHandFan(handEl); };
+	new MutationObserver(refit).observe(handEl, {childList: true});
+	window.addEventListener('resize', refit);
+	refit();
+}
+
 // HTML Stuff
 
 function initNewUIElement(typeEl, properties = new Map(), parentID, cssClass = ''){
@@ -75,6 +149,14 @@ function initNewUIElement(typeEl, properties = new Map(), parentID, cssClass = '
 	modifyCSSEl('add', el, cssClass);
 	div.appendChild(el);
 	return el;
+}
+
+function deckAnchorEl(pid){ return document.getElementById('pile_deck_' + pid); }
+function discardAnchorEl(pid){ return document.getElementById('pile_discard_' + pid); }
+function setPileCount(pileEl, n){
+	var badge = pileEl.querySelector('.pile-count');
+	if(!badge){ badge = document.createElement('div'); badge.className = 'pile-count'; pileEl.appendChild(badge); }
+	badge.innerHTML = n;
 }
 
 function createButton(text, id, parentID, callback, cssClass){
@@ -115,7 +197,7 @@ function modifyCSSChildren(mode, id, cssClass, isCard = true){
 	var el = document.getElementById(id);
 	for(var i = 0; i < el.childNodes.length; i++){
 		if(isCard){
-			modifyCSSID(mode, getIDImgFromDiv(el.childNodes[i].id), cssClass);				
+			modifyCSSID(mode, getIDImgFromDiv(el.childNodes[i].id) + id_div, cssClass); // target the .dcard root, not the inner art div
 		} else{
 			modifyCSSID(mode, el.childNodes[i].id, cssClass);
 		}
@@ -157,15 +239,20 @@ function initShopHTML(){
 	initNewUIElement('div', new Map().set('id', 'shopTitle'), 'mainShop', ['text16', 'margin_left', 'bold', 'text_shadow']).innerHTML = 'Shop';
 	initNewUIElement('div', new Map().set('id', 'shopCards'), 'mainShop', 'card_container');
 	cards.forEach(function(card, key){
-		generateCardHTML(card, id_card + card.id, 'shopCards', true, 'card_smaller', [getCssClassCard(card)], function(card_HTMLid){
-			var card_id = getIDFromCard(card_HTMLid);
-			var newCard = generateNewCard(cards_global_id.get(card_id));
-			if(newCard === null){ // Out of this card, capacity reached
-				updateShopText('Out of this cardtype!');
-			} else { 
-				getPlayer(turn).buyCard(newCard, card_id);			
+		renderCard(card, id_card + card.id, 'shopCards', {
+			isShopCard: true, size: 'shop',
+			// Group the shop by type: treasures, then victories, then actions
+			order: (card.cardType === CardType.TREASURE_CARD ? 1 : card.cardType === CardType.VICTORY_CARD ? 2 : 3),
+			callback: function(card_HTMLid){
+				var card_id = getIDFromCard(card_HTMLid);
+				var newCard = generateNewCard(cards_global_id.get(card_id));
+				if(newCard === null){ // Out of this card, capacity reached
+					updateShopText('Out of this cardtype!');
+				} else {
+					getPlayer(turn).buyCard(newCard, card_id);
+				}
 			}
-		}, 2);
+		});
 	});
 
 	initNewUIElement('div', new Map().set('id', 'shopPanel'), 'mainShop', 'shopPanel');
@@ -184,65 +271,6 @@ function initShopHTML(){
 		.innerHTML = 'Shop Message\n';
 }
 
-// Returns width size for cards size
-function getWidthCard(cardType){
-	switch(cardType){
-		case 'card_discard':
-			return width_smallest;
-		case 'card_smaller':
-		case 'card_board':
-		default:
-			return width_middle;
-	}
-}
-
-// Generate HTML for Card - More generic
-function generateCardHTML(tempCard, id, parentID, isShopCard, cardType, cssClass, callback = '', orderNum = '4'){
-	var div = initNewUIElement('div', new Map().set('id', id + id_div), parentID, ['container', 'margin_left_1', 'position_relative']);
-	div.style.order = orderNum;
-	var centerWidth = getWidthCard(cardType);
-	var centeredTextCSSClass = getCssFontSize(tempCard, centerWidth, true); 
-	var normalTextCSSClass = getCssFontSize(tempCard, centerWidth, false);
-
-	// Img element
-	var properties = new Map();
-	properties.set('id', id);
-	properties.set('src', getCorrectImage(tempCard));
-	var img = initNewUIElement('img', properties, id + id_div, cssClass);
-	modifyCSSEl('add', img, [cardType, 'position_relative', 'noclick']);
-	
-	// Name
-	var name = initNewUIElement('div', new Map().set('id', id + id_name_post), id + id_div, [getCssAlign('centered_top', centerWidth), 'text_shadow', 'noclick', normalTextCSSClass]);
-	name.innerHTML = tempCard.name;
-	//name.style.width = centerWidth;
-	// Center text
-	var center = initNewUIElement('div', new Map().set('id', id + id_centeredText), id + id_div, ['centered', 'noclick', centeredTextCSSClass]);
-	center.style.width = centerWidth;
-	var stringActions = String(tempCard.getValue());
-	var splitted = stringActions.split('\n');
-	if(splitted.length > 0){
-		for(var i = 0; i < splitted.length; i++){
-			var el = initNewUIElement('div', new Map().set('id', id + id_centeredText + '_' + i), id + id_centeredText, ['noclick', 'text_shadow', centeredTextCSSClass]);
-			el.innerHTML = splitted[i];
-		}		
-	} else {
-		center.innerHTML = stringActions;
-	}
-	// Bottom texts
-	if(isShopCard){ // Only shop cards have to show cost and capacity
-		var bottomLeft = initNewUIElement('div', new Map().set('id', id + id_bottomLeft), id + id_div, [getCssAlign('bottom_left', centerWidth), 'noclick', 'text_shadow', normalTextCSSClass]);
-		var bottomRight = initNewUIElement('div', new Map().set('id', id + id_bottomRight), id + id_div, [getCssAlign('bottom_right', centerWidth), 'noclick', 'text_shadow', normalTextCSSClass]);
-		bottomLeft.innerHTML = tempCard.getCost();
-		bottomRight.innerHTML = getCapacityString(tempCard);
-	}
-	// Event
-	if(callback != ''){
-		div.addEventListener('click', function(res){
-			var card_HTMLid = res.target.id;
-			callback(card_HTMLid);
-		});		
-	}
-}
 
 
 // Add eventListener to hand card
@@ -265,35 +293,3 @@ function addHandCardClick(pid, allowedCardTypes, callback){
 	}
 }
 
-function animateCard(id, animationCSS = '', callbackEnd = '', requiredCSS = ''){
-	// Animate display card
-	//console.log('DEBUG @animateCard ' + id + ', ' + animationCSS);
-	var element = document.getElementById(id + id_div);
-	modifyCSSEl('add', element, requiredCSS);
-	element.addEventListener('animationstart', listener, false);
-	element.addEventListener('animationend', listener, false);
-
-	if(animationCSS != ''){
-		modifyCSSEl('add', element, animationCSS);
-	}
-	function listener(event) {
-		switch(event.type) {
-			case 'animationstart':
-				//console.log('animationstart: ' + animationCSS + ', ' + event.elapsedTime + 's');
-				break;
-			case 'animationend':
-				//console.log('animationend: ' + animationCSS + ', ' + event.elapsedTime + 's');
-				if(animationCSS != ''){
-					modifyCSSEl('remove', element, animationCSS);
-				}
-				modifyCSSEl('remove', element, requiredCSS);
-				if(callbackEnd != ''){
-					callbackEnd(turn, id);
-				}
-				element.removeEventListener('animationstart', listener);
-				element.removeEventListener('animationend', listener);
-				break;
-		}
-	}
-	return true;
-}

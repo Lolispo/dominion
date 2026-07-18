@@ -98,11 +98,12 @@ function startGame(){
 	cards_victory = JSON.parse(sessionStorage.getItem('Cards_Victory'));
 	*/
 	initCardsGlobal();
+	initCardTooltip();
 	for(var i = 0; i < playingPlayers; i++){
 		var tempPlayer = new Player(i);
 		tempPlayer.initPlayer();
 		players.push(tempPlayer);
-		players[i].drawHand();
+		players[i].drawHand(true); // silent: the starting player's hand deals in at startTurn
 	}
 
 	// Choosing turn and start
@@ -114,6 +115,17 @@ function startGame(){
 		'helpDiv', ['inline', 'margin_top_10']).innerHTML = 'Your browser does not support the audio element';
 	// TODO: Move the strings to vars
 	createButton(MUSIC_STRING_PLAY, 'audioButton', 'helpDiv', togglePlay, ['normalButton', 'margin_left_10', 'margin_top_2']);
+	createButton('Sound: On', 'sfxButton', 'helpDiv', (function(){
+		if(typeof sfxSetMuted === 'function'){
+			sfxSetMuted(!sfxMuted());
+			changeText('sfxButton', 'Sound: ' + (sfxMuted() ? 'Off' : 'On'));
+		}
+	}).bind(this), ['normalButton', 'margin_left_10', 'margin_top_2']);
+	// Toggle whether opponents' hands show face-up (default) or as card backs
+	createButton('Rivals: Face-up', 'oppFaceButton', 'helpDiv', (function(){
+		var down = document.body.classList.toggle('opp-facedown');
+		changeText('oppFaceButton', 'Rivals: ' + (down ? 'Face-down' : 'Face-up'));
+	}).bind(this), ['normalButton', 'margin_left_10', 'margin_top_2']);
 	createButton(HELP_MESSAGE_OPEN, 'helpButton', 'helpDiv', (function(){
 		var currentName = document.getElementById('helpButton').innerHTML;
 		if(currentName === HELP_MESSAGE_OPEN){
@@ -133,9 +145,13 @@ function startGame(){
 	changeText('turn_box', getPlayer(turn).name + ":s turn");
 	document.getElementById('turn_box').style.backgroundColor = getPlayerColor(turn);
 	for(var i = 0; i < playingPlayers; i++){
-		document.getElementById(id_player + i).style.order = 2;
+		document.getElementById(id_player + i).style.order = 1;
+		modifyCSSID('remove', id_player + i, 'player-active');
+		modifyCSSID('add', id_player + i, 'opponent');
 	}
-	document.getElementById(id_player + turn).style.order = 1;
+	document.getElementById(id_player + turn).style.order = 2;
+	modifyCSSID('add', id_player + turn, 'player-active');
+	modifyCSSID('remove', id_player + turn, 'opponent');
 	players[turn].startTurn();
 }
 
@@ -165,60 +181,19 @@ function changeTurn(){
 	} else {
 		turn++;
 	}
-
-	var element = document.getElementById('turn');
-	element.addEventListener('animationstart', listener, false);
-	element.addEventListener('animationend', listener, false);
-
-	modifyCSSEl('add', element, 'animation_slideOut');
-	function listener(event) {
-		switch(event.type) {
-			case 'animationstart':
-				//console.log('animationstart: 1: ' + event.elapsedTime);
-				break;
-			case 'animationend':
-				//console.log('animationend: 1: ' + event.elapsedTime);
-				modifyCSSEl('remove', element, 'animation_slideOut');
-				// Outside of screen
-				changeText('turn_box', players[turn].name + ":s turn"); // Decide ' or :
-				document.getElementById('turn_box').style.backgroundColor = getPlayerColor(turn);
-				modifyCSSEl('add', element, 'invis_opacity');
-
-				element.removeEventListener('animationstart', listener);
-				element.removeEventListener('animationend', listener);
-				element.addEventListener('animationstart', listener2, false);
-				element.addEventListener('animationend', listener2, false);
-
-				modifyCSSEl('add', element, 'animation_slideIn');
-				function listener2(event) {
-					switch(event.type) {
-						case 'animationstart':
-							//console.log('animationstart: 2: ' + event.elapsedTime);
-							break;
-						case 'animationend':
-							//console.log('animationend: 2: ' + event.elapsedTime);
-							modifyCSSEl('remove', element, 'invis_opacity');
-							element.removeEventListener('animationstart', listener2);
-							element.removeEventListener('animationend', listener2);
-							modifyCSSEl('remove', element, 'animation_slideIn');
-							
-							for(var i = 0; i < players.length; i++){
-								document.getElementById(id_player + i).style.order = 2;
-							}
-							document.getElementById(id_player + turn).style.order = 1;
-							players[turn].startTurn();
-						
-							break;
-					}
-				}
-				break;
-			/*
-			case 'animationiteration':
-				console.log('animationiteration: ' + event.elapsedTime);
-				break;
-			}*/
-		}
+	// Update the current-turn label (no slide animation — the turn flash signals the handoff)
+	changeText('turn_box', players[turn].name + ":s turn");
+	document.getElementById('turn_box').style.backgroundColor = getPlayerColor(turn);
+	// Re-assign active vs opponent roles
+	for(var i = 0; i < players.length; i++){
+		document.getElementById(id_player + i).style.order = 1;
+		modifyCSSID('remove', id_player + i, 'player-active');
+		modifyCSSID('add', id_player + i, 'opponent');
 	}
+	document.getElementById(id_player + turn).style.order = 2;
+	modifyCSSID('add', id_player + turn, 'player-active');
+	modifyCSSID('remove', id_player + turn, 'opponent');
+	players[turn].startTurn();
 }
 
 function backMainMenu(){
@@ -294,20 +269,6 @@ function getPlayerCard(pid, cardID){
 	return getPlayer(pid).cards.hand.getCard(cardID);
 }
 
-function getCorrectImage(card){
-	var sPre = 'res/';
-	var sPost = '.png';
-	switch(card.cardType){
-		case CardType.ACTION_CARD:
-			return sPre + 'Action' + sPost;
-		case CardType.VICTORY_CARD:
-			return sPre + 'Victory' + sPost;
-		case CardType.TREASURE_CARD:
-		default:
-			return sPre + 'Treasure' + sPost;
-	}
-}
-
 // Returns css class for CardType
 function getCssClassCard(card){
 	switch(card.cardType){
@@ -318,37 +279,6 @@ function getCssClassCard(card){
 		case CardType.TREASURE_CARD:
 		default:
 			return 'card_treasure';
-	}
-}
-
-function getCssAlign(string, width){
-	switch(width){
-		case width_smallest:
-			return 'size1_' + string;
-		case width_biggest:
-			return 'size3_' + string;
-		case width_middle:
-		default:
-			return 'size2_' + string;			
-	}
-}
-
-// Returns Font size for center text
-function getCssFontSize(card, width, isCenter){
-	if(isCenter){
-		switch(card.cardType){
-			case CardType.ACTION_CARD:
-				return getCssAlign('text_small', width);
-			case CardType.VICTORY_CARD:
-				if(card.name === 'Garden'){
-					return getCssAlign('text_small', width);
-				}
-			case CardType.TREASURE_CARD:
-			default:
-				return getCssAlign('text_big', width);
-		}
-	} else{
-		return getCssAlign('text_medium', width);
 	}
 }
 
@@ -433,6 +363,10 @@ function getStringNotZero(money, buysLeft, actionsLeft){
 function endGame(){
 	console.log('Game ending!');
 	gameEnded = true;
+	document.body.classList.add('game-over'); // relax the one-screen layout so results scroll
+	for(var p = 0; p < players.length; p++){
+		modifyCSSID('remove', id_player + p, 'opponent');
+	}
 	modifyCSSID('add', 'shopCards', 'invis')
 	var pointsArray = [];
 	var highestPointPlayer = [];
@@ -517,7 +451,7 @@ function endGame(){
 			}
 			var div = initNewUIElement('div', new Map().set('id', id_scoreScreen + id_card + card.name + '_' + i), id_info_stats + i, ['card_container']);
 			div.style.order = getCssOrderCard(card, 3);
-			generateCardHTML(card, id_scoreScreen + id_card + card.id + i, id_scoreScreen + id_card + card.name + '_' + i, false, 'card_discard', [getCssClassCard(card)]);
+			renderCard(card, id_scoreScreen + id_card + card.id + i, id_scoreScreen + id_card + card.name + '_' + i, { size: 'discard' });
 			initNewUIElement('div', new Map().set('id', id_scoreScreen + id_text + card.name + '_' + i + id_div), id_scoreScreen + id_card + card.name + '_' + i, 'endScreen_texts').style.order = 1;
 			initNewUIElement('div', new Map().set('id', id_scoreScreen + id_text + i), id_scoreScreen + id_text + card.name + '_' + i + id_div, ['noclick', 'text_shadow', 'text16'])
 				.innerHTML = 'Amount: ' + value + victoryCardString;			

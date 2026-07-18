@@ -1,3 +1,36 @@
+:root {
+	/* Type palette */
+	--type-treasure: #b8860b;
+	--type-victory:  #2e7d32;
+	--type-action:   #1565c0;
+	/* Card surface */
+	--card-face: #f4ecd8;   /* parchment */
+	--card-ink:  #2b2b2b;
+	--radius-card: 8px;
+	/* Table */
+	--table-top:  #2f6b43;  /* felt green */
+	--table-edge: #17361f;
+	--wood: #5b3a21;
+	/* Spacing */
+	--space-1: 4px; --space-2: 8px; --space-3: 16px; --space-4: 30px;
+	/* Motion */
+	--anim-fast: 180ms; --anim-med: 380ms;
+	--ease-card: cubic-bezier(.22,.61,.36,1);
+}
+
+body.theme-table {
+	background: radial-gradient(ellipse at 50% 20%, #4f9c68, #2f6b43 45%, #1f4e30 100%);
+	background-attachment: scroll;
+	min-height: 100vh;
+}
+body.theme-forest {
+	background: url('res/forest.jpg');
+}
+
+@media (prefers-reduced-motion: reduce) {
+	:root { --anim-fast: 1ms; --anim-med: 1ms; }
+}
+
 /* Author Petter Andersson */
 
 /* Font Sizes */
@@ -66,24 +99,38 @@
     -1px -1px 0 #000,
     1px -1px 0 #000,
     -1px 1px 0 #000,
-    1px 1px 0 #000;  
+    1px 1px 0 #000;
 }
 
-/* HTML Element Sizes, cards */
-
-.card {
-	height: 228px;
-    width: 128px;
+/* Banner-style header title (Task 14) */
+.game-title {
+	font-size: 40pt;
+	letter-spacing: 6px;
+	text-transform: uppercase;
+	text-align: center;
+	color: var(--card-face);
+	background: linear-gradient(180deg, var(--wood), var(--table-edge));
+	border-bottom: 4px solid var(--type-treasure);
+	padding: var(--space-2) var(--space-4);
+	margin: 0 auto var(--space-3);
+	width: fit-content;
+	box-shadow: 0 4px 12px rgba(0,0,0,.5);
+	text-shadow: 0 2px 0 rgba(0,0,0,.6), 0 0 18px rgba(184,134,11,.4);
 }
 
-.card_smaller {
-	height: 114px;
-    width: 64px;
-}
-
-.card_discard {
-	height: 57px;
-    width: 32px;
+/* Main menu panel (Task 15) */
+.menu-panel {
+	align-items: center;
+	justify-content: center;
+	gap: var(--space-3);
+	width: fit-content;
+	max-width: 480px;
+	margin: var(--space-4) auto;
+	padding: var(--space-4);
+	background: linear-gradient(180deg, rgba(91,58,33,.85), rgba(23,54,31,.85));
+	border: 1px solid var(--wood);
+	border-radius: var(--radius-card);
+	box-shadow: 0 4px 12px rgba(0,0,0,.5);
 }
 
 /* Card borders */
@@ -143,9 +190,9 @@
 }
 
 .info_stats_main {
-	border-style: solid;
-	border-color: black;
-	border-width: 1px;
+	border-radius: 6px;
+	padding: 2px 6px;
+	margin: 1px 2px;
 }
 
 .border_bottom {
@@ -155,13 +202,22 @@
 }
 
 .info_stats {
-	background-color: darkslateblue;
+	background: linear-gradient(180deg, rgba(91,58,33,.85), rgba(23,54,31,.85));
+	border: 1px solid var(--wood);
 }
 
 .shopPanel {
 	display: flex;
-	padding: 5px;
+	padding: var(--space-2);
 	margin-right: 5px;
+	background: rgba(23, 54, 31, 0.4);
+	border: 1px solid var(--wood);
+	border-radius: 6px;
+}
+
+#shopTitle {
+	color: var(--type-treasure);
+	letter-spacing: 1px;
 }
 
 /* Scaleable positions*/
@@ -280,70 +336,75 @@
 /* Buttons */
 
 .normalButton {
-	border: black;
-    border-style: solid;
+	border: 2px solid var(--table-edge);
+    border-radius: 6px;
 	height: 28px;
     width: 100px;
-    margin-right: 5px;	
-    color: white;
-    text-shadow:
-    -1px -1px 0 #000,
-    1px -1px 0 #000,
-    -1px 1px 0 #000,
-    1px 1px 0 #000; 
-    background-color: rgba(0, 0, 0, 0.7);
+    margin-right: 5px;
+    color: var(--card-face);
+    text-shadow: 0 1px 2px rgba(0,0,0,.8);
+    background: linear-gradient(180deg, #7c5232, var(--wood));
+    box-shadow: 0 2px 4px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.12);
+    cursor: pointer;
+    transition: transform var(--anim-fast) var(--ease-card),
+                box-shadow var(--anim-fast) var(--ease-card),
+                background var(--anim-fast) var(--ease-card);
 }
 
 .bigButton {
-	border: black;
-    border-style: solid;
+	border: 2px solid var(--table-edge);
+    border-radius: 6px;
 	height: 35px;
     width: 50px;
-    margin-right: 5px;	
-    color: white;
-    text-shadow:
-    -1px -1px 0 #000,
-    1px -1px 0 #000,
-    -1px 1px 0 #000,
-    1px 1px 0 #000; 
-    background-color: rgba(1, 1, 1, 0.7);
+    margin-right: 5px;
+    color: var(--card-face);
+    text-shadow: 0 1px 2px rgba(0,0,0,.8);
+    background: linear-gradient(180deg, #7c5232, var(--wood));
+    box-shadow: 0 2px 4px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.12);
     font-weight: bold;
     font-size: 16pt;
+    cursor: pointer;
+    transition: transform var(--anim-fast) var(--ease-card),
+                box-shadow var(--anim-fast) var(--ease-card),
+                background var(--anim-fast) var(--ease-card);
 }
 
 .interactButton {
-	border: black;
-    border-style: solid;
-    border-width: 4px;
+	border: 3px solid var(--table-edge);
+    border-radius: 6px;
 	height: 50px;
     width: 140px;
-    background-color: rgba(0, 0, 0, 0.7);
+    background: linear-gradient(180deg, #7c5232, var(--wood));
+    box-shadow: 0 2px 4px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.12);
     font-weight: bold;
-    color: white;
-    text-shadow:
-    -1px -1px 0 #000,
-    1px -1px 0 #000,
-    -1px 1px 0 #000,
-    1px 1px 0 #000; 
+    color: var(--card-face);
+    text-shadow: 0 1px 2px rgba(0,0,0,.8);
+    cursor: pointer;
+    transition: transform var(--anim-fast) var(--ease-card),
+                box-shadow var(--anim-fast) var(--ease-card),
+                background var(--anim-fast) var(--ease-card);
 
 }
 
 .interactButton:hover {
-	background-color: rgba(0,0,0,0.9);
-	box-shadow: 0px 0px 10px rgba(255,255,100,1);
-	text-shadow: 0px 0px 10px rgba(255,255,100,1);
+	background: linear-gradient(180deg, #96693f, #6b4527);
+	border-color: var(--type-treasure);
+	box-shadow: 0 4px 10px rgba(0,0,0,.5), 0 0 14px rgba(184,134,11,.65);
+	transform: translateY(-2px);
 }
 
 .normalButton:hover {
-	background-color: rgba(0,0,0,0.9);
-	box-shadow: 0px 0px 10px rgba(255,255,100,1);
-	text-shadow: 0px 0px 10px rgba(255,255,100,1);
+	background: linear-gradient(180deg, #96693f, #6b4527);
+	border-color: var(--type-treasure);
+	box-shadow: 0 4px 10px rgba(0,0,0,.5), 0 0 14px rgba(184,134,11,.65);
+	transform: translateY(-2px);
 }
 
 .bigButton:hover {
-	background-color: rgba(0,0,0,0.9);
-	box-shadow: 0px 0px 10px rgba(255,255,100,1);
-	text-shadow: 0px 0px 10px rgba(255,255,100,1);
+	background: linear-gradient(180deg, #96693f, #6b4527);
+	border-color: var(--type-treasure);
+	box-shadow: 0 4px 10px rgba(0,0,0,.5), 0 0 14px rgba(184,134,11,.65);
+	transform: translateY(-2px);
 }
 
 
@@ -371,6 +432,10 @@
 	position: absolute;
     left: 60px;
     padding-top: 16px;
+    padding-left: 6px;
+    padding-right: 6px;
+    background: rgba(23, 54, 31, 0.55);
+    border-radius: 4px;
 }
 
 .selected {
@@ -426,35 +491,6 @@
 	*/
 }
 
-.animation_fadeIn {
-	animation: 0.8s ease-in-out 0s 1 normal both running fadein;
-}
-
-.animation_fadeOut {
-	animation: 0.4s ease-in-out 0s 1 normal both running fadeout;
-}
-
-@keyframes fadein {
-	from {
-		opacity: 0;
-	}
-  
-	to {
-		opacity: 1;
-	}
-}
-
-@keyframes fadeout {
-	from {
-		opacity: 1;
-	}
-  
-	to {
-		opacity: 0;
-	}
-}
-
-
 @keyframes slideout {
 	from {
 		margin-left:0%;
@@ -475,10 +511,289 @@
 		height: 31px;
 		opacity: 0;
 	}
-  
+
 	to {
 		margin-left:0%;
 		height: 31px;
 		opacity: 1;
 	}
+}
+
+/* Faithful card renderer (Task 3) */
+.dcard {
+	--card-scale: 1;
+	position: relative;
+	width: calc(160px * var(--card-scale));
+	height: calc(250px * var(--card-scale));
+	background: var(--card-face);
+	color: var(--card-ink);
+	border-radius: var(--radius-card);
+	border: calc(3px * var(--card-scale)) solid var(--type-color, #888);
+	box-shadow: 0 2px 6px rgba(0,0,0,.4);
+	display: grid;
+	grid-template-rows: 18% 46% 12% 24%;
+	overflow: hidden;
+	transition: transform var(--anim-fast) var(--ease-card),
+	            box-shadow var(--anim-fast) var(--ease-card);
+}
+.dcard.size-shop    { --card-scale: .72; }
+.dcard.size-hand    { --card-scale: .86; }
+.dcard.size-board   { --card-scale: .62; }
+.dcard.size-discard { --card-scale: .4; }
+.dcard-treasure { --type-color: var(--type-treasure); }
+.dcard-victory  { --type-color: var(--type-victory); }
+.dcard-action   { --type-color: var(--type-action); }
+
+.dcard-banner {
+	background: var(--type-color); color: #fff;
+	text-align: center; font-weight: bold;
+	display: flex; align-items: center; justify-content: center;
+	font-size: calc(18px * var(--card-scale));
+	text-shadow: 0 1px 1px rgba(0,0,0,.6);
+}
+.dcard-art { display: flex; align-items: center; justify-content: center; color: var(--type-color); }
+.dcard-art .card-icon { width: calc(92px * var(--card-scale)); height: calc(92px * var(--card-scale)); }
+.dcard-typeline { text-align: center; font-style: italic; font-size: calc(13px * var(--card-scale)); align-self: center; }
+.dcard-text { text-align: center; font-size: calc(15px * var(--card-scale)); padding: 0 calc(6px * var(--card-scale)); line-height: 1.15; }
+.dcard-cost, .dcard-supply {
+	position: absolute; bottom: calc(6px * var(--card-scale));
+	width: calc(24px * var(--card-scale)); height: calc(24px * var(--card-scale));
+	border-radius: 50%; display: flex; align-items: center; justify-content: center;
+	font-weight: bold; font-size: calc(14px * var(--card-scale)); color: #fff;
+}
+.dcard-cost   { left: calc(6px * var(--card-scale)); background: var(--type-treasure); }
+.dcard-supply { right: calc(6px * var(--card-scale)); background: #444; }
+.dcard.selected { outline: calc(3px * var(--card-scale)) solid #ffd400; outline-offset: 2px; }
+.dcard.inactive { filter: grayscale(100%) brightness(.8); }
+
+.pile { position: relative; width: 64px; height: 100px; border-radius: 6px; }
+.pile-deck { background: repeating-linear-gradient(45deg, #33406b, #33406b 6px, #26305a 6px, #26305a 12px);
+	border: 2px solid #1b2140; box-shadow: 0 2px 5px rgba(0,0,0,.4); }
+.pile-empty { background: rgba(255,255,255,.08); border: 2px dashed rgba(255,255,255,.4); }
+.pile-count { position: absolute; bottom: -6px; right: -6px; min-width: 20px; height: 20px; padding: 0 4px;
+	border-radius: 10px; background: #000c; color: #fff; font-size: 12px; font-weight: bold;
+	display: flex; align-items: center; justify-content: center; }
+.pile-row { display: flex; gap: var(--space-3); }
+
+#flight-layer { position: fixed; inset: 0; pointer-events: none; z-index: 1000; }
+#flight-layer .dcard { position: fixed; margin: 0; }
+/* Face-down flip deal */
+#flight-layer .deal-flight { position: fixed; margin: 0; perspective: 900px; }
+.deal-flip { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; }
+.deal-face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+	border-radius: var(--radius-card); overflow: hidden; box-shadow: 0 6px 16px rgba(0,0,0,.5); }
+.deal-front { transform: rotateY(180deg); }
+.dcard-back { background: repeating-linear-gradient(45deg, #33406b, #33406b 6px, #26305a 6px, #26305a 12px);
+	border: 2px solid #1b2140; }
+
+/* Task 13: active-player highlight, hand fan, hover lift */
+#playArea .margin_bottom { transition: box-shadow var(--anim-med), opacity var(--anim-med); }
+.player-active { box-shadow: 0 0 0 3px #ffd400, 0 0 24px rgba(255,212,0,.5); border-radius: 10px; }
+#playArea > .margin_bottom:not(.player-active) { opacity: .85; }
+.card_container .dcard { transition: transform var(--anim-fast) var(--ease-card), box-shadow var(--anim-fast); }
+#playArea .dcard:hover { transform: translateY(-10px); box-shadow: 0 8px 18px rgba(0,0,0,.5); z-index: 5; }
+/* hand fan overlap is handled by the .hand-row rules below (relayout round 2) */
+
+/* ============================================================
+   Table relayout — two columns, fits one viewport (2026-07-17)
+   ============================================================ */
+html, body { height: 100%; margin: 0; }
+body.theme-forest { overflow: hidden; }
+
+#topbar {
+	display: flex; align-items: center; justify-content: space-between;
+	gap: 12px; padding: 4px 12px; box-sizing: border-box;
+}
+#topbar .game-title { margin: 0; font-size: 22pt; padding: 4px 18px; }
+#info { display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+#info #helpDiv { display: inline-flex; align-items: center; gap: 6px; position: relative; }
+/* Help text overlays instead of pushing the top bar */
+#helpMessage:not(.invis) {
+	position: absolute; top: 100%; right: 0; z-index: 50; width: 460px; max-width: 80vw;
+	background: rgba(23,54,31,.95); border: 1px solid var(--wood); border-radius: 8px; padding: 10px;
+}
+
+#table {
+	display: flex; align-items: stretch; gap: 12px; padding: 0 12px 12px;
+	height: calc(100vh - 72px); box-sizing: border-box;
+}
+#shop {
+	flex: 0 0 58%; max-width: 58%; overflow-y: auto; overflow-x: hidden;
+	margin: 0; padding-right: 4px; align-content: flex-start;
+}
+#playArea {
+	flex: 1 1 42%; min-width: 0; display: flex; flex-direction: column;
+	overflow: hidden;
+}
+
+/* Task 2: active player's right-column arrangement */
+#playArea > .margin_bottom { margin-bottom: 8px; }
+#playArea > .margin_bottom:not(.opponent) {
+	display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0;
+}
+#playArea > .margin_bottom:not(.opponent) .hand-row { margin-top: auto; }  /* pin hand to bottom */
+.hand-row { display: flex; align-items: flex-end; gap: 10px; padding-top: 6px; }
+.hand-row .pile { flex: 0 0 auto; }
+.hand-row [id^='hand_'] { flex: 1 1 auto; }
+
+/* Task 2 fit: keep the hand to one row (smaller cards; scroll horizontally, never grow vertically) */
+.dcard.size-hand { --card-scale: .62; }
+.hand-row { flex-wrap: nowrap; }
+.hand-row [id^='hand_'] { flex: 1 1 auto; min-width: 0; flex-wrap: nowrap; overflow-x: auto; overflow-y: visible; padding-bottom: 4px; }
+.hand-row [id^='hand_'] .dcard { flex: 0 0 auto; }
+
+/* Task 3: collapse non-active players into a compact opponent strip */
+.opponent {
+	display: flex; flex-direction: row; align-items: center; flex-wrap: wrap;
+	gap: 6px 14px; flex: 0 0 auto; opacity: .82;
+	border: 1px solid rgba(255,255,255,.15); border-radius: 6px;
+	padding: 4px 8px; margin-bottom: 6px;
+}
+/* flatten wrapper containers so their leaf children join the strip row */
+.opponent [id^='name_'][id$='_div'],
+.opponent [id^='infoboard_'],
+.opponent [id^='info_']:not([id^='info_discard']):not([id*='_card']) { display: contents; }
+/* hide everything that isn't part of the compact strip */
+.opponent [id^='info_stats_main_'],
+.opponent [id^='text_'],
+.opponent [id^='board_'],
+.opponent [id^='interact_'],
+.opponent [id^='handRow_'] { display: none !important; }
+.opponent [id^='name_']:not([id$='_div']) { font-size: 15pt; padding: 1px 8px; }
+.opponent [id^='deck_'], .opponent [id^='discard_'] { font-size: 11pt; }
+
+/* Task 3 fix: constrain the active section + hand so the discard pile stays on-screen */
+#playArea > .margin_bottom { min-width: 0; max-width: 100%; box-sizing: border-box; }
+.hand-row { max-width: 100%; box-sizing: border-box; }
+.hand-row [id^='hand_'] { flex: 1 1 0; }   /* take only leftover space; scroll internally */
+
+/* Task 4: single current status line (hide the header + older lines) */
+[id^='text_'] > div:not(:nth-child(2)) { display: none; }
+
+/* Task 4: end-game score screen — relax the fixed one-screen layout so results scroll */
+body.game-over { overflow: auto; }
+body.game-over #table { height: auto; display: block; }
+body.game-over #shop { max-width: none; flex: none; overflow: visible; }
+body.game-over #playArea { overflow: visible; display: block; }
+body.game-over .opponent { display: block; opacity: 1; border: none; }
+body.game-over .opponent [id^='name_'][id$='_div'],
+body.game-over .opponent [id^='infoboard_'],
+body.game-over .opponent [id^='info_']:not([id^='info_discard']):not([id*='_card']) { display: block; }
+
+/* Task 4: at game end the hand-row (piles/hand) is irrelevant — hide it so the score breakdown is clean */
+body.game-over .hand-row { display: none; }
+/* nudge the score-screen amount label so it clears the (wider) mini card */
+body.game-over .endScreen_texts { position: static; padding-top: 4px; left: auto; }
+
+/* ===== Review round 2: hand fit, frame, fonts (2026-07-17) ===== */
+/* Slightly wider player column */
+#shop { flex-basis: 55%; max-width: 55%; }
+#playArea { flex-basis: 45%; }
+
+/* Drop the yellow active outline; give the hand a subtle tray instead */
+.player-active { box-shadow: none; }
+.hand-row {
+	background: linear-gradient(180deg, rgba(23,54,31,0), rgba(23,54,31,.5));
+	border-top: 3px solid rgba(184,134,11,.55);
+	border-radius: 14px 14px 0 0;
+	padding: 10px 12px 8px;
+}
+.hand-row .pile { width: 52px; height: 84px; }
+
+/* Bigger, fanned hand cards so 5+ fit without a cramped scroll and read clearly */
+.dcard.size-hand { --card-scale: .6; }
+.hand-row [id^='hand_'] { gap: 0; justify-content: flex-start; }
+.hand-row [id^='hand_'] .dcard { margin-left: var(--hand-overlap, -26px); transition: transform var(--anim-fast) var(--ease-card), margin var(--anim-fast); }
+.hand-row [id^='hand_'] .dcard:first-child { margin-left: 0; }
+.hand-row [id^='hand_'] .dcard:hover { transform: translateY(-14px); z-index: 6; }
+.hand-row [id^='hand_'] .dcard:first-child { margin-left: 0; }
+#playArea .hand-row .dcard:hover { transform: translateY(-14px); z-index: 6; }
+
+/* Readable cost + supply badges on cards */
+.dcard-cost, .dcard-supply {
+	width: calc(32px * var(--card-scale)); height: calc(32px * var(--card-scale));
+	font-size: calc(21px * var(--card-scale));
+	box-shadow: 0 1px 2px rgba(0,0,0,.5);
+}
+.dcard-cost { font-weight: 900; border: 2px solid rgba(255,255,255,.5); }
+
+/* Readable stat readouts for the active player */
+#playArea > .margin_bottom:not(.opponent) [id^='money_'],
+#playArea > .margin_bottom:not(.opponent) [id^='buysLeft_'],
+#playArea > .margin_bottom:not(.opponent) [id^='actionsLeft_'] { font-size: 18pt; }
+
+/* Turn-switch flash announcement */
+.turn-flash {
+	position: fixed; top: 42%; left: 50%; transform: translate(-50%,-50%);
+	z-index: 1200; pointer-events: none; white-space: nowrap;
+	font-size: 40pt; font-weight: bold; color: #fff;
+	background: rgba(23,54,31,.92); border: 5px solid var(--type-treasure);
+	border-radius: 16px; padding: 16px 46px;
+	text-shadow: 0 2px 6px rgba(0,0,0,.85); box-shadow: 0 10px 34px rgba(0,0,0,.6);
+}
+
+/* Opponent miniature hand: a small face-down fan showing the whole hand size */
+.opponent [id^='handRow_'] { display: flex !important; align-items: center; background: none; border: none; padding: 0; margin: 0 0 0 6px; }
+.opponent [id^='handRow_'] .pile { display: none; }           /* piles hidden in the strip; counts already shown */
+.opponent [id^='hand_'] { display: inline-flex !important; overflow: visible; flex: 0 0 auto; min-width: 0; }
+.opponent [id^='hand_'] .dcard {
+	width: 26px !important; height: 40px !important; min-width: 26px;
+	margin-left: -14px; border-radius: 3px; overflow: hidden;
+	border-width: 1px; box-shadow: 0 1px 2px rgba(0,0,0,.4);
+	grid-template-rows: 38% 62%;   /* legible face-up mini: colored banner + icon only */
+}
+.opponent [id^='hand_'] .dcard:first-child { margin-left: 0; }
+/* drop the dense text rows that can't be read at this size; keep banner colour + icon */
+.opponent [id^='hand_'] .dcard .dcard-typeline,
+.opponent [id^='hand_'] .dcard .dcard-text,
+.opponent [id^='hand_'] .dcard .dcard-cost,
+.opponent [id^='hand_'] .dcard .dcard-supply { display: none !important; }
+.opponent [id^='hand_'] .dcard .dcard-banner { font-size: 0; padding: 0; }
+.opponent [id^='hand_'] .dcard .dcard-art .card-icon { width: 15px !important; height: 15px !important; }
+/* Face-down toggle (body.opp-facedown): render rivals' hand as card backs */
+body.opp-facedown .opponent [id^='hand_'] .dcard {
+	background: repeating-linear-gradient(45deg, #4457a8, #4457a8 4px, #35459a 4px, #35459a 8px);
+	border-color: #223; box-shadow: 0 0 0 1px rgba(0,0,0,.35), 0 1px 2px rgba(0,0,0,.4);
+}
+body.opp-facedown .opponent [id^='hand_'] .dcard > * { visibility: hidden; }
+
+/* Shop panel bar (Close Shop / message / Confirm / Cancel) */
+.shopPanel {
+	align-items: center; gap: 12px; padding: 8px 12px; margin: 8px 0 0;
+	background: linear-gradient(180deg, #4a3320, #1c3a25);
+	border-radius: 8px; flex-wrap: wrap;
+	position: sticky; bottom: 0; z-index: 5;   /* stay visible at the bottom of the scrolling shop */
+	box-shadow: 0 -6px 12px rgba(0,0,0,.4);
+}
+.shopText { height: auto; display: flex; align-items: center; }
+#shop_text_1 { font-size: 13pt !important; color: var(--card-face); margin-left: 4px; font-weight: bold; }
+
+/* Move cost + supply badges to the top corners so they don't cover the rules text */
+.dcard-cost, .dcard-supply { top: calc(4px * var(--card-scale)); bottom: auto; z-index: 2; }
+
+/* Card hover tooltip */
+.card-tip {
+	position: fixed; z-index: 2000; pointer-events: none; width: 240px;
+	background: var(--card-face); color: var(--card-ink);
+	border: 3px solid var(--type-treasure); border-radius: 10px;
+	padding: 10px 14px; box-shadow: 0 10px 28px rgba(0,0,0,.55);
+}
+.card-tip .tip-name { font-weight: bold; font-size: 17pt; margin-bottom: 3px; }
+.card-tip .tip-type { font-style: italic; color: #6a5a3a; font-size: 11pt; margin-bottom: 6px; }
+.card-tip .tip-text { font-size: 13pt; line-height: 1.3; white-space: normal; }
+
+/* Keep the name banner clear of the top cost/supply badges */
+.dcard-banner {
+	padding: 2px calc(30px * var(--card-scale));
+	box-sizing: border-box;
+	font-size: calc(15px * var(--card-scale));
+	line-height: 1.05;
+	white-space: normal;
+}
+
+/* Floating "+N" resource-gain chip */
+.gain-chip {
+	position: fixed; z-index: 1300; pointer-events: none;
+	font-weight: 900; font-size: 17pt; white-space: nowrap;
+	text-shadow: 0 1px 2px rgba(0,0,0,.9), 0 0 6px rgba(0,0,0,.7);
 }

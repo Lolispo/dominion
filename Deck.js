@@ -11,10 +11,21 @@ function DeckOfCards(playerIndex){
 	this.activeActionCard = '';
 
 	this.updateDeckLength = function(){
+		var pile = document.getElementById('pile_deck_' + this.playerIndex);
+		if(pile){
+			modifyCSSEl(this.deckStack.length === 0 ? 'add' : 'remove', pile, 'pile-empty');
+			modifyCSSEl(this.deckStack.length === 0 ? 'remove' : 'add', pile, 'pile-deck');
+			setPileCount(pile, this.deckStack.length);
+		}
 		document.getElementById(id_deck + this.playerIndex).innerHTML = 'Deck: ' + this.deckStack.length + ' cards';
 	}
 
 	this.updateDiscardLength = function(){
+		var pile = document.getElementById('pile_discard_' + this.playerIndex);
+		if(pile){
+			modifyCSSEl(this.discard.length === 0 ? 'add' : 'remove', pile, 'pile-empty');
+			setPileCount(pile, this.discard.length);
+		}
 		document.getElementById(id_discard + this.playerIndex).innerHTML = 'Discard: ' + this.discard.length + ' cards';
 	}
 
@@ -25,29 +36,27 @@ function DeckOfCards(playerIndex){
 			var card = cards_global_id.get(getIDFromCard(imgID));
 			var cardCost = card.cost;
 			if(getCapacity(card) === 0){
-				shop.childNodes[i].style.order = 3; // Order set
-				// Mark out of stock
+				// Mark out of stock (order stays grouped by type; affordability is shown by greying)
 				if(document.getElementById(imgID + '_out') === null){
 					var properties = new Map();
 					properties.set('id', imgID + '_out');
 					properties.set('src', 'res/outOfStockSmaller.png');
-					modifyCSSID('add', imgID, 'inactive');				
+					modifyCSSID('add', imgID + id_div, 'inactive');
 					var el = initNewUIElement('img', properties, shop.childNodes[i].id, ['outOfStock', 'position_absolute']);
 					el.style.left = '0px';
 					el.style.top = '0px';
 				}
 			} else if(this.getCurrentMoney() >= cardCost){
-				shop.childNodes[i].style.order = 1; // Order set
-				modifyCSSID('remove', imgID, 'inactive');
+				modifyCSSID('remove', imgID + id_div, 'inactive');
 			} else if(this.getCurrentMoney() < cardCost){ // Can't afford card
-				shop.childNodes[i].style.order = 2; // Order set
-				modifyCSSID('add', imgID, 'inactive');
+				modifyCSSID('add', imgID + id_div, 'inactive');
 			}
 		}
 	}
 
 	// Printme = true on new hand drawn or action card used
 	this.updateMoney = function(value = this.money, printMe = false){
+		var increased = value > this.money;
 		if(value > this.money && printMe){
 			updateTextPrint(this.playerIndex, '+' + (value - this.money) +  ' Money!', false);
 		}
@@ -56,9 +65,12 @@ function DeckOfCards(playerIndex){
 		if(this.plusMoney !== 0){
 			plusMoneyString = ' (+$' + this.plusMoney + ')';
 		}
-		document.getElementById(id_money + this.playerIndex).innerHTML = 'Money: ' + this.getCurrentMoney() + plusMoneyString;
+		document.getElementById(id_money + this.playerIndex).innerHTML = COIN_ICON + ' ' + this.getCurrentMoney() + plusMoneyString;
+		if(increased){
+			bumpCounter(document.getElementById(id_money + this.playerIndex));
+		}
 		if(printMe){
-			this.checkShopCostInactive();		
+			this.checkShopCostInactive();
 		}
 	}
 
@@ -67,19 +79,27 @@ function DeckOfCards(playerIndex){
 	}
 
 	this.updateActionsLeft = function(value = this.actionsLeft, printMe = false){
+		var increased = value > this.actionsLeft;
 		if(value > this.actionsLeft && printMe){
 			updateTextPrint(this.playerIndex, '+' + (value - this.actionsLeft) + ' Action!', false);
 		}
 		this.actionsLeft = value;
 		document.getElementById(id_actionsLeft + this.playerIndex).innerHTML = 'Actions Left: ' + this.actionsLeft;
+		if(increased){
+			bumpCounter(document.getElementById(id_actionsLeft + this.playerIndex));
+		}
 	}
 
 	this.updateBuysLeft = function(value = this.buysLeft, printMe = false){
+		var increased = value > this.buysLeft;
 		if(value > this.buysLeft && printMe){
 			updateTextPrint(this.playerIndex, '+' + (value - this.buysLeft) +  ' Buy!', false);
 		}
 		this.buysLeft = value;
 		document.getElementById(id_buysLeft + this.playerIndex).innerHTML = 'Buys Left: ' + this.buysLeft;
+		if(increased){
+			bumpCounter(document.getElementById(id_buysLeft + this.playerIndex));
+		}
 	}
 
 	this.getCurrentMoney = function(){
@@ -112,9 +132,9 @@ function DeckOfCards(playerIndex){
 		modifyCSSID('remove', id_text + this.playerIndex, 'invis');
 		modifyCSSID('remove', id_actionsLeft + this.playerIndex, 'invis');
 
-		var el = document.getElementById(id_discard_top + id_card + this.playerIndex);
+		var el = document.getElementById(id_discard_top + id_card + this.playerIndex + id_div);
 		if(el !== null){
-			modifyCSSEl('remove', el, 'inactive')		
+			modifyCSSEl('remove', el, 'inactive')
 		}
 
 		createButton(id_phase0, 'skipButton', id_interact + this.playerIndex, (function(){
@@ -172,21 +192,8 @@ function DeckOfCards(playerIndex){
 	}
  
 	this.displayCard = function(id){
-		modifyCSSID('remove', id, ['card_smaller', 'inactive']);
-		modifyCSSID('add', id, 'card');
-		modifyCSSID('remove', id, 'margin_left_1');
-		modifyCSSID('add', id, 'margin_left_2');
-		modifyCSSID('remove', id + id_name_post, 'size2_text_medium');
-		modifyCSSID('add', id + id_name_post, 'size3_text_medium');
-		modifyCSSID('remove', id + id_name_post, 'size2_centered_top');
-		modifyCSSID('add', id + id_name_post, 'size3_centered_top');
-		var newSize = getCssFontSize(this.hand.getCard(getIDFromCard(id)), width_biggest, true);
-		var centerTexts = document.getElementById(id + id_centeredText);
-		centerTexts.style.width = width_biggest;
-		for(var j = 0; j < centerTexts.childNodes.length; j++){
-			modifyCSSEl('add', centerTexts.childNodes[j], newSize);
-		}
-		animateCard(id, 'animation_fadeIn', '', 'invis_opacity');
+		var div = document.getElementById(id + id_div);
+		if(div){ modifyCSSEl('remove', div, 'inactive'); modifyCSSEl('add', div, 'size-hand'); }
 	}
 
 	this.checkIfPhaseDone = function(nextStage = false){ // Boolean to see if next stage
@@ -198,7 +205,7 @@ function DeckOfCards(playerIndex){
 				var cardDivs = document.getElementById(id_hand + this.playerIndex).childNodes;
 				for(var i = 0; i < cardDivs.length; i++){
 					var imgID = getIDImgFromDiv(cardDivs[i].id);
-					var el = document.getElementById(imgID);
+					var el = document.getElementById(imgID + id_div);
 					if(el !== undefined){
 						modifyCSSEl('remove', el, 'selected');
 					}
@@ -220,13 +227,12 @@ function DeckOfCards(playerIndex){
 				if(!gameEnded){
 					updateTextPrint(this.playerIndex, 'Ending Turn ' + getStringNotZero((this.money + this.plusMoney), this.buysLeft, this.actionsLeft));
 					deleteButton('interactButton', id_interact + this.playerIndex);
-					this.hand.discardHandAnimation();
-					setTimeout(function(){
+					this.hand.discardHandAnimation().then(function(){
 						var currentPlayer = getPlayer(turn);
 						currentPlayer.cards.discardHand();
-						currentPlayer.drawHand();
+						currentPlayer.drawHand(true); // silent: deals in when its owner's turn starts
 						changeTurn();
-					}, useCardAnimationTime);
+					});
 				}
 			}			
 		}
@@ -239,20 +245,28 @@ function DeckOfCards(playerIndex){
 		this.generateHandCard(tempCard); // Generate Hand Card HTML
 	}
 
-	this.drawCard = function(){
+	this.drawCard = function(silent){
 		if(this.deckStack.length === 0){ // No more cards available to draw, needs to shuffle
 			this.deckStack = this.discard;
 			this.discard = [];
 			shuffle(this.deckStack);
 			removeChildren(id_discard_top + this.playerIndex);
+			if(typeof sfxShuffle === 'function'){ sfxShuffle(); }
 			updateTextPrint(this.playerIndex, 'Shuffled Deck! (' + this.deckStack.length + ' cards)');
 		}
 
 		if(this.deckStack.length > 0){ // Draw a card
 			var tempCard = this.deckStack.pop(); // Read pop
 			this.addCardToHand(tempCard);
-			animateCard(id_card + tempCard.id, 'animation_fadeIn', '', 'invis_opacity');
-			return id_card + tempCard.id;
+			var rootId = id_card + tempCard.id;
+			if(!silent){
+				var handCardDiv = document.getElementById(rootId + id_div);
+				if(handCardDiv){ handCardDiv.style.visibility = 'hidden'; }
+				flyCardDeal(rootId, deckAnchorEl(this.playerIndex), handCardDiv).then(function(){
+					if(handCardDiv){ handCardDiv.style.visibility = 'visible'; }
+				});
+			}
+			return rootId;
 		} else { // If you have shuffled but there are still no cards
 			updateTextPrint(this.playerIndex, 'Out of cards!');
 			return null;
@@ -261,30 +275,33 @@ function DeckOfCards(playerIndex){
 
 	// Generate HTML for Card in hand
 	this.generateHandCard = function(tempCard){
-		generateCardHTML(tempCard, id_card + tempCard.id, id_hand + this.playerIndex, false, 'card_smaller', ['inactive', getCssClassCard(tempCard)], function(card_HTMLid){
-			var tempEl = document.getElementById(card_HTMLid);
-			var playerID = getIDFromCard(tempEl.parentElement.id);
-			var card_id = getIDFromCard(card_HTMLid);
-			if(isTurn(playerID) && getPlayer(playerID).cards.phase === 0) {
-				var currentPlayer = getPlayer(turn);
-				var card = currentPlayer.cards.hand.getCard(card_id);
-				if(card.cardType === CardType.ACTION_CARD && currentPlayer.cards.actionsLeft > 0 && currentPlayer.cards.activeActionCard === ''){
-					// Add use card button
-					//updateTextPrint(currentPlayer.index, 'Selected Action Card!', false);
-					deleteButton('playActionID', id_interact + currentPlayer.index);
-					var cardDivs = document.getElementById(id_hand + currentPlayer.index).childNodes;
-					for(var i = 0; i < cardDivs.length; i++){
-						var imgID = getIDImgFromDiv(cardDivs[i].id);
-						modifyCSSID('remove', imgID, 'selected');
+		renderCard(tempCard, id_card + tempCard.id, id_hand + this.playerIndex, {
+			size: 'hand', cssClass: ['inactive'], order: getCssOrderCard(tempCard, this.phase),
+			callback: function(card_HTMLid){
+				var tempEl = document.getElementById(card_HTMLid);
+				var playerID = getIDFromCard(tempEl.parentElement.id);
+				var card_id = getIDFromCard(card_HTMLid);
+				if(isTurn(playerID) && getPlayer(playerID).cards.phase === 0) {
+					var currentPlayer = getPlayer(turn);
+					var card = currentPlayer.cards.hand.getCard(card_id);
+					if(card.cardType === CardType.ACTION_CARD && currentPlayer.cards.actionsLeft > 0 && currentPlayer.cards.activeActionCard === ''){
+						// Add use card button
+						//updateTextPrint(currentPlayer.index, 'Selected Action Card!', false);
+						deleteButton('playActionID', id_interact + currentPlayer.index);
+						var cardDivs = document.getElementById(id_hand + currentPlayer.index).childNodes;
+						for(var i = 0; i < cardDivs.length; i++){
+							var imgID = getIDImgFromDiv(cardDivs[i].id);
+							modifyCSSID('remove', imgID + id_div, 'selected');
+						}
+						modifyCSSID('add', id_card + card.id + id_div, 'selected');
+						createButton('Use <br>' + card.name + '?', 'playActionID', id_interact + currentPlayer.index, (function(){
+							updateTextPrint(currentPlayer.index, 'Played Action Card ' + card.name + '!');
+							currentPlayer.playActionCard(card);
+						}).bind(this), 'interactButton');
 					}
-					modifyCSSID('add', id_card + card.id, 'selected');
-					createButton('Use <br>' + card.name + '?', 'playActionID', id_interact + currentPlayer.index, (function(){
-						updateTextPrint(currentPlayer.index, 'Played Action Card ' + card.name + '!');
-						currentPlayer.playActionCard(card);
-					}).bind(this), 'interactButton');					
 				}
 			}
-		}, getCssOrderCard(tempCard, this.phase));
+		});
 	}
 
 	this.discardHand = function(){ 
@@ -306,7 +323,7 @@ function DeckOfCards(playerIndex){
 
 	this.showTopOfDiscard = function(tempCard){
 		removeChildren(id_discard_top + this.playerIndex);
-		generateCardHTML(tempCard, id_discard_top + id_card + this.playerIndex, id_discard_top + this.playerIndex, false, 'card_discard', [getCssClassCard(tempCard)]);
+		renderCard(tempCard, id_discard_top + id_card + this.playerIndex, id_discard_top + this.playerIndex, { size: 'discard' });
 	}
 
 	// Used on end to get all cards for a player
@@ -330,7 +347,7 @@ function DeckOfCards(playerIndex){
 		modifyCSSID('add', id_board + this.playerIndex, 'invis');
 		modifyCSSID('add', id_info_stats_main + this.playerIndex, 'invis');
 		modifyCSSID('add', id_text + this.playerIndex, 'invis');
-		modifyCSSID('add', id_discard_top + id_card + this.playerIndex, 'inactive');
+		modifyCSSID('add', id_discard_top + id_card + this.playerIndex + id_div, 'inactive');
 		removeChildren(id_board + this.playerIndex);
 		removeChildren(id_hand + this.playerIndex);
 		removeChildren(id_interact + this.playerIndex);
@@ -358,12 +375,13 @@ function DeckOfCards(playerIndex){
 	// Use action card
 	this.useCard = function(cardParam){
 		this.actionsLeft--;
+		if(typeof sfxPlay === 'function'){ sfxPlay(); }
 		//console.log('DEBUG @useCard');
 		var card = this.hand.useCard(cardParam);
 		var currentDeck = getPlayer(turn).cards;
-		setTimeout(function(){
+		popCard(id_card + cardParam.id).then(function(){
 			currentDeck.useCardAfterAnimation(card);
-		}, useCardAnimationTime); 
+		});
 	}
 
 	this.useCardAfterAnimation = function(card){
@@ -385,6 +403,24 @@ function DeckOfCards(playerIndex){
 		}
 		if(actions.moreGold !== 0){
 			this.updatePlusMoney(this.plusMoney + actions.moreGold);
+		}
+
+		// Staggered "+N" float chips so multi-effect cards (e.g. Festival) read one effect at a time
+		if(typeof floatGain === 'function'){
+			var self = this;
+			var plural = function(n, word){ return '+' + n + ' ' + word + (n > 1 ? 's' : ''); };
+			var steps = [];
+			if(actions.drawCards !== 0){ steps.push({ get: function(){ return deckAnchorEl(self.playerIndex); }, txt: plural(actions.drawCards, 'Card'), tint: '#f4ecd8' }); }
+			if(actions.moreActions !== 0){ steps.push({ get: function(){ return document.getElementById(id_actionsLeft + self.playerIndex); }, txt: plural(actions.moreActions, 'Action'), tint: '#8ecae6' }); }
+			if(actions.moreBuys !== 0){ steps.push({ get: function(){ return document.getElementById(id_buysLeft + self.playerIndex); }, txt: plural(actions.moreBuys, 'Buy'), tint: '#b8e0a0' }); }
+			if(actions.moreGold !== 0){ steps.push({ get: function(){ return document.getElementById(id_money + self.playerIndex); }, txt: '+$' + actions.moreGold, tint: '#e2b13c' }); }
+			steps.forEach(function(s, i){
+				setTimeout(function(){
+					var el = s.get();
+					floatGain(el, s.txt, s.tint);
+					if(typeof bumpCounter === 'function'){ bumpCounter(el); }
+				}, 190 * i);
+			});
 		}
 
 		// Special card start
@@ -416,7 +452,7 @@ function DeckOfCards(playerIndex){
 				var cardDivs = document.getElementById(id_hand + currentDeck.playerIndex).childNodes;
 				for(var i = 0; i < cardDivs.length; i++){
 					var imgID = getIDImgFromDiv(cardDivs[i].id);
-					modifyCSSID('remove', imgID, 'selected');
+					modifyCSSID('remove', imgID + id_div, 'selected');
 				}
 				currentDeck.checkIfPhaseDone();
 			}).bind(this), 'interactButton');
@@ -431,7 +467,7 @@ function DeckOfCards(playerIndex){
 					if(card.name != 'Gold' && currentDeck.activeActionCard === actionCardID){ // card.id => mine.id
 						// Add use card button
 						//updateTextPrint(currentDeck.playerIndex, 'Selected Treasure Card!', false);
-						modifyCSSID('add', id_card + card.id, 'selected');
+						modifyCSSID('add', id_card + card.id + id_div, 'selected');
 						deleteButton('mineUpgradeID', id_interact + currentDeck.playerIndex);
 						createButton('Upgrade ' + card.name + '?', 'mineUpgradeID', id_interact + currentDeck.playerIndex, (function(){
 							deleteButton('mineUpgradeID', id_interact + currentDeck.playerIndex);
@@ -443,7 +479,7 @@ function DeckOfCards(playerIndex){
 							} else if(card.name === 'Silver'){
 								newCard = generateNewCard(cards_global.get('Gold'));
 							}
-							modifyCSSID('remove', id_card + card.id, 'selected');
+							modifyCSSID('remove', id_card + card.id + id_div, 'selected');
 							currentDeck.hand.useCard(card); // Trash this card
 							currentDeck.addNewCard(newCard, false); // Add card to hand instead of discard pile
 							currentDeck.activeActionCard = '';
@@ -467,7 +503,7 @@ function DeckOfCards(playerIndex){
 				var cardDivs = document.getElementById(id_hand + currentDeck.playerIndex).childNodes;
 				for(var i = 0; i < cardDivs.length; i++){
 					var imgID = getIDImgFromDiv(cardDivs[i].id);
-					modifyCSSID('remove', imgID, 'selected');
+					modifyCSSID('remove', imgID + id_div, 'selected');
 				}
 				currentDeck.checkIfPhaseDone();
 			}).bind(this), 'interactButton');
@@ -480,7 +516,7 @@ function DeckOfCards(playerIndex){
 					var currentDeck = getPlayer(turn).cards;
 					if(currentDeck.activeActionCard === actionCardID){ // card.id => mine.id
 						// Add use card button
-						modifyCSSID('toggle', id_card + card.id, 'selected');	
+						modifyCSSID('toggle', id_card + card.id + id_div, 'selected');
 						//updateTextPrint(currentDeck.playerIndex, 'Selected ' + card.name + '!', false);
 						deleteButton('chapelID', id_interact + currentDeck.playerIndex); // Check me
 						createButton('Trash the selected cards', 'chapelID', id_interact + currentDeck.playerIndex, (function(){
@@ -491,9 +527,9 @@ function DeckOfCards(playerIndex){
 							var counter = 0;
 							for(var i = cardDivs.length-1; i >= 0; i--){
 								var imgID = getIDImgFromDiv(cardDivs[i].id);
-								if(document.getElementById(imgID).classList.contains('selected')){
+								if(document.getElementById(imgID + id_div).classList.contains('selected')){
 									counter++;
-									modifyCSSID('remove', imgID, 'selected');
+									modifyCSSID('remove', imgID + id_div, 'selected');
 									var tempCard = getPlayerCard(currentDeck.playerIndex, getIDFromCard(imgID));
 									currentDeck.hand.useCard(tempCard); // Trash this card
 								}
@@ -519,7 +555,7 @@ function DeckOfCards(playerIndex){
 				var cardDivs = document.getElementById(id_hand + currentDeck.playerIndex).childNodes;
 				for(var i = 0; i < cardDivs.length; i++){
 					var imgID = getIDImgFromDiv(cardDivs[i].id);
-					modifyCSSID('remove', imgID, 'selected');
+					modifyCSSID('remove', imgID + id_div, 'selected');
 				}
 				currentDeck.checkIfPhaseDone();
 			}).bind(this), 'interactButton');
@@ -532,7 +568,7 @@ function DeckOfCards(playerIndex){
 					var currentDeck = getPlayer(turn).cards;
 					if(currentDeck.activeActionCard === actionCardID){ // card.id => mine.id
 						// Add use card button
-						modifyCSSID('toggle', id_card + card.id, 'selected');	
+						modifyCSSID('toggle', id_card + card.id + id_div, 'selected');
 						//updateTextPrint(currentDeck.playerIndex, 'Selected ' + card.name + '!', false);
 						deleteButton('cellarID', id_interact + currentDeck.playerIndex); // Check me
 						createButton('Exchange Selected Cards', 'cellarID', id_interact + currentDeck.playerIndex, (function(){
@@ -543,9 +579,9 @@ function DeckOfCards(playerIndex){
 							var counter = 0;
 							for(var i = cardDivs.length-1; i >= 0; i--){
 								var imgID = getIDImgFromDiv(cardDivs[i].id);
-								if(document.getElementById(imgID).classList.contains('selected')){
+								if(document.getElementById(imgID + id_div).classList.contains('selected')){
 									counter++;
-									modifyCSSID('remove', imgID, 'selected');
+									modifyCSSID('remove', imgID + id_div, 'selected');
 									var tempCard = getPlayerCard(currentDeck.playerIndex, getIDFromCard(imgID));
 									// Discard this card
 									var newTempCard = currentDeck.hand.useCard(tempCard); 
@@ -592,8 +628,8 @@ function DeckOfCards(playerIndex){
 		this.updateHTMLElements();
 
 		this.board.push(card);
-		
-		generateCardHTML(card, id_board + card.id, id_board + this.playerIndex, false, 'card_smaller', [getCssClassCard(card)]);
+
+		renderCard(card, id_board + card.id, id_board + this.playerIndex, { size: 'board' });
 
 		// Remove Use action button
 		deleteButton('playActionID', id_interact + this.playerIndex);
@@ -661,13 +697,15 @@ function Hand(deckOfCards){
 		}
 		this.amount--;
 		this.removeCardList(tempCard);
-		this.allCards.delete(card.id); 
-		animateCard(id_card + card.id, 'animation_fadeOut', function(pid, id){
-			//console.log('DEBUG @useCard - Callback - REMOVING CARD ' + id);
-			var handEl = document.getElementById(id_hand + pid);
-			var el = document.getElementById(id + id_div);
-			handEl.removeChild(el);
-		});
+		this.allCards.delete(card.id);
+		var rootId = id_card + card.id;
+		var div = document.getElementById(rootId + id_div);
+		if(div){ div.style.opacity = '0'; div.style.transition = 'opacity ' + (prefersReducedMotion()?'1ms':'180ms'); }
+		var playerIndex = this.deckOfCards.playerIndex;
+		setTimeout(function(){
+			if(div && div.parentNode){ div.parentNode.removeChild(div); }
+			reflowHand(document.getElementById(id_hand + playerIndex));
+		}, prefersReducedMotion()?1:180);
 		return tempCard;
 	}
 
@@ -715,14 +753,16 @@ function Hand(deckOfCards){
 
 	this.discardHandAnimation = function(){
 		var listOfCards = this.getHand();
-		for(var i = 0; i < listOfCards.length; i++){
-			var card = listOfCards[i];
-			animateCard(id_card + card.id, 'animation_fadeOut', function(pid, id){
-				//console.log('DEBUG @useCard - Callback - REMOVING CARD ' + id);
-				var handEl = document.getElementById(id_hand + pid);
-				var el = document.getElementById(id + id_div);
-				handEl.removeChild(el);
+		var pid = this.deckOfCards.playerIndex;
+		var handEl = document.getElementById(id_hand + pid);
+		var discard = discardAnchorEl(pid);
+		var flights = listOfCards.map(function(card){
+			var rootId = id_card + card.id;
+			return flyCard(rootId, document.getElementById(rootId + id_div), discard, {fade:true}).then(function(){
+				var el = document.getElementById(rootId + id_div);
+				if(el && el.parentNode){ el.parentNode.removeChild(el); }
 			});
-		}
+		});
+		return Promise.all(flights);
 	}
 }

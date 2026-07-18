@@ -6,18 +6,21 @@
     <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
     <link rel='stylesheet' type='text/css' href='style.css'>
 	<script src='menuScript.js'></script>
+	<script src='icons.js'></script>
 	<script src='Card.js'></script>
 	<script src='html_css_functions.js'></script>
     </head>
-<body onLoad='main();' background='res/forest.jpg'>
-<div class='text_shadow size3_text_big'>Dominion</div>
-<div class='info'>
-	<button class='bigButton' id='players-'>-</button>
-	<div class='info_child text_shadow bold text16' id='playersPlayingID'></div>
-	<button class='bigButton' id='players+'>+</button>
+<body onLoad='main();' class='theme-forest'>
+<div class='text_shadow size3_text_big game-title'>Dominion</div>
+<div class='menu-panel flex_container'>
+	<div class='info'>
+		<button class='bigButton' id='players-'>-</button>
+		<div class='info_child text_shadow bold text16' id='playersPlayingID'></div>
+		<button class='bigButton' id='players+'>+</button>
+	</div>
+	<button type='button' class='normalButton' onClick='changePage();'>Start Game</button>
+	<div id='helpMessage' class='flex_container'></div>
 </div>
-<button type='button' class='normalButton' onClick='changePage();'>Start Game</button>
-<div id='helpMessage' class='flex_container'></div>
 
 </body>
 </html>

@@ -17,3 +17,6 @@ They also show capacity left in the store in the bottom right corner, as long as
 
 ### How to play
 A static version of the game is up and running in the description above. Also, one can simply download the repository and open the index.html file to try out the functionality.
+
+### Visual identity
+The interface uses faithful Dominion-style card faces (name banner, per-card icon, type line, cost shield, supply count) drawn with CSS/SVG, a felt-table backdrop, real deck/discard piles, and tactile animations: cards fly on draw/discard/buy, action cards pop when played, and resource counters bump when they increase. Animations honor `prefers-reduced-motion`. No build step or dependencies — open `index.html` to play.

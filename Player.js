@@ -10,6 +10,8 @@ function Player(index){
 	this.startTurn = function(){
 		this.cards.startTurn();
 		this.displayHand();
+		if(typeof showTurnFlash === 'function'){ showTurnFlash(this.name + "'s turn", getPlayerColor(this.index)); }
+		if(typeof dealInHand === 'function'){ dealInHand(this.index); } // deal this player's hand in with animation
 		this.cards.checkIfPhaseDone();
 	}
 
@@ -24,10 +26,10 @@ function Player(index){
 		}
 	}
 
-	this.drawHand = function(){
+	this.drawHand = function(silent){
 		if(this.cards.getPhase() === 2){
 			for(var i = 0; i < cardHandAmount; i++){
-				this.cards.drawCard();
+				this.cards.drawCard(silent);
 			}
 		}
 		this.cards.updateDeckLength();
@@ -52,8 +54,8 @@ function Player(index){
 			// Check if you can afford card
 			if(this.cards.getCurrentMoney() >= card.cost){
 				// Confirm purchase
-				deleteButton('confirmPurchase', id_interact + this.index);
-				deleteButton('cancelPurchase', id_interact + this.index);
+				deleteButton('confirmPurchase', 'shopPanel');
+				deleteButton('cancelPurchase', 'shopPanel');
 				modifyCSSChildren('remove', 'shopCards', 'selected');
 				var cap = getCapacity(card);
 				var capString = ')';
@@ -62,29 +64,32 @@ function Player(index){
 				}
 				updateShopText(card.name + ': (cost: ' + card.cost + capString);
 				// Add selected
-				modifyCSSID('add', id_card + cardId, 'selected');
-				createButton('Confirm Purchase:\n' + card.name, 'confirmPurchase', id_interact + this.index, (function(){
+				modifyCSSID('add', id_card + cardId + id_div, 'selected');
+				createButton('Confirm Purchase:\n' + card.name, 'confirmPurchase', 'shopPanel', (function(){
 					// Update money
 					this.cards.updateMoney(this.cards.money - card.cost, true);
 					this.cards.updateBuysLeft(this.cards.buysLeft - 1);
 		
 					// Add new card to discard pile
 					this.cards.addNewCard(card);
+					if(typeof sfxBuy === 'function'){ sfxBuy(); }
+					var shopDiv = document.getElementById(id_card + cardId + id_div); // shop card root element
+					flyCard(id_card + cardId, shopDiv, discardAnchorEl(this.index), {fade:false});
 					changeText(id_card + cardId + id_bottomRight, getCapacityString(card));
 
 					// Check if done with buy phase
 					this.cards.checkIfPhaseDone();
 					updateTextPrint(this.index, 'Added card to deck: ' + card.name + '! (Cap: ' + cap + ')'); 
 					updateShopText(this.name + ' bought a ' + card.name + ' card! (Cap: ' + cap + ')');
-					
-					modifyCSSID('remove', id_card + cardId, 'selected');
-					deleteButton('confirmPurchase', id_interact + this.index);
-					deleteButton('cancelPurchase', id_interact + this.index);
+
+					modifyCSSID('remove', id_card + cardId + id_div, 'selected');
+					deleteButton('confirmPurchase', 'shopPanel');
+					deleteButton('cancelPurchase', 'shopPanel');
 				}).bind(this), 'interactButton');
-				createButton('Cancel Purchase', 'cancelPurchase', id_interact + this.index, (function(){
-					modifyCSSID('remove', id_card + cardId, 'selected');
-					deleteButton('confirmPurchase', id_interact + this.index);
-					deleteButton('cancelPurchase', id_interact + this.index);
+				createButton('Cancel Purchase', 'cancelPurchase', 'shopPanel', (function(){
+					modifyCSSID('remove', id_card + cardId + id_div, 'selected');
+					deleteButton('confirmPurchase', 'shopPanel');
+					deleteButton('cancelPurchase', 'shopPanel');
 				}).bind(this), 'interactButton');
 			} else{
 				updateShopText('Not enough money! (' + this.cards.getCurrentMoney() + '/' + card.cost + ')');
@@ -104,8 +109,9 @@ function Player(index){
 		name.innerHTML = this.name;
 		name.style.backgroundColor = color;
 		name.addEventListener('click', function(event){
-			// Option to changeName
+			// Option to changeName — only the active (current) player may rename
 			var pid = getIDFromCard(event.target.id);
+			if(!isTurn(pid)){ return; }
 			if(document.getElementById(id_name_pre + 'change_' + pid) !== null){
 				removeChildren(id_name_pre + 'change_' + pid);
 				var outer = document.getElementById(id_name_pre + pid + id_div);
@@ -137,8 +143,13 @@ function Player(index){
 		initNewUIElement('div', new Map().set('id', id_infoBoard + this.index), id_player + this.index, ['flex_container', 'margin_top_2']);
 		initNewUIElement('div', new Map().set('id', id_info + this.index), id_infoBoard + this.index, 'card_container');
 		initNewUIElement('div', new Map().set('id', id_board + this.index), id_infoBoard + this.index, ['card_container', 'margin_left']);
-		initNewUIElement('div', new Map().set('id', id_interact + this.index), id_player + this.index, 'interact');		
-		initNewUIElement('div', new Map().set('id', id_hand + this.index), id_player + this.index, ['card_container', 'margin_left']);
+		initNewUIElement('div', new Map().set('id', id_interact + this.index), id_player + this.index, 'interact');
+		// Hand row (bottom of the right column): deck pile | hand | discard pile
+		initNewUIElement('div', new Map().set('id', 'handRow_' + this.index), id_player + this.index, ['hand-row']);
+		initNewUIElement('div', new Map().set('id', 'pile_deck_' + this.index), 'handRow_' + this.index, ['pile', 'pile-deck']);
+		var handEl = initNewUIElement('div', new Map().set('id', id_hand + this.index), 'handRow_' + this.index, ['card_container', 'margin_left']);
+		observeHandFan(handEl); // auto-tighten the fan when the hand grows large
+		initNewUIElement('div', new Map().set('id', 'pile_discard_' + this.index), 'handRow_' + this.index, ['pile', 'pile-empty']);
 
 		initNewUIElement('div', new Map().set('id', id_info_stats + this.index), id_info + this.index, ['info_child', 'card_container']);
 		initNewUIElement('div', new Map().set('id', id_info_stats_main + this.index), id_info_stats + this.index);
@@ -146,9 +157,10 @@ function Player(index){
 		initNewUIElement('div', new Map().set('id', id_buysLeft + this.index), id_info_stats_main + this.index, ['bold', 'info_stats_main', 'info_stats', 'text_shadow', 'text16']);
 		initNewUIElement('div', new Map().set('id', id_actionsLeft + this.index), id_info_stats_main + this.index, ['bold', 'info_stats_main', 'info_stats', 'text_shadow', 'text16']);
 
-		initNewUIElement('div', new Map().set('id', id_info_stats_cards + this.index), id_info_stats + this.index, ['margin_left', 'margin_top_2']);	
+		initNewUIElement('div', new Map().set('id', id_info_stats_cards + this.index), id_info_stats + this.index, ['margin_left', 'margin_top_2']);
 		initNewUIElement('div', new Map().set('id', id_deck + this.index), id_info_stats_cards + this.index, ['bold', 'text_shadow', 'text16']);
 		initNewUIElement('div', new Map().set('id', id_discard + this.index), id_info_stats_cards + this.index, ['bold', 'text_shadow', 'text16']);
+
 
 		initNewUIElement('div', new Map().set('id', id_text + this.index), id_info + this.index);
 		initNewUIElement('div', new Map().set('id', id_text + this.index + id_0), id_text + this.index, ['bold', 'text_shadow', 'margin_left', 'border_bottom'])
