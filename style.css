@@ -16,10 +16,16 @@
 	/* Motion */
 	--anim-fast: 180ms; --anim-med: 380ms;
 	--ease-card: cubic-bezier(.22,.61,.36,1);
+	/* Component colour tokens (RGB channels so callers vary alpha) */
+	--forest-rgb: 23, 54, 31;   /* dark forest panel */
+	--wood-rgb: 91, 58, 33;     /* == --wood */
+	--card-back-1: #33406b; --card-back-2: #26305a; --card-back-edge: #1b2140;
+	--btn-wood-top: #7c5232;
+	--btn-hover-top: #96693f; --btn-hover-bottom: #6b4527;
 }
 
 body.theme-table {
-	background: radial-gradient(ellipse at 50% 20%, #4f9c68, #2f6b43 45%, #1f4e30 100%);
+	background: radial-gradient(ellipse at 50% 20%, #4f9c68, var(--table-top) 45%, #1f4e30 100%);
 	background-attachment: scroll;
 	min-height: 100vh;
 }
@@ -127,7 +133,7 @@ body.theme-forest {
 	max-width: 480px;
 	margin: var(--space-4) auto;
 	padding: var(--space-4);
-	background: linear-gradient(180deg, rgba(91,58,33,.85), rgba(23,54,31,.85));
+	background: linear-gradient(180deg, rgba(var(--wood-rgb), .85), rgba(var(--forest-rgb), .85));
 	border: 1px solid var(--wood);
 	border-radius: var(--radius-card);
 	box-shadow: 0 4px 12px rgba(0,0,0,.5);
@@ -202,7 +208,7 @@ body.theme-forest {
 }
 
 .info_stats {
-	background: linear-gradient(180deg, rgba(91,58,33,.85), rgba(23,54,31,.85));
+	background: linear-gradient(180deg, rgba(var(--wood-rgb), .85), rgba(var(--forest-rgb), .85));
 	border: 1px solid var(--wood);
 }
 
@@ -210,7 +216,7 @@ body.theme-forest {
 	display: flex;
 	padding: var(--space-2);
 	margin-right: 5px;
-	background: rgba(23, 54, 31, 0.4);
+	background: rgba(var(--forest-rgb), 0.4);
 	border: 1px solid var(--wood);
 	border-radius: 6px;
 }
@@ -343,7 +349,7 @@ body.theme-forest {
     margin-right: 5px;
     color: var(--card-face);
     text-shadow: 0 1px 2px rgba(0,0,0,.8);
-    background: linear-gradient(180deg, #7c5232, var(--wood));
+    background: linear-gradient(180deg, var(--btn-wood-top), var(--wood));
     box-shadow: 0 2px 4px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.12);
     cursor: pointer;
     transition: transform var(--anim-fast) var(--ease-card),
@@ -362,7 +368,7 @@ body.theme-forest {
     margin-right: 5px;
     color: var(--card-face);
     text-shadow: 0 1px 2px rgba(0,0,0,.8);
-    background: linear-gradient(180deg, #7c5232, var(--wood));
+    background: linear-gradient(180deg, var(--btn-wood-top), var(--wood));
     box-shadow: 0 2px 4px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.12);
     font-weight: bold;
     font-size: 16pt;
@@ -377,7 +383,7 @@ body.theme-forest {
     border-radius: 6px;
 	height: 50px;
     width: 140px;
-    background: linear-gradient(180deg, #7c5232, var(--wood));
+    background: linear-gradient(180deg, var(--btn-wood-top), var(--wood));
     box-shadow: 0 2px 4px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.12);
     font-weight: bold;
     color: var(--card-face);
@@ -390,21 +396,21 @@ body.theme-forest {
 }
 
 .interactButton:hover {
-	background: linear-gradient(180deg, #96693f, #6b4527);
+	background: linear-gradient(180deg, var(--btn-hover-top), var(--btn-hover-bottom));
 	border-color: var(--type-treasure);
 	box-shadow: 0 4px 10px rgba(0,0,0,.5), 0 0 14px rgba(184,134,11,.65);
 	transform: translateY(-2px);
 }
 
 .normalButton:hover {
-	background: linear-gradient(180deg, #96693f, #6b4527);
+	background: linear-gradient(180deg, var(--btn-hover-top), var(--btn-hover-bottom));
 	border-color: var(--type-treasure);
 	box-shadow: 0 4px 10px rgba(0,0,0,.5), 0 0 14px rgba(184,134,11,.65);
 	transform: translateY(-2px);
 }
 
 .bigButton:hover {
-	background: linear-gradient(180deg, #96693f, #6b4527);
+	background: linear-gradient(180deg, var(--btn-hover-top), var(--btn-hover-bottom));
 	border-color: var(--type-treasure);
 	box-shadow: 0 4px 10px rgba(0,0,0,.5), 0 0 14px rgba(184,134,11,.65);
 	transform: translateY(-2px);
@@ -437,7 +443,7 @@ body.theme-forest {
     padding-top: 16px;
     padding-left: 6px;
     padding-right: 6px;
-    background: rgba(23, 54, 31, 0.55);
+    background: rgba(var(--forest-rgb), 0.55);
     border-radius: 4px;
 }
 
@@ -540,7 +546,6 @@ body.theme-forest {
 	            box-shadow var(--anim-fast) var(--ease-card);
 }
 .dcard.size-shop    { --card-scale: .72; }
-.dcard.size-hand    { --card-scale: .86; }
 .dcard.size-board   { --card-scale: .62; }
 .dcard.size-discard { --card-scale: .4; }
 .dcard-treasure { --type-color: var(--type-treasure); }
@@ -570,8 +575,8 @@ body.theme-forest {
 .dcard.inactive { filter: grayscale(100%) brightness(.8); }
 
 .pile { position: relative; width: 64px; height: 100px; border-radius: 6px; }
-.pile-deck { background: repeating-linear-gradient(45deg, #33406b, #33406b 6px, #26305a 6px, #26305a 12px);
-	border: 2px solid #1b2140; box-shadow: 0 2px 5px rgba(0,0,0,.4); }
+.pile-deck { background: repeating-linear-gradient(45deg, var(--card-back-1), var(--card-back-1) 6px, var(--card-back-2) 6px, var(--card-back-2) 12px);
+	border: 2px solid var(--card-back-edge); box-shadow: 0 2px 5px rgba(0,0,0,.4); }
 .pile-empty { background: rgba(255,255,255,.08); border: 2px dashed rgba(255,255,255,.4); }
 .pile-count { position: absolute; bottom: -6px; right: -6px; min-width: 20px; height: 20px; padding: 0 4px;
 	border-radius: 10px; background: #000c; color: #fff; font-size: 12px; font-weight: bold;
@@ -586,12 +591,12 @@ body.theme-forest {
 .deal-face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden;
 	border-radius: var(--radius-card); overflow: hidden; box-shadow: 0 6px 16px rgba(0,0,0,.5); }
 .deal-front { transform: rotateY(180deg); }
-.dcard-back { background: repeating-linear-gradient(45deg, #33406b, #33406b 6px, #26305a 6px, #26305a 12px);
-	border: 2px solid #1b2140; }
+.dcard-back { background: repeating-linear-gradient(45deg, var(--card-back-1), var(--card-back-1) 6px, var(--card-back-2) 6px, var(--card-back-2) 12px);
+	border: 2px solid var(--card-back-edge); }
 
 /* Task 13: active-player highlight, hand fan, hover lift */
 #playArea .margin_bottom { transition: box-shadow var(--anim-med), opacity var(--anim-med); }
-.player-active { box-shadow: 0 0 0 3px #ffd400, 0 0 24px rgba(255,212,0,.5); border-radius: 10px; }
+.player-active { border-radius: 10px; }
 #playArea > .margin_bottom:not(.player-active) { opacity: .85; }
 .card_container .dcard { transition: transform var(--anim-fast) var(--ease-card), box-shadow var(--anim-fast); }
 #playArea .dcard:hover { transform: translateY(-10px); box-shadow: 0 8px 18px rgba(0,0,0,.5); z-index: 5; }
@@ -613,7 +618,7 @@ body.theme-forest { overflow: hidden; }
 /* Help text overlays instead of pushing the top bar */
 #helpMessage:not(.invis) {
 	position: absolute; top: 100%; right: 0; z-index: 50; width: 460px; max-width: 80vw;
-	background: rgba(23,54,31,.95); border: 1px solid var(--wood); border-radius: 8px; padding: 10px;
+	background: rgba(var(--forest-rgb), .95); border: 1px solid var(--wood); border-radius: 8px; padding: 10px;
 }
 
 #table {
@@ -640,7 +645,6 @@ body.theme-forest { overflow: hidden; }
 .hand-row [id^='hand_'] { flex: 1 1 auto; }
 
 /* Task 2 fit: keep the hand to one row (smaller cards; scroll horizontally, never grow vertically) */
-.dcard.size-hand { --card-scale: .62; }
 .hand-row { flex-wrap: nowrap; }
 .hand-row [id^='hand_'] { flex: 1 1 auto; min-width: 0; flex-wrap: nowrap; overflow-x: auto; overflow-y: visible; padding-bottom: 4px; }
 .hand-row [id^='hand_'] .dcard { flex: 0 0 auto; }
@@ -660,8 +664,7 @@ body.theme-forest { overflow: hidden; }
 .opponent [id^='info_stats_main_'],
 .opponent [id^='text_'],
 .opponent [id^='board_'],
-.opponent [id^='interact_'],
-.opponent [id^='handRow_'] { display: none !important; }
+.opponent [id^='interact_'] { display: none !important; }
 .opponent [id^='name_']:not([id$='_div']) { font-size: 15pt; padding: 1px 8px; }
 .opponent [id^='deck_'], .opponent [id^='discard_'] { font-size: 11pt; }
 
@@ -694,9 +697,8 @@ body.game-over .endScreen_texts { position: static; padding-top: 4px; left: auto
 #playArea { flex-basis: 45%; }
 
 /* Drop the yellow active outline; give the hand a subtle tray instead */
-.player-active { box-shadow: none; }
 .hand-row {
-	background: linear-gradient(180deg, rgba(23,54,31,0), rgba(23,54,31,.5));
+	background: linear-gradient(180deg, rgba(var(--forest-rgb), 0), rgba(var(--forest-rgb), .5));
 	border-top: 3px solid rgba(184,134,11,.55);
 	border-radius: 14px 14px 0 0;
 	padding: 10px 12px 8px;
@@ -709,8 +711,6 @@ body.game-over .endScreen_texts { position: static; padding-top: 4px; left: auto
 .hand-row [id^='hand_'] .dcard { margin-left: var(--hand-overlap, -26px); transition: transform var(--anim-fast) var(--ease-card), margin var(--anim-fast); }
 .hand-row [id^='hand_'] .dcard:first-child { margin-left: 0; }
 .hand-row [id^='hand_'] .dcard:hover { transform: translateY(-14px); z-index: 6; }
-.hand-row [id^='hand_'] .dcard:first-child { margin-left: 0; }
-#playArea .hand-row .dcard:hover { transform: translateY(-14px); z-index: 6; }
 
 /* Readable cost + supply badges on cards */
 .dcard-cost, .dcard-supply {
@@ -730,7 +730,7 @@ body.game-over .endScreen_texts { position: static; padding-top: 4px; left: auto
 	position: fixed; top: 42%; left: 50%; transform: translate(-50%,-50%);
 	z-index: 1200; pointer-events: none; white-space: nowrap;
 	font-size: 40pt; font-weight: bold; color: #fff;
-	background: rgba(23,54,31,.92); border: 5px solid var(--type-treasure);
+	background: rgba(var(--forest-rgb), .92); border: 5px solid var(--type-treasure);
 	border-radius: 16px; padding: 16px 46px;
 	text-shadow: 0 2px 6px rgba(0,0,0,.85); box-shadow: 0 10px 34px rgba(0,0,0,.6);
 }
@@ -781,7 +781,7 @@ body.game-over .endScreen_texts { position: static; padding-top: 4px; left: auto
 }
 
 /* Opponent miniature hand: a small face-down fan showing the whole hand size */
-.opponent [id^='handRow_'] { display: flex !important; align-items: center; background: none; border: none; padding: 0; margin: 0 0 0 6px; }
+.opponent [id^='handRow_'] { display: flex; align-items: center; background: none; border: none; padding: 0; margin: 0 0 0 6px; }
 .opponent [id^='handRow_'] .pile { display: none; }           /* piles hidden in the strip; counts already shown */
 .opponent [id^='hand_'] { display: inline-flex !important; overflow: visible; flex: 0 0 auto; min-width: 0; }
 .opponent [id^='hand_'] .dcard {
