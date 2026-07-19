@@ -35,9 +35,16 @@ Working tree clean and in sync with origin as of the last session.
 1. **`Deck.js` God Object** (~770 lines): `useCardAfterAnimation` is a ~250-line mega-fn with near-identical Mine/Chapel/Cellar blocks, and card behaviour is dispatched by hardcoded `card.name === 'Witch'` strings. → per-card handler registry attached to card definitions.
 2. **Fragile id-string ↔ CSS-selector contract**: 30+ hand-built ids (`id_discard_top + id_card + ...`) matched by 30+ `[id^='...']` CSS rules; a rename fails silently. → id-builder helpers + semantic classes; document the contract.
 3. **CSS structural consolidation**: merge the multi-location `.dcard-banner` / `.dcard-cost,.dcard-supply` / `.hand-row [id^='hand_']` rule blocks; extract a `.btn` base class (3 near-identical button blocks + 3 identical hovers); add a `@media` breakpoint or document the single-viewport assumption; replace magic `calc(100vh - 72px)` with a JS-set `--topbar-h`.
+### Smaller leftover review nits (low priority)
+4. `Player.js:48` — a debugging `throw ('Check me: ...')` is still in production code; make it a real error or drop it.
+5. `html_css_functions.js` `modifyCSSEl` — array vs string branches duplicate the add/remove/toggle logic; normalise to an array once.
+6. Extract animation magic numbers in `animator.js` (fly 380ms, deal stagger 135ms, float rise -52px, pop 420ms) into named constants; add an `_envelope()` helper for the repeated gain-ramp boilerplate in `sfx.js`.
+7. Legacy `snake_case` utility classes (`margin_left_10`, `size2_text_medium`) vs overhaul-era `kebab-case` — unify in a follow-up (touch JS references too).
+
 ### Minor / cosmetic
-4. Action "pop" reads as scale-while-leaving-hand (not a forward pop); score-screen amount labels spacing.
-5. Docs: README notes the overhaul but not the two-column relayout — refresh if desired.
+8. Action "pop" reads as scale-while-leaving-hand (not a forward pop); score-screen amount labels spacing.
+9. Docs: README notes the overhaul but not the two-column relayout — refresh if desired.
+10. Face-down opponent minis read a bit muddy over the busy autumn backdrop (accepted; it's the non-default mode).
 
 ## Specs & plans (for reference)
 - docs/superpowers/specs/2026-07-12-visual-overhaul-design.md
