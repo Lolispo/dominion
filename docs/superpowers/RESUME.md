@@ -24,12 +24,15 @@ Working tree clean and in sync with origin as of the last session.
 - **Rivals' hands render face-up by default** (legible mini card: type-coloured banner + icon) with an in-game **"Rivals: Face-up / Face-down"** toggle button (next to Sound) that flips a `body.opp-facedown` class.
 - **Dynamic hand-fan tightening** (fitHandFan + a MutationObserver per hand container in Player.js): large hands (8+ cards) tighten `--hand-overlap` to stay on one row instead of scrolling; normal 5-card hands keep the comfortable default.
 
+## DONE (shipped to `main`)
+- Overhaul squash-merged to `main` (repo was migrated master→`main` on 2026-07-19; remote HEAD = origin/main).
+- **Player-identity pills** — name + turn label are dark forest pills using a refined jewel palette (`getPlayerColor`) as a `--player-color` accent ring, replacing the old neon fills.
+- **Opponent discard thumbnail** — compact, framed, captioned "discard"; hides when empty.
+
 ## OPEN TODOS / candidate next steps
-1. **Finish the branch:** default branch here is `master` (remote HEAD = origin/master; this hobby repo was NOT migrated to `main` despite the global convention). Squash-merge or PR into `master`.
-2. Opponent **discard-top thumbnail** is plain — polish or drop it.
-3. **Player-name rendering** (the coloured-background name pills, e.g. active vs opponent) isn't pretty — revisit the styling.
-4. Minor/accepted: action "pop" reads as scale-while-leaving-hand (not a forward pop); score-screen amount labels spacing.
-5. Docs: README notes the overhaul but not the two-column relayout — refresh if desired.
+1. **Maintainability review** (done 2026-07-19 via two code-reviewer passes on the refactored view layer + CSS) — act on the prioritized findings (design-token extraction, id/selector-coupling fragility, duplication, dead code). See the review summary in the session / consider capturing top items here.
+2. Minor/accepted: action "pop" reads as scale-while-leaving-hand (not a forward pop); score-screen amount labels spacing.
+3. Docs: README notes the overhaul but not the two-column relayout — refresh if desired.
 
 ## Specs & plans (for reference)
 - docs/superpowers/specs/2026-07-12-visual-overhaul-design.md

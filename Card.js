@@ -194,9 +194,9 @@ function initCards(){
 	var estate = new Card('Estate', CardType.VICTORY_CARD);
 	estate.setValue(1);
 	estate.setCost(2);
-	var duchey = new Card('Duchey', CardType.VICTORY_CARD);
-	duchey.setValue(3);
-	duchey.setCost(5);
+	var duchy = new Card('Duchy', CardType.VICTORY_CARD);
+	duchy.setValue(3);
+	duchy.setCost(5);
 	var province = new Card('Province', CardType.VICTORY_CARD);
 	province.setValue(6);
 	province.setCost(8);
@@ -266,7 +266,7 @@ function initCards(){
 	storeCard(gold, card_capacity_infinite);
 
 	storeCard(estate, card_capacity_infinite);
-	storeCard(duchey, card_capacity_victory);
+	storeCard(duchy, card_capacity_victory);
 	storeCard(province, card_capacity_victory);
 	storeCard(garden, card_capacity_victory);
 	storeCard(curse, card_capacity_infinite, false); // Don't show in shop

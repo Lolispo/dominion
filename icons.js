@@ -23,7 +23,7 @@ CARD_ICONS.set('Gold', svgWrap(
 CARD_ICONS.set('Estate', svgWrap(
 	"<path d='M24 12 L38 24 H33 V37 H15 V24 H10 Z' fill='none' stroke='currentColor' stroke-width='3' stroke-linejoin='round'/>" +
 	"<rect x='21' y='29' width='6' height='8' fill='currentColor'/>"));
-CARD_ICONS.set('Duchey', svgWrap(
+CARD_ICONS.set('Duchy', svgWrap(
 	"<path d='M24 8 L41 23 H35 V39 H13 V23 H7 Z' fill='none' stroke='currentColor' stroke-width='3' stroke-linejoin='round'/>" +
 	"<rect x='21' y='27' width='6' height='12' fill='currentColor'/>"));
 CARD_ICONS.set('Province', svgWrap(

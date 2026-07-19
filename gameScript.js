@@ -8,79 +8,7 @@ var turn = 0;
 var gameCounter = 0;
 var gameEnded = false;
 
-/*
-	TODO
-	Move Deck card logic to Card.js
-		Pass functions for cards as a card field instead of having logic in deck.js looking at which card it is
-		So in deck: if function != null, run function
-	
-	Top of Discard show 'Empty' image instead of not showing when discard empty
-		After this, move it before status messages
-	Make cards for other players show backside by default
-		Make the backside of the cards
-			When backside is added, add a Deck element, same as discard
-	Deck and Discard visual cards can have their amount of cards on their back (atleast deck)
-		If a nicer way of showing what is bought than discard pile is found, discard pile could be backside up aswell
-
-	Sound
-		Music on/off button
-		Sound on/off button
-
-		Sound
-			New Turn
-			Selects
-
-	Animations:
-		All UI updates
-			Shop availability changes
-			Buying a card
-
-	Firefox:
-		Council Room Firefox, sizes differ, text overlap	
-
-	Gameplay:
-		Make it more obvious whne you have more buys (1 moire buy with 1 gold maybe)
-
-	Code
-		Change global vars to Caps / Const
-		Currently animation for both draw and dispaly card - Problem? Seems fine animation wise Check me.
-
-	Estetic
-		Better looking new name CSS input field
-		Start to Center stuff in css
-		Choose color and name
-		Make Player own areas more clearer
-		Better background color to buttons so they are more easily spottable
-		
-		Make it more obvious in UI when having to choose a card from your hand (currently the skip button appears only)
-			Also should be available for shop for Cards where you receive a free card
-		Scalable card sizes
-			Use 3 existing card sizes, when card amount in hand goes over a certain limit
-		Is it required to remove money cards that are used? In buy phase, they are hardly used so its visual only
-			Could be good in netplay
-		More visual on what was bought
-			netplay
-
-	Restructure: 
-		Board in middle 
-
-	Later:
-		New Cards:
-			Listed in Deck.js
-
-		netplay - nodejs
-			Remove code about order of players divs
-				On restructure, this should be set to each user anyway
-			board cards sent
-			amount of cards sent to all, which cards only to the player
-			Deck updates (buys) are sent
-			Move Player and Deck to server side instead of client side
-	
-
-
-		Private variables / exchange var to let / const
-			Gather variables in one place
-*/
+// Open tasks / roadmap now live in docs/superpowers/RESUME.md (kept out of source).
 
 function startGame(){
 	// Init players
@@ -120,12 +48,12 @@ function startGame(){
 			sfxSetMuted(!sfxMuted());
 			changeText('sfxButton', 'Sound: ' + (sfxMuted() ? 'Off' : 'On'));
 		}
-	}).bind(this), ['normalButton', 'margin_left_10', 'margin_top_2']);
+	}), ['normalButton', 'margin_left_10', 'margin_top_2']);
 	// Toggle whether opponents' hands show face-up (default) or as card backs
 	createButton('Rivals: Face-up', 'oppFaceButton', 'helpDiv', (function(){
 		var down = document.body.classList.toggle('opp-facedown');
 		changeText('oppFaceButton', 'Rivals: ' + (down ? 'Face-down' : 'Face-up'));
-	}).bind(this), ['normalButton', 'margin_left_10', 'margin_top_2']);
+	}), ['normalButton', 'margin_left_10', 'margin_top_2']);
 	createButton(HELP_MESSAGE_OPEN, 'helpButton', 'helpDiv', (function(){
 		var currentName = document.getElementById('helpButton').innerHTML;
 		if(currentName === HELP_MESSAGE_OPEN){
@@ -134,7 +62,7 @@ function startGame(){
 			changeText('helpButton', HELP_MESSAGE_OPEN)
 		}
 		modifyCSSID('toggle', 'helpMessage', 'invis');
-	}).bind(this), ['normalButton', 'margin_left_10', 'margin_top_2']);
+	}), ['normalButton', 'margin_left_10', 'margin_top_2']);
 	initNewUIElement('div', new Map().set('id', 'helpMessage'), 'helpDiv', ['flex_container', 'invis']);
 	var stringActions = getHelpString();
 	var splitted = stringActions.split('\n');
@@ -142,9 +70,15 @@ function startGame(){
 		var el = initNewUIElement('div', new Map().set('id', 'helpMessage_' + i), 'helpMessage', ['inline', 'bold', 'size2_text_medium', 'text_shadow']);
 		el.innerHTML = splitted[i];
 	}
-	changeText('turn_box', getPlayer(turn).name + ":s turn");
+	activatePlayer();
+}
+
+// Highlight the current player (turn label colour + active/opponent classes) and start their turn.
+// Shared by startGame and changeTurn so the role-swap logic lives in one place.
+function activatePlayer(){
+	changeText('turn_box', players[turn].name + ":s turn");
 	document.getElementById('turn_box').style.setProperty('--player-color', getPlayerColor(turn));
-	for(var i = 0; i < playingPlayers; i++){
+	for(var i = 0; i < players.length; i++){
 		document.getElementById(id_player + i).style.order = 1;
 		modifyCSSID('remove', id_player + i, 'player-active');
 		modifyCSSID('add', id_player + i, 'opponent');
@@ -181,19 +115,7 @@ function changeTurn(){
 	} else {
 		turn++;
 	}
-	// Update the current-turn label (no slide animation — the turn flash signals the handoff)
-	changeText('turn_box', players[turn].name + ":s turn");
-	document.getElementById('turn_box').style.setProperty('--player-color', getPlayerColor(turn));
-	// Re-assign active vs opponent roles
-	for(var i = 0; i < players.length; i++){
-		document.getElementById(id_player + i).style.order = 1;
-		modifyCSSID('remove', id_player + i, 'player-active');
-		modifyCSSID('add', id_player + i, 'opponent');
-	}
-	document.getElementById(id_player + turn).style.order = 2;
-	modifyCSSID('add', id_player + turn, 'player-active');
-	modifyCSSID('remove', id_player + turn, 'opponent');
-	players[turn].startTurn();
+	activatePlayer();
 }
 
 function backMainMenu(){

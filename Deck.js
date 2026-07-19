@@ -154,8 +154,6 @@ function DeckOfCards(playerIndex){
 		for(var i = 0; i < 3; i++){
 			this.discard.push(generateNewCard(cards_global.get('Estate')));
 		}
-		// Test action cards
-		//this.discard.push(generateNewCard(cards_global.get('Laboratory')));
 		if(this.discard.length !== 10){
 			console.warn('Wrong size of ' + this.discard.length);
 		}
@@ -218,7 +216,6 @@ function DeckOfCards(playerIndex){
 				deleteButton('cellarID', id_interact + this.playerIndex);
 				deleteButton('cellarIDSkip', id_interact + this.playerIndex);
 				modifyCSSID('add', id_actionsLeft + this.playerIndex, 'invis')
-				//updateTextPrint(this.playerIndex, id_startBuyString);
 				changeText('skipButton', id_phase1);
 			}
 		} else if(this.phase === 1){
@@ -286,7 +283,6 @@ function DeckOfCards(playerIndex){
 					var card = currentPlayer.cards.hand.getCard(card_id);
 					if(card.cardType === CardType.ACTION_CARD && currentPlayer.cards.actionsLeft > 0 && currentPlayer.cards.activeActionCard === ''){
 						// Add use card button
-						//updateTextPrint(currentPlayer.index, 'Selected Action Card!', false);
 						deleteButton('playActionID', id_interact + currentPlayer.index);
 						var cardDivs = document.getElementById(id_hand + currentPlayer.index).childNodes;
 						for(var i = 0; i < cardDivs.length; i++){
@@ -348,7 +344,6 @@ function DeckOfCards(playerIndex){
 		modifyCSSID('add', id_info_stats_main + this.playerIndex, 'invis');
 		modifyCSSID('add', id_text + this.playerIndex, 'invis');
 		modifyCSSID('add', id_discard_top + id_card + this.playerIndex + id_div, 'inactive');
-		removeChildren(id_board + this.playerIndex);
 		removeChildren(id_hand + this.playerIndex);
 		removeChildren(id_interact + this.playerIndex);
 	}
@@ -386,7 +381,6 @@ function DeckOfCards(playerIndex){
 
 	this.useCardAfterAnimation = function(card){
 		var actions = card.getActions();
-		//updateTextPrint(this.playerIndex, 'Using Card ' + card.name + '!');
 		if(actions.drawCards !== 0){
 			for(var i = 0; i < actions.drawCards; i++){
 				var html_id = this.drawCard();
@@ -466,7 +460,6 @@ function DeckOfCards(playerIndex){
 					modifyCSSChildren('remove', id_hand + currentDeck.playerIndex, 'selected');
 					if(card.name != 'Gold' && currentDeck.activeActionCard === actionCardID){ // card.id => mine.id
 						// Add use card button
-						//updateTextPrint(currentDeck.playerIndex, 'Selected Treasure Card!', false);
 						modifyCSSID('add', id_card + card.id + id_div, 'selected');
 						deleteButton('mineUpgradeID', id_interact + currentDeck.playerIndex);
 						createButton('Upgrade ' + card.name + '?', 'mineUpgradeID', id_interact + currentDeck.playerIndex, (function(){
@@ -517,7 +510,6 @@ function DeckOfCards(playerIndex){
 					if(currentDeck.activeActionCard === actionCardID){ // card.id => mine.id
 						// Add use card button
 						modifyCSSID('toggle', id_card + card.id + id_div, 'selected');
-						//updateTextPrint(currentDeck.playerIndex, 'Selected ' + card.name + '!', false);
 						deleteButton('chapelID', id_interact + currentDeck.playerIndex); // Check me
 						createButton('Trash the selected cards', 'chapelID', id_interact + currentDeck.playerIndex, (function(){
 							deleteButton('chapelID', id_interact + currentDeck.playerIndex);
@@ -569,7 +561,6 @@ function DeckOfCards(playerIndex){
 					if(currentDeck.activeActionCard === actionCardID){ // card.id => mine.id
 						// Add use card button
 						modifyCSSID('toggle', id_card + card.id + id_div, 'selected');
-						//updateTextPrint(currentDeck.playerIndex, 'Selected ' + card.name + '!', false);
 						deleteButton('cellarID', id_interact + currentDeck.playerIndex); // Check me
 						createButton('Exchange Selected Cards', 'cellarID', id_interact + currentDeck.playerIndex, (function(){
 							deleteButton('cellarID', id_interact + currentDeck.playerIndex);
@@ -677,7 +668,6 @@ function Hand(deckOfCards){
 		if(card.cardType === CardType.TREASURE_CARD){
 			this.treasureCards.push(card);
 			this.deckOfCards.updateMoney(this.deckOfCards.money + card.getValue());
-			//updateTextPrint(this.deckOfCards.playerIndex, 'Money Update! ( + ' + card.getValue() + ')');
 		} else if(card.cardType === CardType.VICTORY_CARD){
 			this.victoryCards.push(card);
 		} else if(card.cardType === CardType.ACTION_CARD){

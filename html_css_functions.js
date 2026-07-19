@@ -32,7 +32,6 @@ var id_0 = '_0';
 var id_1 = '_1';
 var id_2 = '_2';
 var id_3 = '_3';
-var id_img = '_img';
 var id_div = '_div';
 var id_centeredText = '_centered'
 var id_bottomLeft = '_bottomLeft'
