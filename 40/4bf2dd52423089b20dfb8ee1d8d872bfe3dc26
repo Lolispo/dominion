@@ -1,0 +1,28 @@
+gameScript.js
+  s_efcf5b155ce7ed::t_ac4faaef8d32ee 51,56,65
+  s_efcf5b155ce7ed::t_bec47c14aa9eb2 118
+  s_efcf5b155ce7ed::t_b0bc4567e2a8be 11
+  s_efcf5b155ce7ed::t_f471fa5a550990 73-79,81
+docs/superpowers/RESUME.md
+  s_efcf5b155ce7ed::t_3284bcf647b6f7 27-31,33-35
+icons.js
+  s_efcf5b155ce7ed::t_a79ea923bf4bd7 26
+Card.js
+  s_efcf5b155ce7ed::t_a79ea923bf4bd7 197-199,269
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "404bf2dd52423089b20dfb8ee1d8d872bfe3dc26",
+  "prompts": {},
+  "sessions": {
+    "s_efcf5b155ce7ed": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "64ed1560-835e-4803-ba15-99fc86d68ae9",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Petter Andersson <12279747+Lolispo@users.noreply.github.com>"
+    }
+  }
+}
