@@ -105,9 +105,9 @@ function Player(index){
 		//player.style.borderColor = color;
 		//player.style.backgroundColor = color;
 		initNewUIElement('div', new Map().set('id', id_name_pre + this.index + id_div), id_player + this.index, ['card_container', 'margin_left']);
-		var name = initNewUIElement('div', new Map().set('id', id_name_pre + this.index), id_name_pre + this.index + id_div, ['inline', 'bold', 'text34', 'text_shadow']);
+		var name = initNewUIElement('div', new Map().set('id', id_name_pre + this.index), id_name_pre + this.index + id_div, ['inline', 'bold', 'text34', 'text_shadow', 'player-name']);
 		name.innerHTML = this.name;
-		name.style.backgroundColor = color;
+		name.style.setProperty('--player-color', color); // accent for the .player-name pill
 		name.addEventListener('click', function(event){
 			// Option to changeName — only the active (current) player may rename
 			var pid = getIDFromCard(event.target.id);

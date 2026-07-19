@@ -735,6 +735,34 @@ body.game-over .endScreen_texts { position: static; padding-top: 4px; left: auto
 	text-shadow: 0 2px 6px rgba(0,0,0,.85); box-shadow: 0 10px 34px rgba(0,0,0,.6);
 }
 
+/* Player name pills — the per-player colour reads as an identity ring/accent on a
+   dark forest pill rather than a neon fill, so it fits the theme and stays legible. */
+.player-name {
+	display: inline-block;
+	padding: 2px 16px; border-radius: 999px;
+	background: rgba(18, 38, 24, .72);
+	border: 2px solid var(--player-color, #9aa0a6);
+	color: #f4ecd8; cursor: pointer;
+	box-shadow: 0 2px 6px rgba(0,0,0,.4), inset 0 0 14px rgba(0,0,0,.22);
+	transition: border-color var(--anim-fast), box-shadow var(--anim-fast);
+}
+.player-active .player-name {
+	background: rgba(18, 38, 24, .82);
+	border-width: 3px; color: #fff;
+	box-shadow: 0 0 0 1px var(--player-color, #9aa0a6), 0 3px 10px rgba(0,0,0,.5),
+	            0 0 18px color-mix(in srgb, var(--player-color, #9aa0a6) 42%, transparent);
+}
+.opponent .player-name { padding: 1px 12px; box-shadow: 0 1px 4px rgba(0,0,0,.4); }
+
+/* Current-turn label uses the same pill treatment, keyed to the active player's colour */
+.turn-box {
+	display: inline-block; padding: 3px 20px; border-radius: 999px;
+	background: rgba(18, 38, 24, .82);
+	border: 2px solid var(--player-color, #9aa0a6);
+	color: #f4ecd8;
+	box-shadow: 0 2px 6px rgba(0,0,0,.4);
+}
+
 /* Opponent miniature hand: a small face-down fan showing the whole hand size */
 .opponent [id^='handRow_'] { display: flex !important; align-items: center; background: none; border: none; padding: 0; margin: 0 0 0 6px; }
 .opponent [id^='handRow_'] .pile { display: none; }           /* piles hidden in the strip; counts already shown */

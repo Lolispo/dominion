@@ -109,7 +109,7 @@ function startGame(){
 	// Choosing turn and start
 	turn = Math.floor(Math.random() * playingPlayers);
 	initNewUIElement('div', new Map().set('id', 'turn'), 'info', ['inline']);
-	initNewUIElement('div', new Map().set('id', 'turn_box'), 'turn', ['inline', 'bold', 'size3_text_medium', 'text_shadow']);
+	initNewUIElement('div', new Map().set('id', 'turn_box'), 'turn', ['inline', 'bold', 'size3_text_medium', 'text_shadow', 'turn-box']);
 	initNewUIElement('div', new Map().set('id', 'helpDiv'), 'info', ['inline']);
 	initNewUIElement('audio', new Map().set('id', 'audioMain').set('src', 'res/villageMusicShort.mp3').set('loop', ''), //.set('controls', '')
 		'helpDiv', ['inline', 'margin_top_10']).innerHTML = 'Your browser does not support the audio element';
@@ -143,7 +143,7 @@ function startGame(){
 		el.innerHTML = splitted[i];
 	}
 	changeText('turn_box', getPlayer(turn).name + ":s turn");
-	document.getElementById('turn_box').style.backgroundColor = getPlayerColor(turn);
+	document.getElementById('turn_box').style.setProperty('--player-color', getPlayerColor(turn));
 	for(var i = 0; i < playingPlayers; i++){
 		document.getElementById(id_player + i).style.order = 1;
 		modifyCSSID('remove', id_player + i, 'player-active');
@@ -183,7 +183,7 @@ function changeTurn(){
 	}
 	// Update the current-turn label (no slide animation — the turn flash signals the handoff)
 	changeText('turn_box', players[turn].name + ":s turn");
-	document.getElementById('turn_box').style.backgroundColor = getPlayerColor(turn);
+	document.getElementById('turn_box').style.setProperty('--player-color', getPlayerColor(turn));
 	// Re-assign active vs opponent roles
 	for(var i = 0; i < players.length; i++){
 		document.getElementById(id_player + i).style.order = 1;
@@ -314,19 +314,21 @@ function getCssOrderCard(card, phase){
 	}
 }
 
-// Returns background player color for HTML
+// Per-player identity colour — used as an accent (border/glow), not a flat fill.
+// Refined jewel tones that read on the dark forest backdrop and harmonise with
+// the card type palette (treasure gold / victory green / action blue).
 function getPlayerColor(index){
 	switch(index){
-		case 0: 
-			return 'aquamarine'
+		case 0:
+			return '#e0a63c'  // amber
 		case 1:
-			return 'greenyellow'
+			return '#35b39a'  // teal
 		case 2:
-			return 'lightblue'
+			return '#7d9ce6'  // periwinkle
 		case 3:
-			return 'lightpink';
+			return '#dd7ba0'; // rose
 		default:
-			return 'lightgray'
+			return '#9aa0a6'  // slate
 	}
 }
 
