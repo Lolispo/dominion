@@ -28,11 +28,16 @@ Working tree clean and in sync with origin as of the last session.
 - Overhaul squash-merged to `main` (repo was migrated master→`main` on 2026-07-19; remote HEAD = origin/main).
 - **Player-identity pills** — name + turn label are dark forest pills using a refined jewel palette (`getPlayerColor`) as a `--player-color` accent ring, replacing the old neon fills.
 - **Opponent discard thumbnail** — compact, framed, captioned "discard"; hides when empty.
+- **Maintainability review** (2026-07-19, two code-reviewer passes) + its **safe quick-wins batch B**: extracted CSS colour tokens (`--forest-rgb`, `--wood-rgb`, `--card-back-*`, `--btn-*`, wired `--table-top`), removed dead JS/CSS (commented code, stale 70-line TODO block, dead `.dcard.size-hand` overrides, duplicate rules, no-op `.bind(this)`), extracted `activatePlayer()`, ended the opponent-handRow `!important` war, and fixed the misspelled card name `Duchey`→`Duchy`.
 
 ## OPEN TODOS / candidate next steps
-1. **Maintainability review** (done 2026-07-19 via two code-reviewer passes on the refactored view layer + CSS) — act on the prioritized findings (design-token extraction, id/selector-coupling fragility, duplication, dead code). See the review summary in the session / consider capturing top items here.
-2. Minor/accepted: action "pop" reads as scale-while-leaving-hand (not a forward pop); score-screen amount labels spacing.
-3. Docs: README notes the overhaul but not the two-column relayout — refresh if desired.
+### Deferred maintainability findings (from the 2026-07-19 review — bigger, own session)
+1. **`Deck.js` God Object** (~770 lines): `useCardAfterAnimation` is a ~250-line mega-fn with near-identical Mine/Chapel/Cellar blocks, and card behaviour is dispatched by hardcoded `card.name === 'Witch'` strings. → per-card handler registry attached to card definitions.
+2. **Fragile id-string ↔ CSS-selector contract**: 30+ hand-built ids (`id_discard_top + id_card + ...`) matched by 30+ `[id^='...']` CSS rules; a rename fails silently. → id-builder helpers + semantic classes; document the contract.
+3. **CSS structural consolidation**: merge the multi-location `.dcard-banner` / `.dcard-cost,.dcard-supply` / `.hand-row [id^='hand_']` rule blocks; extract a `.btn` base class (3 near-identical button blocks + 3 identical hovers); add a `@media` breakpoint or document the single-viewport assumption; replace magic `calc(100vh - 72px)` with a JS-set `--topbar-h`.
+### Minor / cosmetic
+4. Action "pop" reads as scale-while-leaving-hand (not a forward pop); score-screen amount labels spacing.
+5. Docs: README notes the overhaul but not the two-column relayout — refresh if desired.
 
 ## Specs & plans (for reference)
 - docs/superpowers/specs/2026-07-12-visual-overhaul-design.md
