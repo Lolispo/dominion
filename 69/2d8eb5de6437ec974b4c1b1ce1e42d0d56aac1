@@ -1,0 +1,19 @@
+docs/superpowers/RESUME.md
+  s_efcf5b155ce7ed::t_5ff2f7cc5e2798 38-43,45-47
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "692d8eb5de6437ec974b4c1b1ce1e42d0d56aac1",
+  "prompts": {},
+  "sessions": {
+    "s_efcf5b155ce7ed": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "64ed1560-835e-4803-ba15-99fc86d68ae9",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Petter Andersson <12279747+Lolispo@users.noreply.github.com>"
+    }
+  }
+}
