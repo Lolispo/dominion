@@ -1,0 +1,30 @@
+style.css
+  s_bde8fe114cae31::t_545d4140b515ad 715
+  s_bde8fe114cae31::t_2fad288a10e949 551-552
+  s_bde8fe114cae31::t_faf7b70de0d007 853,855
+  s_bde8fe114cae31::t_07b753dc77da39 651-652,654,656
+  s_bde8fe114cae31::t_5a0aa42ebee493 716-728
+  s_bde8fe114cae31::t_80e2637a14a7df 546
+  s_bde8fe114cae31::t_6a4b240ea23dfd 838-840
+cardRenderer.js
+  s_bde8fe114cae31::t_16dc94f7bca0a8 55-57
+html_css_functions.js
+  s_bde8fe114cae31::t_d2336a718e8b7c 301
+  s_bde8fe114cae31::t_b6999bf44aecba 130-147
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "1e878f116bff5edfc194591591662ca2f7bdda48",
+  "prompts": {},
+  "sessions": {
+    "s_bde8fe114cae31": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d6285155-53ab-4ec6-818e-81075302d319",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Petter Andersson <12279747+Lolispo@users.noreply.github.com>"
+    }
+  }
+}
