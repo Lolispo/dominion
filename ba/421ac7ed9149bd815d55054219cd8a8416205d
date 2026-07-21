@@ -1,0 +1,59 @@
+html_css_functions.js
+  s_bde8fe114cae31::t_ce7f57a7b9499c 158-170
+  s_bde8fe114cae31::t_d2336a718e8b7c 301
+  s_bde8fe114cae31::t_b6999bf44aecba 130-147
+gameScript.js
+  s_bde8fe114cae31::t_d22563a7ca1007 30
+style.css
+  s_bde8fe114cae31::t_846bfca04c784e 35-36
+  s_bde8fe114cae31::t_cde235f8c3d9b1 19-20
+  s_bde8fe114cae31::t_63a875c5fc8ea4 629-630
+  s_bde8fe114cae31::t_545d4140b515ad 717
+  s_bde8fe114cae31::t_2fad288a10e949 551-552
+  s_bde8fe114cae31::t_faf7b70de0d007 872,874
+  s_bde8fe114cae31::t_07b753dc77da39 651-652,654,656
+  s_bde8fe114cae31::t_5a0aa42ebee493 718-730
+  s_bde8fe114cae31::t_80e2637a14a7df 546
+  s_bde8fe114cae31::t_6a4b240ea23dfd 857-859
+  s_bde8fe114cae31::t_076210612acd22 747-764
+  s_bde8fe114cae31::t_419353a8020eba 697-698
+  s_bde8fe114cae31::t_cd34931bf7112e 881-910
+cardRenderer.js
+  s_bde8fe114cae31::t_16dc94f7bca0a8 55-57
+Player.js
+  s_bde8fe114cae31::t_a5976ebd3c3f0f 146
+  s_bde8fe114cae31::t_783d828f8b0513 163-167
+  s_bde8fe114cae31::t_7fe7b9edf25a1a 168
+  s_bde8fe114cae31::t_690f506d06a4be 154-160
+Deck.js
+  s_bde8fe114cae31::t_73e617b452d583 382
+  s_bde8fe114cae31::t_532d01f674467a 331-339
+animator.js
+  s_bde8fe114cae31::t_f8af72d89841bb 182-183,188,190-192
+  s_bde8fe114cae31::t_226cb22adffa02 55-56
+sfx.js
+  s_bde8fe114cae31::t_a961c2fc4b78bc 77-92
+  s_bde8fe114cae31::t_e168717bfe4f89 76
+deckBrowser.js
+  s_bde8fe114cae31::t_7e89811728f2ca 1-70
+game.html
+  s_bde8fe114cae31::t_4e663c452f9d8b 26
+docs/superpowers/RESUME.md
+  s_bde8fe114cae31::t_a548b988afc734 33-43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "ba421ac7ed9149bd815d55054219cd8a8416205d",
+  "prompts": {},
+  "sessions": {
+    "s_bde8fe114cae31": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d6285155-53ab-4ec6-818e-81075302d319",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Petter Andersson <12279747+Lolispo@users.noreply.github.com>"
+    }
+  }
+}
