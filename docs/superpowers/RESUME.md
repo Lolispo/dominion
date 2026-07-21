@@ -30,6 +30,17 @@ Working tree clean and in sync with origin as of the last session.
 - **Opponent discard thumbnail** — compact, framed, captioned "discard"; hides when empty.
 - **Maintainability review** (2026-07-19, two code-reviewer passes) + its **safe quick-wins batch B**: extracted CSS colour tokens (`--forest-rgb`, `--wood-rgb`, `--card-back-*`, `--btn-*`, wired `--table-top`), removed dead JS/CSS (commented code, stale 70-line TODO block, dead `.dcard.size-hand` overrides, duplicate rules, no-op `.bind(this)`), extracted `activatePlayer()`, ended the opponent-handRow `!important` war, and fixed the misspelled card name `Duchey`→`Duchy`.
 
+## DONE (branch `feat/cross-device-polish-deck-browser`, 2026-07-21 — not yet merged)
+Spec/plan: `docs/superpowers/specs/2026-07-21-cross-device-polish-and-deck-browser-design.md`,
+`docs/superpowers/plans/2026-07-21-cross-device-polish-and-deck-browser.md`.
+- **Cross-device layout:** forest background now `cover / no-repeat / fixed` (no more tiling on tall screens); `#table` capped at 1600px + centred; card scales fixed per size class with `@media` step-ups at 1900/2400px (a unitless `--card-scale` can't be driven by `vw`); `--topbar-h` set from JS `ResizeObserver` and used via `calc(100dvh - var(--topbar-h))`.
+- **Card text:** cost/supply badges moved to the art-row top corners (clear of name + rules); grid rebalanced to 16/42/11/31; `fitCardText()` (in html_css_functions.js, hooked in `renderCard`) shrinks long rules to fit — all 19 cards verified no-overflow at 1440 & 2560.
+- **Shop message** hidden until a real message; **first hand card** no longer clipped (dropped `overflow-x:auto` on the fan; `fitHandFan` already guarantees fit).
+- **Resource dock:** money/buys/actions + action buttons + a new **View Deck** button sit in a `.dock-bar` directly above the hand (readouts re-parented into `#interact_`, ids unchanged; column reordered via flex `order`). Hidden on the score screen; opponents unaffected.
+- **Action feedback:** `popCard` bigger/slower (scale 1.5 / 650ms / overshoot, lifts above neighbours); new synth `sfxAction` (C5→G5) on action play; dead `sfxPlay` removed.
+- **Deck browser:** new `deckBrowser.js` — read-only Slay-the-Spire-style modal grouping owned cards with ×N badges (sorted by type then cost); `DeckOfCards.getAllOwnedCards()` aggregates draw+discard+in-play+hand without mutating; opens from either pile or the View Deck button; closes on Esc / backdrop / ✕.
+- **New deferred nit:** `#info_stats_main_<pid>` is now an empty vestigial container; its `invis` toggles in Deck.js (lines ~130/148/353) are no-ops (dock visibility via `.opponent` preserves the per-turn show/hide). Safe to remove in a game-logic cleanup pass.
+
 ## OPEN TODOS / candidate next steps
 ### Deferred maintainability findings (from the 2026-07-19 review — bigger, own session)
 1. **`Deck.js` God Object** (~770 lines): `useCardAfterAnimation` is a ~250-line mega-fn with near-identical Mine/Chapel/Cellar blocks, and card behaviour is dispatched by hardcoded `card.name === 'Witch'` strings. → per-card handler registry attached to card definitions.

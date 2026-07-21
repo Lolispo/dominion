@@ -27,6 +27,7 @@ function startGame(){
 	*/
 	initCardsGlobal();
 	initCardTooltip();
+	initTopbarHeightVar();
 	for(var i = 0; i < playingPlayers; i++){
 		var tempPlayer = new Player(i);
 		tempPlayer.initPlayer();

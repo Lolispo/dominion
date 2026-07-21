@@ -16,6 +16,8 @@
 	/* Motion */
 	--anim-fast: 180ms; --anim-med: 380ms;
 	--ease-card: cubic-bezier(.22,.61,.36,1);
+	/* Topbar height, kept in sync from JS (initTopbarHeightVar) */
+	--topbar-h: 72px;
 	/* Component colour tokens (RGB channels so callers vary alpha) */
 	--forest-rgb: 23, 54, 31;   /* dark forest panel */
 	--wood-rgb: 91, 58, 33;     /* == --wood */
@@ -30,7 +32,8 @@ body.theme-table {
 	min-height: 100vh;
 }
 body.theme-forest {
-	background: url('res/forest.jpg');
+	background: url('res/forest.jpg') center / cover no-repeat fixed;
+	background-color: #17361f; /* fallback + letterbox colour, matches --table-edge */
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -540,12 +543,12 @@ body.theme-forest {
 	border: calc(3px * var(--card-scale)) solid var(--type-color, #888);
 	box-shadow: 0 2px 6px rgba(0,0,0,.4);
 	display: grid;
-	grid-template-rows: 18% 46% 12% 24%;
+	grid-template-rows: 16% 42% 11% 31%;
 	overflow: hidden;
 	transition: transform var(--anim-fast) var(--ease-card),
 	            box-shadow var(--anim-fast) var(--ease-card);
 }
-.dcard.size-shop    { --card-scale: .72; }
+.dcard.size-shop    { --card-scale: .70; }
 .dcard.size-board   { --card-scale: .62; }
 .dcard.size-discard { --card-scale: .4; }
 .dcard-treasure { --type-color: var(--type-treasure); }
@@ -623,7 +626,8 @@ body.theme-forest { overflow: hidden; }
 
 #table {
 	display: flex; align-items: stretch; gap: 12px; padding: 0 12px 12px;
-	height: calc(100vh - 72px); box-sizing: border-box;
+	height: calc(100dvh - var(--topbar-h, 72px)); box-sizing: border-box;
+	max-width: 1600px; margin-inline: auto;
 }
 #shop {
 	flex: 0 0 58%; max-width: 58%; overflow-y: auto; overflow-x: hidden;
@@ -644,10 +648,12 @@ body.theme-forest { overflow: hidden; }
 .hand-row .pile { flex: 0 0 auto; }
 .hand-row [id^='hand_'] { flex: 1 1 auto; }
 
-/* Task 2 fit: keep the hand to one row (smaller cards; scroll horizontally, never grow vertically) */
+/* Task 2 fit: keep the hand to one row. fitHandFan() tightens the fan so it always fits,
+   so no scroll/clip is needed — overflow stays visible so the first card + hover-lift aren't cut. */
 .hand-row { flex-wrap: nowrap; }
-.hand-row [id^='hand_'] { flex: 1 1 auto; min-width: 0; flex-wrap: nowrap; overflow-x: auto; overflow-y: visible; padding-bottom: 4px; }
+.hand-row [id^='hand_'] { flex: 1 1 auto; min-width: 0; flex-wrap: nowrap; overflow: visible; padding: 4px 0 4px 6px; }
 .hand-row [id^='hand_'] .dcard { flex: 0 0 auto; }
+.hand-row .pile { z-index: 0; }   /* keep piles under the hover-lifted first card */
 
 /* Task 3: collapse non-active players into a compact opponent strip */
 .opponent {
@@ -688,6 +694,8 @@ body.game-over .opponent [id^='info_']:not([id^='info_discard']):not([id*='_card
 
 /* Task 4: at game end the hand-row (piles/hand) is irrelevant — hide it so the score breakdown is clean */
 body.game-over .hand-row { display: none; }
+/* The docked resource bar (money/buys/actions + action buttons) is also irrelevant on the score screen */
+body.game-over .dock-bar { display: none; }
 /* nudge the score-screen amount label so it clears the (wider) mini card */
 body.game-over .endScreen_texts { position: static; padding-top: 4px; left: auto; }
 
@@ -706,7 +714,20 @@ body.game-over .endScreen_texts { position: static; padding-top: 4px; left: auto
 .hand-row .pile { width: 52px; height: 84px; }
 
 /* Bigger, fanned hand cards so 5+ fit without a cramped scroll and read clearly */
-.dcard.size-hand { --card-scale: .6; }
+.dcard.size-hand { --card-scale: .58; }
+/* Gentle bounded scale-up on large screens (a unitless custom prop can't be driven
+   by vw directly, so step it at breakpoints instead). Placed after all base scale
+   rules so these win at equal specificity when the media query matches. */
+@media (min-width: 1900px){
+	.dcard.size-shop  { --card-scale: .76; }
+	.dcard.size-board { --card-scale: .66; }
+	.dcard.size-hand  { --card-scale: .64; }
+}
+@media (min-width: 2400px){
+	.dcard.size-shop  { --card-scale: .82; }
+	.dcard.size-board { --card-scale: .70; }
+	.dcard.size-hand  { --card-scale: .68; }
+}
 .hand-row [id^='hand_'] { gap: 0; justify-content: flex-start; }
 .hand-row [id^='hand_'] .dcard { margin-left: var(--hand-overlap, -26px); transition: transform var(--anim-fast) var(--ease-card), margin var(--anim-fast); }
 .hand-row [id^='hand_'] .dcard:first-child { margin-left: 0; }
@@ -723,7 +744,24 @@ body.game-over .endScreen_texts { position: static; padding-top: 4px; left: auto
 /* Readable stat readouts for the active player */
 #playArea > .margin_bottom:not(.opponent) [id^='money_'],
 #playArea > .margin_bottom:not(.opponent) [id^='buysLeft_'],
-#playArea > .margin_bottom:not(.opponent) [id^='actionsLeft_'] { font-size: 18pt; }
+#playArea > .margin_bottom:not(.opponent) [id^='actionsLeft_'] { font-size: 16pt; }
+
+/* Dock the resource readouts + action buttons directly above the hand (active player).
+   Reorder via flex `order` rather than re-parenting DOM, so the id/CSS contract and the
+   opponent-strip rules stay intact. */
+#playArea > .margin_bottom:not(.opponent) > [id^='name_'][id$='_div'] { order: 0; }
+#playArea > .margin_bottom:not(.opponent) > [id^='infoboard_']        { order: 1; }
+#playArea > .margin_bottom:not(.opponent) > [id^='interact_']         { order: 8; margin-top: auto; }
+#playArea > .margin_bottom:not(.opponent) > [id^='handRow_']          { order: 9; margin-top: 0; }
+
+/* The docked bar itself: resource readouts + action buttons on one line above the hand. */
+.dock-bar {
+	display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
+	padding: 6px 10px; margin: 0 0 4px;
+	background: linear-gradient(180deg, rgba(var(--wood-rgb), .55), rgba(var(--forest-rgb), .6));
+	border: 1px solid var(--wood); border-radius: 10px;
+}
+.dock-bar [id^='money_'], .dock-bar [id^='buysLeft_'], .dock-bar [id^='actionsLeft_'] { font-size: 16pt; margin: 0; }
 
 /* Turn-switch flash announcement */
 .turn-flash {
@@ -816,8 +854,9 @@ body.opp-facedown .opponent [id^='hand_'] .dcard > * { visibility: hidden; }
 .shopText { height: auto; display: flex; align-items: center; }
 #shop_text_1 { font-size: 13pt !important; color: var(--card-face); margin-left: 4px; font-weight: bold; }
 
-/* Move cost + supply badges to the top corners so they don't cover the rules text */
-.dcard-cost, .dcard-supply { top: calc(4px * var(--card-scale)); bottom: auto; z-index: 2; }
+/* Cost + supply sit in the top corners of the ART row — clear of both the
+   name banner (row 1) and the rules text (row 4). */
+.dcard-cost, .dcard-supply { top: 19%; bottom: auto; z-index: 2; }
 
 /* Card hover tooltip */
 .card-tip {
@@ -830,13 +869,43 @@ body.opp-facedown .opponent [id^='hand_'] .dcard > * { visibility: hidden; }
 .card-tip .tip-type { font-style: italic; color: #6a5a3a; font-size: 11pt; margin-bottom: 6px; }
 .card-tip .tip-text { font-size: 13pt; line-height: 1.3; white-space: normal; }
 
-/* Keep the name banner clear of the top cost/supply badges */
+/* Badges now live over the art row, so the banner no longer needs side padding to dodge them */
 .dcard-banner {
-	padding: 2px calc(30px * var(--card-scale));
+	padding: 2px calc(6px * var(--card-scale));
 	box-sizing: border-box;
 	font-size: calc(15px * var(--card-scale));
 	line-height: 1.05;
 	white-space: normal;
+}
+
+/* Deck browser (read-only Slay-the-Spire-style popup) */
+.deck-browser-overlay {
+	position: fixed; inset: 0; z-index: 3000;
+	background: rgba(0,0,0,.66);
+	display: flex; align-items: center; justify-content: center; padding: 24px;
+}
+.deck-browser-panel {
+	width: min(1100px, 92vw); max-height: 88vh; display: flex; flex-direction: column;
+	background: linear-gradient(180deg, rgba(var(--wood-rgb), .96), rgba(var(--forest-rgb), .97));
+	border: 3px solid var(--type-treasure); border-radius: 14px;
+	box-shadow: 0 18px 50px rgba(0,0,0,.6);
+}
+.deck-browser-header {
+	display: flex; align-items: center; justify-content: space-between;
+	padding: 12px 18px; color: var(--card-face); font-size: 20pt; font-weight: bold;
+	border-bottom: 2px solid var(--wood); text-shadow: 0 1px 2px rgba(0,0,0,.7);
+}
+.deck-browser-close { width: auto; padding: 0 14px; }
+.deck-browser-grid {
+	display: flex; flex-wrap: wrap; gap: 16px; align-content: flex-start;
+	padding: 18px; overflow-y: auto;
+}
+.deck-browser-cell { position: relative; }
+.deck-browser-cell .dcard { pointer-events: none; cursor: default; }
+.deck-browser-count {
+	position: absolute; bottom: -6px; right: -6px; min-width: 24px; height: 24px; padding: 0 6px;
+	border-radius: 12px; background: #000d; color: #fff; font-size: 13px; font-weight: bold;
+	display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 4px rgba(0,0,0,.5);
 }
 
 /* Floating "+N" resource-gain chip */

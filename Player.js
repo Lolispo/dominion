@@ -143,7 +143,7 @@ function Player(index){
 		initNewUIElement('div', new Map().set('id', id_infoBoard + this.index), id_player + this.index, ['flex_container', 'margin_top_2']);
 		initNewUIElement('div', new Map().set('id', id_info + this.index), id_infoBoard + this.index, 'card_container');
 		initNewUIElement('div', new Map().set('id', id_board + this.index), id_infoBoard + this.index, ['card_container', 'margin_left']);
-		initNewUIElement('div', new Map().set('id', id_interact + this.index), id_player + this.index, 'interact');
+		initNewUIElement('div', new Map().set('id', id_interact + this.index), id_player + this.index, ['interact', 'dock-bar']);
 		// Hand row (bottom of the right column): deck pile | hand | discard pile
 		initNewUIElement('div', new Map().set('id', 'handRow_' + this.index), id_player + this.index, ['hand-row']);
 		initNewUIElement('div', new Map().set('id', 'pile_deck_' + this.index), 'handRow_' + this.index, ['pile', 'pile-deck']);
@@ -151,11 +151,21 @@ function Player(index){
 		observeHandFan(handEl); // auto-tighten the fan when the hand grows large
 		initNewUIElement('div', new Map().set('id', 'pile_discard_' + this.index), 'handRow_' + this.index, ['pile', 'pile-empty']);
 
+		// Deck browser (read-only): open by clicking either pile, or the "View Deck" dock button.
+		var openMyDeck = (function(){ if(typeof openDeckBrowser === 'function'){ openDeckBrowser(this.index); } }).bind(this);
+		var deckPileEl = document.getElementById('pile_deck_' + this.index);
+		var discardPileEl = document.getElementById('pile_discard_' + this.index);
+		deckPileEl.addEventListener('click', openMyDeck); deckPileEl.style.cursor = 'pointer';
+		discardPileEl.addEventListener('click', openMyDeck); discardPileEl.style.cursor = 'pointer';
+
 		initNewUIElement('div', new Map().set('id', id_info_stats + this.index), id_info + this.index, ['info_child', 'card_container']);
 		initNewUIElement('div', new Map().set('id', id_info_stats_main + this.index), id_info_stats + this.index);
-		initNewUIElement('div', new Map().set('id', id_money + this.index), id_info_stats_main + this.index, ['bold', 'info_stats_main', 'info_stats', 'text_shadow', 'text16']);
-		initNewUIElement('div', new Map().set('id', id_buysLeft + this.index), id_info_stats_main + this.index, ['bold', 'info_stats_main', 'info_stats', 'text_shadow', 'text16']);
-		initNewUIElement('div', new Map().set('id', id_actionsLeft + this.index), id_info_stats_main + this.index, ['bold', 'info_stats_main', 'info_stats', 'text_shadow', 'text16']);
+		// Money / buys / actions live in the docked bar (#interact_) so they sit right above
+		// the hand. Ids are unchanged, so all lookups / bumpCounter / floatGain targets still resolve.
+		initNewUIElement('div', new Map().set('id', id_money + this.index), id_interact + this.index, ['bold', 'info_stats_main', 'info_stats', 'text_shadow', 'text16']);
+		initNewUIElement('div', new Map().set('id', id_buysLeft + this.index), id_interact + this.index, ['bold', 'info_stats_main', 'info_stats', 'text_shadow', 'text16']);
+		initNewUIElement('div', new Map().set('id', id_actionsLeft + this.index), id_interact + this.index, ['bold', 'info_stats_main', 'info_stats', 'text_shadow', 'text16']);
+		createButton('View Deck', 'viewDeck_' + this.index, id_interact + this.index, openMyDeck, 'normalButton');
 
 		initNewUIElement('div', new Map().set('id', id_info_stats_cards + this.index), id_info_stats + this.index, ['margin_left', 'margin_top_2']);
 		initNewUIElement('div', new Map().set('id', id_deck + this.index), id_info_stats_cards + this.index, ['bold', 'text_shadow', 'text16']);

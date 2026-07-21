@@ -127,6 +127,24 @@ function fitHandFan(handEl){
 	handEl.style.setProperty('--hand-overlap', overlap + 'px');
 }
 
+// Shrink a card's rules text until it fits its grid row — guarantees the longest
+// cards (Mine, Council Room, Cellar, Market) never clip. Idempotent: resets first.
+function fitCardText(cardDiv){
+	if(!cardDiv){ return; }
+	var text = cardDiv.querySelector('.dcard-text');
+	if(!text){ return; }
+	text.style.fontSize = '';               // reset to the CSS-driven size
+	var size = parseFloat(getComputedStyle(text).fontSize) || 12;
+	var MIN = 6;                            // floor in px
+	var avail = text.clientHeight;          // the box the text must fit inside
+	if(!avail){ return; }                   // not laid out yet
+	var guard = 40;
+	while(text.scrollHeight > avail && size > MIN && guard-- > 0){
+		size -= 0.5;
+		text.style.fontSize = size + 'px';
+	}
+}
+
 // Attach once per hand container: refit on any card add/remove and on resize.
 function observeHandFan(handEl){
 	if(!handEl || handEl._fanObserved){ return; }
@@ -135,6 +153,19 @@ function observeHandFan(handEl){
 	new MutationObserver(refit).observe(handEl, {childList: true});
 	window.addEventListener('resize', refit);
 	refit();
+}
+
+// Keep the CSS var --topbar-h in sync with the real topbar height so the table
+// fills exactly the remaining viewport, even when the topbar wraps on narrow screens.
+function initTopbarHeightVar(){
+	var bar = document.getElementById('topbar');
+	if(!bar){ return; }
+	var apply = function(){
+		document.documentElement.style.setProperty('--topbar-h', bar.offsetHeight + 'px');
+	};
+	if(typeof ResizeObserver === 'function'){ new ResizeObserver(apply).observe(bar); }
+	window.addEventListener('resize', apply);
+	apply();
 }
 
 // HTML Stuff
@@ -267,7 +298,7 @@ function initShopHTML(){
 	}).bind(this), 'normalButton');	
 	initNewUIElement('div', new Map().set('id', id_shop + 'texts'), 'shopPanel', 'shopText');
 	initNewUIElement('div', new Map().set('id', id_shop + id_text + '1'), id_shop + 'texts', ['text16', 'bold', 'margin_left', 'text_shadow'])
-		.innerHTML = 'Shop Message\n';
+		.innerHTML = '';   // stays empty (hidden) until updateShopText writes a real message
 }
 
 

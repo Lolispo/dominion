@@ -73,18 +73,21 @@ function sfxBuy(){
 	o.start(t); o.stop(t + 0.15);
 }
 
-// A single soft chime — an action card played.
-function sfxPlay(){
+// A richer two-note chime — an action card played.
+function sfxAction(){
 	if(_sfxMuted || !_ready()){ return; }
 	var ctx = _ctx();
 	var t = ctx.currentTime;
-	var o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = 720;
-	var g = ctx.createGain();
-	g.gain.setValueAtTime(0.0001, t);
-	g.gain.exponentialRampToValueAtTime(0.05 * _VOL, t + 0.02);
-	g.gain.exponentialRampToValueAtTime(0.0001, t + 0.30);
-	o.connect(g); g.connect(ctx.destination);
-	o.start(t); o.stop(t + 0.32);
+	[ {f: 523.25, at: 0.00}, {f: 783.99, at: 0.09} ].forEach(function(n){  // C5 then G5
+		var o = ctx.createOscillator(); o.type = 'triangle'; o.frequency.value = n.f;
+		var g = ctx.createGain();
+		var s = t + n.at;
+		g.gain.setValueAtTime(0.0001, s);
+		g.gain.exponentialRampToValueAtTime(0.07 * _VOL, s + 0.02);
+		g.gain.exponentialRampToValueAtTime(0.0001, s + 0.34);
+		o.connect(g); g.connect(ctx.destination);
+		o.start(s); o.stop(s + 0.36);
+	});
 }
 
 // Soft noise swell — shuffling the deck.

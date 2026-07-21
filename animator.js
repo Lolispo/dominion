@@ -52,6 +52,8 @@ var _dealQueue = [];
 var _dealPlaying = false;
 var DEAL_STAGGER = 135; // ms between successive deal starts
 var DEAL_DURATION = 560;
+var POP_SCALE = 1.5;    // action-card pop peak scale (bigger, forward pop)
+var POP_DURATION = 650; // action-card pop duration (slower, more readable)
 
 function flyCardDeal(cardRootId, fromEl, toEl){
 	return new Promise(function(resolve){
@@ -177,15 +179,17 @@ function dealInHand(pid){
 	});
 }
 
-// Pop (scale up briefly) a played action card before its effects resolve.
+// Pop (scale up) a played action card before its effects resolve — bigger + slower,
+// lifted above its neighbours, with a slight overshoot for a forward "pop" feel.
 function popCard(cardRootId){
 	return new Promise(function(resolve){
 		var div = document.getElementById(cardRootId + '_div');
 		if(!div || prefersReducedMotion()){ return resolve(); }
+		div.style.zIndex = '7';   // pop above neighbouring cards while scaling
 		var a = div.animate([
-			{ transform:'scale(1)' }, { transform:'scale(1.25)', offset:.4 }, { transform:'scale(1)' }
-		], { duration: 420, easing:'cubic-bezier(.22,.61,.36,1)' });
-		a.onfinish = resolve;
+			{ transform:'scale(1)' }, { transform:'scale(' + POP_SCALE + ')', offset:.45 }, { transform:'scale(1)' }
+		], { duration: POP_DURATION, easing:'cubic-bezier(.34,1.56,.64,1)' });
+		a.onfinish = function(){ div.style.zIndex = ''; resolve(); };
 	});
 }
 

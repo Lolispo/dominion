@@ -328,6 +328,15 @@ function DeckOfCards(playerIndex){
 		return this.deckStack.concat(this.discard);
 	}
 
+	// Every card the player owns right now, across all piles — for the deck browser.
+	// Read-only: unlike endGetAllCards it does NOT mutate any pile.
+	this.getAllOwnedCards = function(){
+		return this.deckStack
+			.concat(this.discard)
+			.concat(this.board)
+			.concat(Array.from(this.hand.allCards.values()));
+	}
+
 	// Cleanup phase
 	this.cleanUp = function(){
 		this.updateDeckLength();
@@ -370,7 +379,7 @@ function DeckOfCards(playerIndex){
 	// Use action card
 	this.useCard = function(cardParam){
 		this.actionsLeft--;
-		if(typeof sfxPlay === 'function'){ sfxPlay(); }
+		if(typeof sfxAction === 'function'){ sfxAction(); }
 		//console.log('DEBUG @useCard');
 		var card = this.hand.useCard(cardParam);
 		var currentDeck = getPlayer(turn).cards;

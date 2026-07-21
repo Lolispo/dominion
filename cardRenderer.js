@@ -52,5 +52,8 @@ function renderCard(tempCard, id, parentID, opts){
 	if(opts.callback && opts.callback !== ''){
 		div.addEventListener('click', function(res){ opts.callback(res.target.id); });
 	}
+	if(typeof fitCardText === 'function'){
+		requestAnimationFrame(function(){ fitCardText(div); });
+	}
 	return div;
 }
