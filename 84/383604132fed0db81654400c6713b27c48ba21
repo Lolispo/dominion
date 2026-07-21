@@ -1,0 +1,19 @@
+docs/superpowers/specs/2026-07-21-cross-device-polish-and-deck-browser-design.md
+  s_bde8fe114cae31::t_668abb14b60ac6 1-214
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "84383604132fed0db81654400c6713b27c48ba21",
+  "prompts": {},
+  "sessions": {
+    "s_bde8fe114cae31": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d6285155-53ab-4ec6-818e-81075302d319",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Petter Andersson <12279747+Lolispo@users.noreply.github.com>"
+    }
+  }
+}
