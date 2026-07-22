@@ -1,0 +1,29 @@
+# Auto-deploys Dominion to dominion.petterbuilds.com on push to main.
+#
+# Dominion is a static HTML/JS game with no bundler. `npm run build` just stages
+# the runtime files into dist/ (see scripts/build-static.sh); the reusable
+# platform workflow then injects the RUM snippet, syncs dist/ to the apps bucket
+# under /dominion/, and invalidates CloudFront.
+#
+# Auth: the reusable workflow defaults role-arn to the platform's shared OIDC
+# deploy role (trust policy allows repo:Lolispo/*), so no repo variable or stored
+# AWS keys are needed here.
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+jobs:
+  deploy:
+    permissions:
+      id-token: write
+      contents: read
+    uses: Lolispo/web-platform/.github/workflows/deploy-app.yml@main
+    with:
+      app-id: dominion
+      # No dependencies — the build is pure bash. npm ci just satisfies the
+      # workflow's setup-node cache + install step against the empty lockfile.
+      install-command: npm ci
+      build-command: npm run build

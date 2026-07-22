@@ -1,0 +1,9 @@
+{
+  "name": "dominion",
+  "version": "1.0.0",
+  "description": "The board game Dominion, in HTML/JS.",
+  "private": true,
+  "scripts": {
+    "build": "bash scripts/build-static.sh"
+  }
+}
