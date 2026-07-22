@@ -1,0 +1,28 @@
+cardRenderer.js
+  s_cc83a8cd7d3101::t_6169bed4cc03ff 18-25
+docs/superpowers/RESUME.md
+  s_cc83a8cd7d3101::t_15e2627ae5c337 71,73-79
+  s_cc83a8cd7d3101::t_90a2d7fa0cf88a 80-90,94-108
+  s_cc83a8cd7d3101::t_2c789a9bc674ac 91-93
+  s_cc83a8cd7d3101::t_cf799667e6e54e 72
+  s_cc83a8cd7d3101::t_b5c43479505210 45-70
+Deck.js
+  s_cc83a8cd7d3101::t_2bcf44058c2311 597-600
+  s_cc83a8cd7d3101::t_0c19c198f082a2 445-449
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "ba7193b956c773f72541ee353bbfcb654bcb6eca",
+  "prompts": {},
+  "sessions": {
+    "s_cc83a8cd7d3101": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0ba8a46e-e8c9-418e-b7b7-a967f07f163d",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Petter Andersson <12279747+Lolispo@users.noreply.github.com>"
+    }
+  }
+}
