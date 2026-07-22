@@ -1,0 +1,29 @@
+scripts/deploy.sh
+  s_8dab629a68f4e5::t_8aded21040b35a 4-8,14-15
+scripts/build-static.sh
+  s_8dab629a68f4e5::t_d0fd1ee04ee0b3 1-24
+package.json
+  s_8dab629a68f4e5::t_17f3fb1ed4aef8 1-9
+.github/workflows/deploy.yml
+  s_8dab629a68f4e5::t_c5635a35f124f9 1-29
+.gitignore
+  s_8dab629a68f4e5::t_3db695cf5e5cb9 4-7
+package-lock.json
+  s_8dab629a68f4e5::t_a6403ac1530168 1-12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "abc9051859bc72dd1676d4fb2320ae14bc0de4a2",
+  "prompts": {},
+  "sessions": {
+    "s_8dab629a68f4e5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "87ca8edb-7b9e-40e9-84fe-bc4f68910e0e",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Petter Andersson <12279747+Lolispo@users.noreply.github.com>"
+    }
+  }
+}
