@@ -442,7 +442,11 @@ function DeckOfCards(playerIndex){
 		} else if(card.name === 'Council Room'){
 			for(var i = 0; i < players.length; i++){
 				if(i != this.playerIndex){
-					getPlayer(i).cards.drawCard();
+					// Un-grey the rival's drawn card: cards render `inactive` (grey) and rely on
+					// displayCard() to reveal them. Without this the rival's new card stays grey
+					// (visible in face-up rival mode). Guard the null (rival out of cards).
+					var rivalHtmlId = getPlayer(i).cards.drawCard();
+					if(rivalHtmlId !== null){ getPlayer(i).cards.displayCard(rivalHtmlId); }
 				}
 			}
 		}
@@ -590,9 +594,10 @@ function DeckOfCards(playerIndex){
 									// Discard this card
 									var newTempCard = currentDeck.hand.useCard(tempCard); 
 									currentDeck.addNewCard(newTempCard, true, false); 
-									// Draw new Card
-									var cardHtml_id = currentDeck.drawCard(); 
-									currentDeck.displayCard(cardHtml_id);
+									// Draw new Card (drawCard returns null when the deck AND discard are
+									// both empty — nothing left to draw; skip the reveal in that case)
+									var cardHtml_id = currentDeck.drawCard();
+									if(cardHtml_id !== null){ currentDeck.displayCard(cardHtml_id); }
 								}
 							}
 							currentDeck.activeActionCard = '';

@@ -42,6 +42,70 @@ Spec/plan: `docs/superpowers/specs/2026-07-21-cross-device-polish-and-deck-brows
 - **New deferred nit:** `#info_stats_main_<pid>` is now an empty vestigial container; its `invis` toggles in Deck.js (lines ~130/148/353) are no-ops (dock visibility via `.opponent` preserves the per-turn show/hide). Safe to remove in a game-logic cleanup pass.
 
 ## OPEN TODOS / candidate next steps
+### Hand interaction: tooltip-vs-button fix + drag-and-drop play/buy (NEW, 2026-07-22)
+Reported by user: pressing an action card in hand pops a tooltip that covers the "Use <card>?" button, and it'd be nicer to drag cards to play/buy them.
+
+**A. Tooltip blocks the "Use <card>?" button (bug, do first — small).**
+- Repro: tap/click an action card in your hand. The click handler (`Deck.js:~281-297`) selects the card and injects a `Use <br><card>?` button (id `playActionID`) into the dock bar `#interact_<pid>`, which sits *directly above* the hand (the `.dock-bar`). The hover tooltip `#cardTip` (`initCardTooltip`, `html_css_functions.js:70-107`) positions itself *above* the hovered card (`top = r.top - tip.offsetHeight - 12`, flipping below only when there's no room above — line 98-99). For a bottom-docked hand card, "above" is exactly where the dock/`playActionID` button lives → the tooltip overlaps and blocks the button you now need to press.
+- Options (pick when implementing):
+  1. For hand cards specifically, prefer flipping the tooltip *below* the card (or offset it sideways) so it never lands on the dock. The generic "flip below if no room above" logic already exists — extend it so a hand/dock context always flips (or clears the dock rect).
+  2. Make `#cardTip` `pointer-events:none` (it may already be — verify) AND ensure it isn't drawn over the dock; even non-interactive, it visually hides the button.
+  3. Suppress/hide the tooltip once a card is selected (i.e. while `playActionID` is showing for that card), or hide it on the card's own click.
+- Acceptance: after clicking an action card, the "Use <card>?" button is fully visible and clickable with no tooltip overlapping it, on both desktop hover and touch.
+
+**B. Drag an action card from hand → board to play it (feature).**
+- Drop target: the active player's board region `#board_<pid>` (`id_board`, rendered in `Player.js:145`; cards land there via `playCard`/`Deck.js:634-636`). The area is the strip above the hand.
+- On a valid drop, run the same path as the existing button: `currentPlayer.playActionCard(card)` (`Player.js:44`) — reuse it, don't fork the logic. Respect the same guards the click handler uses (`isTurn`, `phase === 0`, `cardType === ACTION_CARD`, `actionsLeft > 0`, `activeActionCard === ''`).
+- Keep the click→"Use <card>?" button flow working as a fallback (touch + accessibility); drag is an additive shortcut.
+
+**C. Drag a shop card → hand to buy it (feature).**
+- Source: shop cards. Drop target: the active player's hand `#hand_<pid>` (`id_hand`) or the dock.
+- On a valid drop, run the existing buy path: `getPlayer(turn).buyCard(newCard, card_id)` (`Player.js:52`, mirroring `html_css_functions.js:282`). Respect buy guards (buys left, affordable, correct phase).
+- The buy already has a WAAPI "buy flight" animation in `animator.js`; ensure the drag doesn't double-animate — either suppress the flight when the drop provides the motion, or let go and play the existing flight from the drop point.
+
+**Notes / cross-cutting.**
+- Use HTML5 DnD or pointer events; must work with the existing FLIP/WAAPI animator and not fight `fitHandFan`'s `--hand-overlap` transforms. Touch drag needs pointer events (native HTML5 DnD is desktop-only).
+- Reuse `playActionCard` / `buyCard`; the drop handlers are just alternative *triggers*, so all rules/animations stay centralized.
+- Good candidate for its own spec+plan session (brainstorm first) rather than a drive-by; item A alone is a quick fix that can ship independently.
+
+### BUG: "gray card with a blank face" appeared during play (NEW, 2026-07-22 — H1 FIXED)
+Reported by user: mid-game a card showed up **gray with nothing on its face**. User's hunch: it may be tied to **drawing a card when few/none are left to draw**. **Hypotheses 1 (Cellar reshuffle collision) and 2 (Council Room rival draw) were confirmed and fixed** on 2026-07-22 — see "FIX SHIPPED" below. H3–H4 remain open follow-ups. Below is the code review of how it can happen (ranked).
+
+**FIX SHIPPED (H1, 2026-07-22):**
+- Root cause: `initNewUIElement` (`html_css_functions.js`) appends nodes with no id dedup, so re-rendering a card whose previous `<id>_div` is still mid-removal (Cellar discards a card → `useCard` fades it out over ~180ms → a reshuffle draws that same card back within that window) created **two `card_<id>_div` nodes**. `getElementById` returns the first (stale, dying) one, so `displayCard` stripped `inactive` from the wrong node and the fresh hand card stayed gray.
+- Fix 1 (root cause): `renderCard` (`cardRenderer.js`) now drops any pre-existing `<id>_div` before building — enforces the invariant "one DOM node per card id." Only the hand uses `card_<cardid>_div`, and ids are globally unique, so a same-id node is always a stale leftover; safe to remove.
+- Fix 2 (defense in depth): the Cellar draw path (`Deck.js`) now null-guards `drawCard()` before `displayCard()` (drawCard returns null when deck+discard are both empty).
+- Verified with a `vm`-loaded regression test of the real `renderCard` (scratchpad `renderCard.collision.test.js`): fails on pre-fix code (2 duplicate nodes / card stays `inactive`), passes after. No jsdom/deps added.
+- Not yet re-verified live in-browser; H2–H4 below are untouched.
+
+Background on the two symptoms:
+- **Gray** = the `.dcard.inactive` filter (`style.css`: `filter: grayscale(100%) brightness(.8)`). Newly-drawn hand cards are *rendered gray on purpose* (`Deck.js:275-276` and `generateHandCard` `Deck.js:681-682` pass `cssClass:['inactive']`) and are only un-grayed when the caller calls `displayCard()` (`Deck.js:192-195`, which removes `inactive`). The deal-flight `.then()` only restores `visibility`, **not** `inactive` (`Deck.js:261-263`, `animator.js:170-178`).
+- **Blank face** = either the real card node is `visibility:hidden` (reveal never ran) or `renderCard` (`cardRenderer.js:16-59`) built a `.dcard` shell but didn't populate its children.
+
+**Hypothesis 1 — Cellar draw-after-discard id collision / reveal hits the wrong node (LEADING; fits "gray, while playing, low on cards").**
+- `Deck.js:591-595` (Cellar "Exchange Selected Cards"): it discards each selected card into `this.discard` (`addNewCard(newTempCard, true, false)`, line 592) and *immediately* `drawCard()` (594). `hand.useCard` (line 591) doesn't remove the card's DOM node right away — it fades opacity to 0 and removes it **180ms later** via `setTimeout` (`Deck.js:703-711`).
+- If the deck was empty, `drawCard` reshuffles `this.discard` into the deck (`Deck.js:246-249`) — and that discard now contains the cards *just discarded by this same Cellar action* — so it can pop the **same card id** back. `generateHandCard` → `renderCard(tempCard, id_card + tempCard.id, …)` then builds a **second element with the same `card_<id>_div` id** while the old (opacity:0, mid-removal) one still exists.
+- `displayCard(cardHtml_id)` (line 595) → `getElementById('card_<id>_div')` resolves to the **stale dying node** (first in DOM order), removes `inactive` from *it* (pointless), and the freshly-drawn real hand card keeps `inactive` → **gray card left in hand.** Duplicate ids also corrupt every later `getElementById` on that card.
+- Extra: `displayCard(cardHtml_id)` at 595 has **no null guard** (`drawCard` returns `null` when truly out of cards — `Deck.js:250-252`); `displayCard(null)` no-ops but signals the missing-draw case the user described.
+
+**Hypothesis 2 — a drawn card's `inactive` is simply never cleared (general). [FIXED 2026-07-22]**
+- Any draw path that renders a hand card but forgets to call `displayCard()` leaves it gray. Confirmed gap: **Council Room** "each other player draws a card" (`Deck.js:442-448`) called `getPlayer(i).cards.drawCard()` with no `silent` and no follow-up `displayCard()` → opponents' drawn cards stayed gray (visible in face-up rival mode). The self-draw loop in `useCardAfterAnimation` (`Deck.js:397-403`) *is* guarded, so Smithy/Lab/Market/Village were already fine.
+- **Fix:** Council Room now captures the drawn id and calls `getPlayer(i).cards.displayCard(rivalHtmlId)` (null-guarded), mirroring the self-draw pattern. `displayCard` only toggles `inactive`/`size-hand` — it does not reveal face-down info (face-down is `body.opp-facedown` + CSS), so no hidden-hand leak. Witch's rival draw is unaffected (it goes to the discard pile via `addNewCard`, which never renders `inactive`). Syntax-checked; not yet re-verified live in-browser.
+
+**Hypothesis 3 — deal/flip reveal race leaves the card hidden/gray (transient).**
+- `drawCard` sets the real div `visibility:hidden` then re-shows it inside `flyCardDeal().then()` (`Deck.js:261-263`; `dealInHand` `animator.js:170-178`). If the flight's `onfinish` never fires — card div removed/replaced mid-flight by a turn switch or hand re-render, or the WAAPI anim cancelled — the `.then()` never runs and the card stays hidden; with `inactive` also lingering it reads as a gray blank.
+
+**Hypothesis 4 — `renderCard` partial build on a malformed/null card (blank face; low likelihood).**
+- `renderCard` has no null/shape guard. A `null` card (`generateNewCard` returns `null` at 0 capacity, `Card.js:48-59`) or a card missing a valid `cardType`/`getValue` would throw partway — typeline `CardType.properties[tempCard.cardType].name` (`cardRenderer.js:35`) or text `tempCard.getValue()` (`cardRenderer.js:39`) — leaving a `.dcard` shell with a blank face. Unlikely in normal play (Curse/Silver/Gold are effectively infinite) but a cheap guard.
+
+**Suggested fixes (when picked up — confirm with a repro first).**
+1. Null-guard `displayCard` and skip when `drawCard` returns null (Cellar line 594-595 + `displayCard` itself).
+2. Make "un-gray on draw" not depend on the caller: remove `inactive` in the `flyCardDeal` reveal (`Deck.js:262-263`) / `dealInHand`, or in `addCardToHand` once the flight resolves — so no draw path can leave a gray card. Fixes H2 (incl. Council Room) too.
+3. Prevent same-id DOM duplicates: before `renderCard` builds `card_<id>_div`, remove any existing node with that id synchronously (don't rely on the 180ms fade), or don't fold the just-discarded Cellar cards back into the draw pile until the whole Cellar action finishes.
+4. Add a guard at the top of `renderCard` for null/invalid cards.
+
+**Repro to try:** run your deck very low, play **Cellar**, and discard-then-draw enough to force a reshuffle that includes the cards you just discarded (or play with a tiny deck). Watch for a hand card that stays gray/blank. Also check opponents after a **Council Room** in face-up rival mode.
+
 ### Deferred maintainability findings (from the 2026-07-19 review — bigger, own session)
 1. **`Deck.js` God Object** (~770 lines): `useCardAfterAnimation` is a ~250-line mega-fn with near-identical Mine/Chapel/Cellar blocks, and card behaviour is dispatched by hardcoded `card.name === 'Witch'` strings. → per-card handler registry attached to card definitions.
 2. **Fragile id-string ↔ CSS-selector contract**: 30+ hand-built ids (`id_discard_top + id_card + ...`) matched by 30+ `[id^='...']` CSS rules; a rename fails silently. → id-builder helpers + semantic classes; document the contract.

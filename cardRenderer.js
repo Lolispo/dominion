@@ -15,6 +15,14 @@ function cardSizeClass(size){
 // Faithful card DOM. Preserves legacy element ids so existing code keeps working.
 function renderCard(tempCard, id, parentID, opts){
 	opts = opts || {};
+	// Invariant: at most one DOM node per card id. A card can be re-rendered while its
+	// previous node is still mid-removal — e.g. Cellar discards a card (useCard fades it
+	// out over ~180ms before deleting it, Deck.js), then a reshuffle draws that SAME card
+	// back within that window. Without this guard `initNewUIElement` appends a second
+	// `<id>_div`, so getElementById() resolves the stale dying node and the fresh hand card
+	// never gets `inactive` removed → it reads as a blank grey card. Drop any stale node first.
+	var stale = document.getElementById(id + id_div);
+	if(stale && stale.parentNode){ stale.parentNode.removeChild(stale); }
 	var size = opts.size || 'hand';
 	var typeClass = getCssClassCard(tempCard).replace('card_', 'dcard-'); // card_action -> dcard-action
 	var div = initNewUIElement('div', new Map().set('id', id + id_div), parentID,
