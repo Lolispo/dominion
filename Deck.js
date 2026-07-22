@@ -354,7 +354,11 @@ function DeckOfCards(playerIndex){
 		modifyCSSID('add', id_text + this.playerIndex, 'invis');
 		modifyCSSID('add', id_discard_top + id_card + this.playerIndex + id_div, 'inactive');
 		removeChildren(id_hand + this.playerIndex);
-		removeChildren(id_interact + this.playerIndex);
+		// Only clear the leftover transient turn button (the skip/phase button). The dock bar
+		// (#interact_) also holds the PERSISTENT money / buys / actions displays and the
+		// "View Deck" button (see Player.js) — removeChildren() here would destroy those and
+		// break updateMoney() on the next turn ("Cannot set properties of null").
+		deleteButton('skipButton', id_interact + this.playerIndex);
 	}
 
 	// New Card
