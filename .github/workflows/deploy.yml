@@ -1,13 +1,16 @@
 # Auto-deploys Dominion to dominion.petterbuilds.com on push to main.
 #
 # Dominion is a static HTML/JS game with no bundler. `npm run build` just stages
-# the runtime files into dist/ (see scripts/build-static.sh); the reusable
-# platform workflow then injects the RUM snippet, syncs dist/ to the apps bucket
-# under /dominion/, and invalidates CloudFront.
+# the runtime files into dist/ (see scripts/build-static.sh); the shared platform
+# workflow then injects the RUM snippet, syncs dist/ to the apps bucket under
+# /dominion/, and invalidates CloudFront.
 #
-# Auth: the reusable workflow defaults role-arn to the platform's shared OIDC
-# deploy role (trust policy allows repo:Lolispo/*), so no repo variable or stored
-# AWS keys are needed here.
+# This repo is PUBLIC, so it calls the shared deploy workflow in the PUBLIC repo
+# Lolispo/ci directly (GitHub blocks public→private reusable-workflow calls, so it
+# can't go through the private web-platform like the private apps do). The AWS
+# role ARN is passed from the repo variable AWS_DEPLOY_ROLE_ARN, keeping the
+# account id out of this public source. Access is gated by the OIDC trust policy
+# (repo:Lolispo/*), not by secrecy.
 name: Deploy
 
 on:
@@ -20,9 +23,10 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    uses: Lolispo/web-platform/.github/workflows/deploy-app.yml@main
+    uses: Lolispo/ci/.github/workflows/deploy-app.yml@main
     with:
       app-id: dominion
+      role-arn: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
       # No dependencies — the build is pure bash. npm ci just satisfies the
       # workflow's setup-node cache + install step against the empty lockfile.
       install-command: npm ci
